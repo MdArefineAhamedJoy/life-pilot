@@ -80,9 +80,9 @@ export function ExpenseForm({ categories }: ExpenseFormProps) {
             <option>Mobile banking</option>
           </SelectInput>
         </FieldShell>
-        <div className="rounded-md border border-teal-100 bg-teal-50 p-3">
-          <p className="text-sm font-medium text-teal-900">Auto total</p>
-          <p className="mt-1 text-2xl font-semibold text-teal-950">{formatCurrency(previewTotal)}</p>
+        <div className="rounded-md border border-emerald-500/20 bg-emerald-50 p-3">
+          <p className="text-sm font-medium text-emerald-600">Auto total</p>
+          <p className="mt-1 text-2xl font-semibold text-slate-800">{formatCurrency(previewTotal)}</p>
         </div>
         <div className="md:col-span-2">
           <FieldShell label="Note">
@@ -91,7 +91,7 @@ export function ExpenseForm({ categories }: ExpenseFormProps) {
         </div>
         <div className="md:col-span-2">
           <Button className="w-full sm:w-auto" type="submit">Save expense</Button>
-          {savedMessage && <p className="mt-2 text-sm font-medium text-teal-700">{savedMessage}</p>}
+          {savedMessage && <p className="mt-2 text-sm font-medium text-green-500">{savedMessage}</p>}
         </div>
       </form>
     </Card>

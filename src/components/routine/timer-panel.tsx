@@ -58,9 +58,9 @@ export function TimerPanel() {
             </SelectInput>
           </FieldShell>
         </div>
-        <div className="min-w-0 rounded-md border border-zinc-200 bg-zinc-50 p-4 text-center">
-          <p className="text-sm font-medium text-zinc-500">{status} | {mode}</p>
-          <p className="mt-2 break-words font-mono text-3xl font-semibold text-zinc-950 sm:text-4xl">{formatTimer(seconds)}</p>
+        <div className="min-w-0 rounded-md border border-slate-200 bg-slate-50 p-4 text-center">
+          <p className="text-sm font-medium text-slate-500">{status} | {mode}</p>
+          <p className="mt-2 break-words font-mono text-3xl font-semibold text-slate-800 sm:text-4xl">{formatTimer(seconds)}</p>
           <div className="mt-4 grid gap-2 min-[420px]:grid-cols-3">
             <Button onClick={() => setIsRunning((current) => !current)} type="button">
               {isRunning ? "Pause" : "Start"}
@@ -94,7 +94,7 @@ export function TimerPanel() {
               Save
             </Button>
           </div>
-          {savedMessage && <p className="mt-3 text-sm font-medium text-teal-700">{savedMessage}</p>}
+          {savedMessage && <p className="mt-3 text-sm font-medium text-green-500">{savedMessage}</p>}
         </div>
       </div>
     </Card>

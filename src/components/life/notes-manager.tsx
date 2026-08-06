@@ -46,9 +46,9 @@ export function NotesManager() {
       <Card title="Saved Notes" eyebrow="Database">
         <div className="space-y-3">
           {notes.map((note) => (
-            <article className="min-w-0 rounded-md border border-zinc-100 bg-zinc-50 p-4" key={note.id}>
-              <h3 className="break-words text-sm font-semibold text-zinc-950">{note.title}</h3>
-              <p className="mt-2 break-words text-sm leading-6 text-zinc-600">{note.body}</p>
+            <article className="min-w-0 rounded-md border border-slate-200 bg-slate-50 p-4" key={note.id}>
+              <h3 className="break-words text-sm font-semibold text-slate-800">{note.title}</h3>
+              <p className="mt-2 break-words text-sm leading-6 text-slate-600">{note.body}</p>
               {note.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {note.tags.map((tag) => (

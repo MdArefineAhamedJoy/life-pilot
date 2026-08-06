@@ -153,13 +153,242 @@ Dashboard should show:
 
 - Dashboard
 - Budget
+- Expenses
 - Add Expense
-- Scan Slip
+- Receipt Scanner
+- Categories
 - Routine
+- Tasks
 - Timer
 - Notes
+- Goals
+- Shopping
+- Meal Planner
+- Health
+- Family
+- Reminder
 - Reports
+- AI Assistant
+- Backup
+- Calendar
+- Profile
 - Settings
+
+## UI Design System
+
+The product should feel like a calm Daily Money Management + Daily Routine dashboard. The UI must be comfortable for long daily use, avoid overly bright surfaces, and keep money, tasks, and alerts easy to scan.
+
+### Color Palette
+
+| Element | Color | Hex |
+| --- | --- | --- |
+| Primary | Emerald | `#10B981` |
+| Primary hover | Dark Emerald | `#059669` |
+| Secondary | Blue | `#3B82F6` |
+| Background | Light Gray | `#F8FAFC` |
+| Card | White | `#FFFFFF` |
+| Text | Dark Slate | `#1E293B` |
+| Border | Gray | `#E2E8F0` |
+| Success | Green | `#22C55E` |
+| Warning | Orange | `#F59E0B` |
+| Danger | Red | `#EF4444` |
+
+Feature color rules:
+
+- Income and saved states use success green.
+- Expenses and missed/over-budget states use danger red.
+- Savings goals and secondary actions use blue.
+- Routine/task progress can use blue, with warning orange for delayed states.
+- Cards stay white on the light gray background.
+- Borders use soft gray; heavy black UI should be avoided.
+
+### Typography And Shape
+
+- Heading font: Poppins.
+- Body font: Inter.
+- Number and money font: JetBrains Mono.
+- Card border radius: `16px`.
+- Button border radius: `12px`.
+- Button height: `44px`.
+- Card padding: `20px`.
+- Card shadow: soft dashboard shadow, around `0 8px 30px rgba(0,0,0,0.08)`.
+- Layout style: minimal dashboard with light glassmorphism only where it improves depth.
+
+## Page UI Map
+
+### Dashboard
+
+- Top header with greeting, date, search, and profile area.
+- Quick actions: Add Expense, Add Task, Scan Receipt, Start Timer.
+- Summary cards: Today's Budget, Today's Expense, Remaining Budget, Savings, Today's Score.
+- Analytics cards: Expense Overview, Weekly Spending, Budget Progress.
+- Today's Routine list.
+- Recent Expenses list.
+- Upcoming Reminder list.
+
+### Budget
+
+- Top summary: Monthly Budget, Spent, Remaining, Savings.
+- Category cards for Food, Transport, Medical, Shopping, Emergency, Baby, Bills, Savings.
+- Category-wise spending chart.
+- Category budget table.
+- Progress bars: green for healthy, red for over budget.
+
+### Expenses
+
+- Search input.
+- Date picker.
+- Category filter.
+- Payment filter.
+- Expense table with item, category, amount, payment, date, edit, delete, and view actions.
+
+### Add Expense
+
+- Item name.
+- Category.
+- Amount.
+- Quantity.
+- Payment method.
+- Date.
+- Note.
+- Attachment upload.
+- Emerald Save Expense button.
+
+### Receipt Scanner
+
+- Upload image.
+- Camera capture placeholder.
+- Paste text.
+- Preview panel.
+- Extracted table.
+- Save extracted rows.
+
+### Categories
+
+- Category cards: Food, Baby, Medicine, Transport, Bills, Savings, Emergency.
+- Create Category action.
+- Edit and delete actions.
+- Each card should use a small accent color, not a full-color card.
+
+### Routine
+
+- Today segmented sections: Morning, Afternoon, Evening, Night.
+- Task card fields: title, priority, status, time.
+- Start Timer and Complete actions.
+- Priority indicators: high red, medium orange, low blue.
+
+### Tasks
+
+- Kanban columns: Pending, In Progress, Completed, Missed, Skipped, Delayed.
+- Compact task cards with title, time, priority, and status.
+
+### Focus Timer
+
+- Pomodoro.
+- Stopwatch.
+- Countdown.
+- Large timer display.
+- Start, Pause, Reset controls.
+- Today's Focus and Weekly Focus statistics.
+
+### Reports
+
+- Expense Report.
+- Routine Report.
+- Time Report.
+- Savings Report.
+- Monthly Report.
+- Charts: line, pie, and bar.
+
+### Notes
+
+- Create Note.
+- Search.
+- Pinned notes.
+- Tags.
+- Archive.
+
+### Goals
+
+- Emergency Fund, Buy Laptop, Vacation, Bike, House.
+- Progress bars with target and saved amount.
+
+### Shopping
+
+- Shopping list with completed and pending states.
+- Add item action.
+- Convert purchased items into expenses later.
+
+### Meal Planner
+
+- Breakfast, lunch, dinner, snacks.
+- Weekly or monthly meal plan.
+- Optional link to shopping list.
+
+### Health
+
+- Medicine.
+- Weight.
+- Water intake.
+- Exercise.
+- Sleep.
+
+### Family
+
+- Baby costs.
+- Parents costs.
+- Family monthly cost.
+- Recurring family needs.
+
+### Reminder
+
+- Bills.
+- Meeting.
+- Medicine.
+- Routine.
+- Birthday.
+- Missed and upcoming reminders.
+
+### AI Assistant
+
+- Ask AI input.
+- Expense analysis.
+- Routine suggestion.
+- Monthly summary.
+- OCR and receipt parser suggestions.
+- AI remains optional and disabled by default until configured.
+
+### Backup
+
+- Export CSV.
+- Export JSON.
+- Restore.
+- Download.
+- Cloud sync marked as future.
+
+### Calendar
+
+- Month, week, and day views.
+- Show expenses, tasks, and reminders.
+
+### Profile
+
+- Avatar.
+- Name.
+- Theme.
+- Currency.
+- Language.
+- Notification.
+
+### Settings
+
+- Theme.
+- Language.
+- Currency.
+- Export/import.
+- Backup.
+- Notification.
+- Privacy.
 
 ## Data Model Draft
 

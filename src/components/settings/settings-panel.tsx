@@ -97,9 +97,9 @@ export function SettingsPanel() {
       </Card>
       <Card title="Notifications And Data" eyebrow="Local first">
         <div className="space-y-4">
-          <div className="rounded-md border border-zinc-100 bg-zinc-50 p-4">
-            <p className="text-sm font-semibold text-zinc-950">Browser notifications</p>
-            <p className="mt-1 text-sm text-zinc-600">Current status: {notificationStatus}</p>
+          <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm font-semibold text-slate-800">Browser notifications</p>
+            <p className="mt-1 text-sm text-slate-600">Current status: {notificationStatus}</p>
             <Button className="mt-3" onClick={requestNotifications} type="button" variant="secondary">
               Enable notifications
             </Button>

@@ -37,13 +37,13 @@ export function RoutineBoard({ tasks, onStatusChange }: RoutineBoardProps) {
       </div>
       <div className="space-y-3">
         {tasks.map((task) => (
-          <div className="grid min-w-0 gap-3 rounded-md border border-zinc-100 bg-zinc-50 p-3 2xl:grid-cols-[minmax(0,1fr)_auto]" key={task.id}>
+          <div className="grid min-w-0 gap-3 rounded-md border border-slate-200 bg-slate-50 p-3 2xl:grid-cols-[minmax(0,1fr)_auto]" key={task.id}>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h3 className="break-words text-sm font-semibold text-zinc-950">{task.title}</h3>
+                <h3 className="break-words text-sm font-semibold text-slate-800">{task.title}</h3>
                 <StatusBadge status={getDisplayStatus(task)} />
               </div>
-              <p className="mt-1 text-sm text-zinc-600">
+              <p className="mt-1 text-sm text-slate-600">
                 {task.category} | {task.plannedStart} - {task.plannedEnd}
                 {typeof task.actualMinutes === "number" ? ` | actual ${formatMinutes(task.actualMinutes)}` : ""}
               </p>

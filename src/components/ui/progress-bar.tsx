@@ -7,11 +7,11 @@ type ProgressBarProps = {
 };
 
 const tones = {
-  teal: "bg-teal-600",
+  teal: "bg-emerald-500",
   amber: "bg-amber-500",
-  rose: "bg-rose-500",
-  indigo: "bg-indigo-600",
-  zinc: "bg-zinc-900",
+  rose: "bg-red-500",
+  indigo: "bg-blue-500",
+  zinc: "bg-slate-800",
 };
 
 export function ProgressBar({ value, tone = "teal", label }: ProgressBarProps) {
@@ -19,8 +19,8 @@ export function ProgressBar({ value, tone = "teal", label }: ProgressBarProps) {
 
   return (
     <div className="space-y-2">
-      {label && <div className="text-xs font-medium text-zinc-500">{label}</div>}
-      <div className="h-2 overflow-hidden rounded bg-zinc-100">
+      {label && <div className="text-xs font-medium text-slate-500">{label}</div>}
+      <div className="h-2 overflow-hidden rounded bg-slate-200">
         <div className={cn("h-full rounded", tones[tone])} style={{ width: `${safeValue}%` }} />
       </div>
     </div>

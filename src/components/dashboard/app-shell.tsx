@@ -2,85 +2,193 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import {
+  Bell,
+  Bot,
+  CalendarDays,
+  ChartColumn,
+  CirclePlus,
+  DatabaseBackup,
+  HeartPulse,
+  LayoutDashboard,
+  ListChecks,
+  ListTodo,
+  LogOut,
+  NotebookTabs,
+  ScanLine,
+  Settings,
+  ShoppingCart,
+  StickyNote,
+  Timer,
+  Trophy,
+  Users,
+  Utensils,
+  WalletCards,
+  type LucideIcon,
+} from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-const navItems = [
-  { label: "Dashboard", href: "/", mark: "D" },
-  { label: "Budget", href: "/budget", mark: "B" },
-  { label: "Add Expense", href: "/add-expense", mark: "+" },
-  { label: "Scan Slip", href: "/scan-slip", mark: "S" },
-  { label: "Routine", href: "/routine", mark: "R" },
-  { label: "Timer", href: "/timer", mark: "T" },
-  { label: "Notes", href: "/notes", mark: "N" },
-  { label: "Reports", href: "/reports", mark: "P" },
-  { label: "Settings", href: "/settings", mark: "G" },
+type NavItem = {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  accent: string;
+};
+
+const navItems: NavItem[] = [
+  { label: "Dashboard", href: "/", icon: LayoutDashboard, accent: "bg-emerald-500" },
+  { label: "Budget", href: "/budget", icon: WalletCards, accent: "bg-blue-500" },
+  { label: "Expenses", href: "/expenses", icon: NotebookTabs, accent: "bg-red-500" },
+  { label: "Add Expense", href: "/add-expense", icon: CirclePlus, accent: "bg-emerald-500" },
+  { label: "Receipt Scanner", href: "/receipt-scanner", icon: ScanLine, accent: "bg-blue-500" },
+  { label: "Categories", href: "/categories", icon: ChartColumn, accent: "bg-emerald-500" },
+  { label: "Routine", href: "/routine", icon: ListChecks, accent: "bg-amber-500" },
+  { label: "Tasks", href: "/tasks", icon: ListTodo, accent: "bg-blue-500" },
+  { label: "Timer", href: "/timer", icon: Timer, accent: "bg-blue-500" },
+  { label: "Notes", href: "/notes", icon: StickyNote, accent: "bg-green-500" },
+  { label: "Goals", href: "/goals", icon: Trophy, accent: "bg-blue-500" },
+  { label: "Shopping", href: "/shopping", icon: ShoppingCart, accent: "bg-amber-500" },
+  { label: "Meal Planner", href: "/meal-planner", icon: Utensils, accent: "bg-emerald-500" },
+  { label: "Health", href: "/health", icon: HeartPulse, accent: "bg-red-500" },
+  { label: "Family", href: "/family", icon: Users, accent: "bg-blue-500" },
+  { label: "Reminder", href: "/reminder", icon: Bell, accent: "bg-amber-500" },
+  { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
+  { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
+  { label: "Backup", href: "/backup", icon: DatabaseBackup, accent: "bg-blue-500" },
+  { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
 ];
 
 type AppShellProps = {
   children: ReactNode;
 };
 
+function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
+  return <Icon aria-hidden="true" className="size-4" strokeWidth={1.9} />;
+}
+
+function isActivePath(pathname: string, href: string) {
+  return href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const primaryMobileItems = navItems.filter((item) =>
-    ["/", "/add-expense", "/scan-slip", "/routine", "/timer"].includes(item.href),
+    ["/", "/budget", "/add-expense", "/routine", "/timer"].includes(item.href),
   );
 
   return (
-    <div className="min-h-dvh bg-[#f7f6f2] text-zinc-950">
-      <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="hidden min-h-screen border-r border-zinc-200 bg-white lg:block">
-          <div className="sticky top-0 flex max-h-dvh min-h-dvh flex-col overflow-y-auto px-3 py-4 xl:px-4 xl:py-5">
-            <Link className="rounded-md px-2 py-1" href="/">
-              <p className="text-sm font-medium text-teal-700">Personal local-first planner</p>
-              <h1 className="mt-1 text-xl font-semibold tracking-normal xl:text-2xl">Life Pilot</h1>
-            </Link>
-            <nav className="mt-6 space-y-1 xl:mt-8">
-              {navItems.map((item) => {
-                const isActive = pathname === item.href;
+    <div className="min-h-dvh bg-slate-50 text-slate-800">
+      <div className="lg:grid lg:grid-cols-[288px_minmax(0,1fr)]">
+        <aside className="hidden min-h-screen border-r border-slate-200 bg-white lg:block">
+          <div className="sticky top-0 flex h-dvh min-h-dvh flex-col px-4 xl:px-5">
+            <div className="-mx-4 shrink-0 bg-white px-4 py-5 xl:-mx-5 xl:px-5">
+              <Link className="flex items-center gap-3 rounded-md px-2 py-1" href="/">
+                <span className="flex size-11 items-center justify-center rounded-md bg-emerald-500 text-sm font-semibold text-white shadow-sm">
+                  LP
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate text-xs font-medium text-emerald-600">
+                    Personal local-first planner
+                  </span>
+                  <span className="block truncate text-xl font-semibold tracking-normal text-slate-800">
+                    Life Pilot
+                  </span>
+                </span>
+              </Link>
+            </div>
 
-                return (
-                  <Link
-                    className={cn(
-                      "flex min-h-11 min-w-0 items-center gap-3 rounded-md px-3 text-sm font-medium text-zinc-600 transition hover:bg-zinc-100 hover:text-zinc-950",
-                      isActive && "bg-zinc-950 text-white hover:bg-zinc-900 hover:text-white",
-                    )}
-                    href={item.href}
-                    key={item.href}
-                  >
-                    <span
+            <div className="sidebar-scrollbar -mx-4 min-h-0 flex-1 overflow-y-auto pb-4 pl-4 pr-1 xl:-mx-5 xl:pl-5">
+              <nav className="mr-3 mt-2 space-y-1 xl:mt-3" aria-label="Main navigation">
+                {navItems.map((item) => {
+                  const isActive = isActivePath(pathname, item.href);
+
+                  return (
+                    <Link
+                      aria-current={isActive ? "page" : undefined}
                       className={cn(
-                        "flex size-7 items-center justify-center rounded border border-zinc-200 bg-white text-xs font-semibold text-zinc-700",
-                        isActive && "border-zinc-700 bg-zinc-800 text-white",
+                        "group relative flex min-h-12 min-w-0 items-center gap-4 rounded-xl px-3 text-base font-medium transition",
+                        isActive
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-800",
                       )}
+                      href={item.href}
+                      key={item.href}
                     >
-                      {item.mark}
-                    </span>
-                    <span className="truncate">{item.label}</span>
+                      <span className="flex size-6 shrink-0 items-center justify-center text-current transition">
+                        <NavIcon icon={item.icon} />
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div className="relative -mx-4 shrink-0 border-t border-slate-200 bg-white px-4 py-0 xl:-mx-5 xl:px-5">
+              {isAccountMenuOpen && (
+                <div className="absolute inset-x-4 bottom-[calc(100%+8px)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.14)] xl:inset-x-5">
+                  <div className="border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800">
+                    My Account
+                  </div>
+                  <Link
+                    className="flex min-h-11 items-center gap-3 border-b border-slate-200 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-emerald-600"
+                    href="/settings"
+                    onClick={() => setIsAccountMenuOpen(false)}
+                  >
+                    <Settings aria-hidden="true" className="size-4" strokeWidth={1.9} />
+                    Account Settings
                   </Link>
-                );
-              })}
-            </nav>
-            <div className="mt-auto rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-              <p className="font-semibold">Free first</p>
-              <p className="mt-1 leading-5">Local browser data now. Optional AI/OCR later.</p>
+                  <button
+                    className="flex min-h-11 w-full items-center gap-3 px-4 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
+                    onClick={() => setIsAccountMenuOpen(false)}
+                    type="button"
+                  >
+                    <LogOut aria-hidden="true" className="size-4" strokeWidth={1.9} />
+                    Logout
+                  </button>
+                </div>
+              )}
+                <button
+                  aria-expanded={isAccountMenuOpen}
+                  aria-label="Open account menu"
+                  className="flex min-h-16 w-full min-w-0 items-center gap-3 bg-white px-2 py-2 text-left transition hover:bg-slate-50"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setIsAccountMenuOpen((current) => !current);
+                  }}
+                  type="button"
+                >
+                  <span className="profile-avatar shrink-0" aria-hidden="true" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold leading-5 text-slate-950">
+                      Md Arefine Ahamed Joy
+                    </span>
+                    <span className="block truncate text-xs font-semibold leading-4 text-slate-500">
+                      mdarefine05@gmail.com
+                    </span>
+                  </span>
+                </button>
             </div>
           </div>
         </aside>
+
         <div className="min-w-0">
-          <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/95 backdrop-blur lg:hidden">
+          <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur lg:hidden">
             <div className="px-3 py-3 sm:px-5 sm:py-4">
               <Link href="/">
-                <p className="text-sm font-medium text-teal-700">Life Pilot</p>
+                <p className="text-sm font-medium text-emerald-600">Life Pilot</p>
                 <h1 className="text-xl font-semibold">Daily planner</h1>
               </Link>
-              <nav className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 sm:mt-4">
+              <nav className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 sm:mt-4" aria-label="Mobile navigation">
                 {navItems.map((item) => (
                   <Link
+                    aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
                     className={cn(
-                      "snap-start whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950",
-                      pathname === item.href && "bg-zinc-950 text-white hover:bg-zinc-900 hover:text-white",
+                      "snap-start whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-800",
+                      isActivePath(pathname, item.href) &&
+                        "bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white",
                     )}
                     href={item.href}
                     key={item.href}
@@ -91,25 +199,34 @@ export function AppShell({ children }: AppShellProps) {
               </nav>
             </div>
           </header>
+
           <main className="mx-auto min-w-0 max-w-[1600px] px-3 py-4 pb-24 sm:px-5 sm:py-6 lg:px-6 lg:pb-8 xl:px-8">
             {children}
           </main>
         </div>
       </div>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-zinc-200 bg-white/95 px-2 py-2 shadow-[0_-8px_24px_rgba(24,24,27,0.08)] backdrop-blur sm:hidden">
-        {primaryMobileItems.map((item) => (
-          <Link
-            className={cn(
-              "flex min-h-12 flex-col items-center justify-center gap-1 rounded-md text-[11px] font-medium text-zinc-600",
-              pathname === item.href && "bg-zinc-950 text-white",
-            )}
-            href={item.href}
-            key={item.href}
-          >
-            <span className="text-sm font-semibold">{item.mark}</span>
-            <span className="max-w-full truncate px-1">{item.label}</span>
-          </Link>
-        ))}
+
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-slate-200 bg-white/95 px-2 py-2 shadow-[0_-8px_24px_rgba(30,41,59,0.08)] backdrop-blur sm:hidden">
+        {primaryMobileItems.map((item) => {
+          const isActive = isActivePath(pathname, item.href);
+
+          return (
+            <Link
+              aria-current={isActive ? "page" : undefined}
+              className={cn(
+                "flex min-h-13 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[11px] font-medium text-slate-600",
+                isActive && "bg-emerald-500 text-white",
+              )}
+              href={item.href}
+              key={item.href}
+            >
+              <span className="flex size-6 items-center justify-center">
+                <NavIcon icon={item.icon} />
+              </span>
+              <span className="max-w-full truncate">{item.label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );

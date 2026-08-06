@@ -36,9 +36,9 @@ export function ReceiptImporter() {
           <FieldShell hint="Ready for future Tesseract.js/browser OCR integration." label="Receipt image">
             <TextInput accept="image/*" type="file" />
           </FieldShell>
-          <div className="flex items-center justify-between rounded-md bg-zinc-50 p-3">
-            <span className="text-sm font-medium text-zinc-600">Parsed total</span>
-            <span className="text-lg font-semibold text-zinc-950">{formatCurrency(total)}</span>
+          <div className="flex items-center justify-between rounded-md border border-slate-200 bg-slate-50 p-3">
+            <span className="text-sm font-medium text-slate-600">Parsed total</span>
+            <span className="text-lg font-semibold text-slate-800">{formatCurrency(total)}</span>
           </div>
           <Button
             className="w-full sm:w-auto"
@@ -50,7 +50,7 @@ export function ReceiptImporter() {
           >
             Review and save
           </Button>
-          {savedMessage && <p className="text-sm font-medium text-teal-700">{savedMessage}</p>}
+          {savedMessage && <p className="text-sm font-medium text-green-500">{savedMessage}</p>}
         </div>
         <DataTable columns={columns} getRowKey={(row) => row.id} rows={parsedRows} />
       </div>

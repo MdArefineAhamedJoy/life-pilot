@@ -13,7 +13,12 @@ export function ExpenseTable({ expenses }: ExpenseTableProps) {
     { key: "item", header: "Item", render: (expense) => expense.itemName },
     { key: "category", header: "Category", render: (expense) => <Badge>{expense.category}</Badge> },
     { key: "source", header: "Source", render: (expense) => expense.sourceType },
-    { key: "amount", header: "Amount", align: "right", render: (expense) => formatCurrency(expense.amount) },
+    {
+      key: "amount",
+      header: "Amount",
+      align: "right",
+      render: (expense) => <span className="font-mono">{formatCurrency(expense.amount)}</span>,
+    },
   ];
 
   return <DataTable columns={columns} emptyMessage="No expense saved yet." getRowKey={(expense) => expense.id} rows={expenses} />;

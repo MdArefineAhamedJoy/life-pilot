@@ -17,7 +17,12 @@ export function TimerHistory() {
     { key: "title", header: "Session", render: (session) => session.title },
     { key: "category", header: "Category", render: (session) => session.category },
     { key: "mode", header: "Mode", render: (session) => session.mode },
-    { key: "duration", header: "Duration", align: "right", render: (session) => formatDuration(session.durationSeconds) },
+    {
+      key: "duration",
+      header: "Duration",
+      align: "right",
+      render: (session) => <span className="font-mono">{formatDuration(session.durationSeconds)}</span>,
+    },
   ];
 
   return (
