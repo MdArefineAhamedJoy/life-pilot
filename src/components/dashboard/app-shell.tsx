@@ -80,10 +80,10 @@ export function AppShell({ children }: AppShellProps) {
 
   return (
     <div className="min-h-dvh bg-slate-50 text-slate-800">
-      <div className="lg:grid lg:grid-cols-[288px_minmax(0,1fr)]">
+      <div className="lg:grid lg:grid-cols-[272px_minmax(0,1fr)]">
         <aside className="hidden min-h-screen border-r border-slate-200 bg-white lg:block">
           <div className="sticky top-0 flex h-dvh min-h-dvh flex-col px-4 xl:px-5">
-            <div className="-mx-4 shrink-0 bg-white px-4 py-5 xl:-mx-5 xl:px-5">
+            <div className="-mx-4 shrink-0 border-b border-slate-200 bg-white px-4 py-5 xl:-mx-5 xl:px-5">
               <Link className="flex items-center gap-3 rounded-md px-2 py-1" href="/">
                 <span className="flex size-11 items-center justify-center rounded-md bg-emerald-500 text-sm font-semibold text-white shadow-sm">
                   LP
@@ -200,7 +200,7 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </header>
 
-          <main className="mx-auto min-w-0 max-w-[1600px] px-3 py-4 pb-24 sm:px-5 sm:py-6 lg:px-6 lg:pb-8 xl:px-8">
+          <main className="mx-auto min-w-0 max-w-[1600px] p-6 pb-24 lg:pb-6">
             {children}
           </main>
         </div>
