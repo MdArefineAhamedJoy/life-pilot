@@ -7,7 +7,6 @@ import {
   Bot,
   CalendarDays,
   ChartColumn,
-  CirclePlus,
   DatabaseBackup,
   HeartPulse,
   LayoutDashboard,
@@ -40,7 +39,6 @@ const navItems: NavItem[] = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard, accent: "bg-emerald-500" },
   { label: "Budget", href: "/budget", icon: WalletCards, accent: "bg-blue-500" },
   { label: "Expenses", href: "/expenses", icon: NotebookTabs, accent: "bg-red-500" },
-  { label: "Add Expense", href: "/add-expense", icon: CirclePlus, accent: "bg-emerald-500" },
   { label: "Receipt Scanner", href: "/receipt-scanner", icon: ScanLine, accent: "bg-blue-500" },
   { label: "Categories", href: "/categories", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "Routine", href: "/routine", icon: ListChecks, accent: "bg-amber-500" },
@@ -75,7 +73,7 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const primaryMobileItems = navItems.filter((item) =>
-    ["/", "/budget", "/add-expense", "/routine", "/timer"].includes(item.href),
+    ["/", "/budget", "/expenses", "/routine", "/timer"].includes(item.href),
   );
 
   return (

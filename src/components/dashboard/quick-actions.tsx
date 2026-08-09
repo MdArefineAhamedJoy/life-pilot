@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const actions = [
-  { label: "Add expense", href: "/add-expense" },
+  { label: "Add expense", href: "/expenses" },
   { label: "Scan slip", href: "/scan-slip" },
   { label: "Start timer", href: "/timer" },
   { label: "Add task", href: "/routine" },

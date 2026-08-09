@@ -88,7 +88,7 @@ const categoryRows = [
 ];
 
 const quickActions = [
-  { label: "Add Expense", href: "/add-expense", icon: Plus, tone: "emerald" },
+  { label: "Add Expense", href: "/expenses", icon: Plus, tone: "emerald" },
   { label: "Add Task", href: "/routine", icon: CheckCircle2, tone: "blue" },
   { label: "Scan Slip", href: "/receipt-scanner", icon: Camera, tone: "blue" },
   { label: "Start Timer", href: "/timer", icon: Clock3, tone: "blue" },

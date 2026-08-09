@@ -1,7 +1,6 @@
 "use client";
 
 import { BudgetWorkspace } from "@/components/budget/budget-workspace";
-import { CategoryManager } from "@/components/budget/category-manager";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { SectionHeader } from "@/components/ui/section-header";
 
@@ -15,7 +14,6 @@ export default function BudgetPage() {
         title="Budget and daily cost"
         description="Manage category limits, track bajar cost, and review total spending."
       />
-      <CategoryManager />
       <BudgetWorkspace categories={categories} expenses={expenses} />
     </div>
   );
