@@ -98,7 +98,12 @@ export function DataTable<Row>({
           </tbody>
         </table>
       </div>
-      <Pagination onPageChange={handlePageChange} page={currentPage} totalPages={paginated ? totalPages : 1} />
+      <Pagination
+        className="mt-auto"
+        onPageChange={handlePageChange}
+        page={currentPage}
+        totalPages={paginated ? totalPages : 1}
+      />
     </div>
   );
 }

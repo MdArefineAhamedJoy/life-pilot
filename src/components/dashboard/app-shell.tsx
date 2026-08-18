@@ -9,7 +9,6 @@ import {
   ChartColumn,
   ChevronsLeft,
   ChevronsRight,
-  DatabaseBackup,
   HeartPulse,
   LayoutDashboard,
   ListChecks,
@@ -55,7 +54,6 @@ const navItems: NavItem[] = [
   { label: "Reminder", href: "/reminder", icon: Bell, accent: "bg-amber-500" },
   { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
-  { label: "Backup", href: "/backup", icon: DatabaseBackup, accent: "bg-blue-500" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
 ];
 

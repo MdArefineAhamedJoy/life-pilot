@@ -16,7 +16,7 @@ type SharedCardButtonProps = {
   children: ReactNode;
 };
 
-type StatCardTone = "emerald" | "red" | "blue";
+type StatCardTone = "emerald" | "red" | "blue" | "amber";
 
 type StatCardProps = {
   label: string;
@@ -42,6 +42,11 @@ const statToneStyles: Record<StatCardTone, { icon: string; value: string; bar: s
     icon: "bg-blue-50 text-blue-500",
     value: "text-blue-500",
     bar: "bg-blue-500",
+  },
+  amber: {
+    icon: "bg-amber-50 text-amber-600",
+    value: "text-amber-600",
+    bar: "bg-amber-500",
   },
 };
 
