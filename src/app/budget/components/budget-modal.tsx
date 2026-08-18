@@ -37,7 +37,7 @@ function getBudgetStatus(category: BudgetCategory): BudgetStatus {
 }
 
 export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalProps) {
-  const { addBudgetCategory, updateBudgetCategory } = useLifeOs();
+  const { categories, updateBudgetCategory } = useLifeOs();
   const [hasExtraNote, setHasExtraNote] = useState(Boolean(budget?.extraNote));
   const isEdit = mode === "edit";
 
@@ -54,8 +54,17 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     const data = new FormData(form);
     const status = String(data.get("status") ?? "active") as BudgetStatus;
     const targetPrice = Number(data.get("targetPrice")) || 0;
+    const selectedCategoryId = String(data.get("categoryId") ?? "");
+    const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
+    const categoryName = isEdit ? budget?.name ?? "" : selectedCategory?.name ?? "";
+    const color = isEdit ? String(data.get("color") ?? "teal") : selectedCategory?.color ?? "teal";
+
+    if (!categoryName) {
+      return;
+    }
+
     const nextBudget: Omit<BudgetCategory, "id"> = {
-      name: String(data.get("categoryName") ?? "").trim(),
+      name: categoryName,
       type: String(data.get("type") ?? "monthly") as BudgetType,
       monthlyLimit: targetPrice,
       startDate: String(data.get("startDate") ?? ""),
@@ -63,14 +72,15 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
       status,
       note: String(data.get("note") ?? "").trim(),
       extraNote: hasExtraNote ? String(data.get("extraNote") ?? "").trim() : "",
-      color: String(data.get("color") ?? "teal"),
+      color,
+      categoryStatus: budget?.categoryStatus ?? selectedCategory?.categoryStatus,
       isActive: status === "active",
     };
 
     if (isEdit && budget) {
       updateBudgetCategory(budget.id, nextBudget);
-    } else {
-      addBudgetCategory(nextBudget);
+    } else if (selectedCategory) {
+      updateBudgetCategory(selectedCategory.id, nextBudget);
       form.reset();
       setHasExtraNote(false);
     }
@@ -90,13 +100,21 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
         <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
             <div className="grid min-w-0 grid-cols-1 gap-4 p-4 md:grid-cols-2">
-              <FieldShell label="Category name">
-                <TextInput
-                  defaultValue={budget?.name ?? ""}
-                  name="categoryName"
-                  placeholder="Home rent, grocery, savings"
-                  required
-                />
+              <FieldShell label="Category">
+                {isEdit ? (
+                  <TextInput defaultValue={budget?.name ?? ""} readOnly />
+                ) : (
+                  <SelectInput defaultValue="" name="categoryId" required>
+                    <option disabled value="">
+                      {categories.length > 0 ? "Select category" : "Add category first"}
+                    </option>
+                    {categories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </SelectInput>
+                )}
               </FieldShell>
               <FieldShell label="Budget type">
                 <SelectInput defaultValue={budget?.type ?? "monthly"} name="type">
@@ -128,15 +146,17 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
                   <option value="completed">Completed</option>
                 </SelectInput>
               </FieldShell>
-              <FieldShell label="Color">
-                <SelectInput defaultValue={budget?.color ?? "teal"} name="color">
-                  {colorOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </SelectInput>
-              </FieldShell>
+              {isEdit && (
+                <FieldShell label="Color">
+                  <SelectInput defaultValue={budget?.color ?? "teal"} name="color">
+                    {colorOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </FieldShell>
+              )}
               <label className="flex min-h-9 items-center gap-3 rounded-md border border-slate-200 px-3 text-sm font-medium text-slate-800 shadow-sm">
                 <input
                   checked={hasExtraNote}

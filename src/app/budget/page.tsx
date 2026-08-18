@@ -10,13 +10,15 @@ import { StatCard } from "@/components/shared/card";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import { SectionHeader } from "@/components/ui/section-header";
-import { getTotalSpent } from "@/lib/calculations";
+import { getBudgetUsage, getTotalSpent } from "@/lib/calculations";
 import type { BudgetCategory } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import { cn, formatCurrency } from "@/lib/utils";
 
 type BudgetStatus = "active" | "paused" | "completed";
 type BudgetModalMode = "create" | "edit";
+type BudgetUsage = ReturnType<typeof getBudgetUsage>[number];
 
 const statusLabels: Record<BudgetStatus, string> = {
   active: "Active",
@@ -56,14 +58,15 @@ export default function BudgetPage() {
   const [viewBudget, setViewBudget] = useState<BudgetCategory | undefined>();
   const [statusChangeBudget, setStatusChangeBudget] = useState<BudgetCategory | undefined>();
   const [openActionMenuId, setOpenActionMenuId] = useState<string | undefined>();
-  const totalBudget = categories.reduce((total, category) => total + category.monthlyLimit, 0);
-  const totalSpent = getTotalSpent(expenses);
+  const budgetUsage = getBudgetUsage(categories, expenses);
+  const totalBudget = budgetUsage.reduce((total, category) => total + category.monthlyLimit, 0);
+  const totalSpent = budgetUsage.reduce((total, category) => total + category.spent, 0);
   const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === "2026-08-05"));
   const totalActiveBudget = categories
     .filter((category) => getBudgetStatus(category) === "active")
     .reduce((total, category) => total + category.monthlyLimit, 0);
   const usageProgress = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
-  const columns: TableColumn<BudgetCategory>[] = [
+  const columns: TableColumn<BudgetUsage>[] = [
     {
       key: "category",
       header: "Category",
@@ -91,6 +94,38 @@ export default function BudgetPage() {
       header: "Target Price",
       render: (category) => <span className="font-medium text-slate-900">{formatCurrency(category.monthlyLimit)}</span>,
       align: "right",
+    },
+    {
+      key: "spent",
+      header: "Spent",
+      render: (category) => <span className="font-mono text-slate-700">{formatCurrency(category.spent)}</span>,
+      align: "right",
+    },
+    {
+      key: "remaining",
+      header: "Remaining",
+      render: (category) => (
+        <span className={cn("font-mono font-semibold", category.isOverBudget ? "text-red-500" : "text-emerald-600")}>
+          {formatCurrency(category.remaining)}
+        </span>
+      ),
+      align: "right",
+    },
+    {
+      key: "usage",
+      header: "Usage",
+      render: (category) => (
+        <div className="min-w-[180px]">
+          <div className="mb-2 flex items-center justify-between gap-2 text-xs font-medium text-slate-500">
+            <span>{category.percent}% used</span>
+            <span>{category.isOverBudget ? "Over" : "Available"}</span>
+          </div>
+          <ProgressBar
+            tone={category.isOverBudget ? "rose" : (category.color as "teal" | "amber" | "rose" | "indigo")}
+            value={category.percent}
+          />
+        </div>
+      ),
     },
     {
       key: "status",
@@ -222,7 +257,7 @@ export default function BudgetPage() {
         columns={columns}
         emptyMessage="No budget categories yet."
         getRowKey={(category) => category.id}
-        rows={categories}
+        rows={budgetUsage}
       />
       <BudgetModal
         budget={selectedBudget}

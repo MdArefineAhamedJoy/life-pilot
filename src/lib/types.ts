@@ -23,6 +23,7 @@ export type BudgetCategory = {
   startDate?: string;
   endDate?: string;
   status?: "active" | "paused" | "completed";
+  categoryStatus?: "active" | "pushed" | "blocked";
   note?: string;
   extraNote?: string;
   color: string;

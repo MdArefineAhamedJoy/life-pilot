@@ -38,6 +38,7 @@ type ParsedExpenseRow = {
 type LifeOsContextValue = LifeOsState & {
   addBudgetCategory: (category: Omit<BudgetCategory, "id">) => void;
   updateBudgetCategory: (categoryId: string, nextCategory: Omit<BudgetCategory, "id">) => void;
+  deleteBudgetCategory: (categoryId: string) => void;
   addExpense: (expense: Omit<Expense, "id">) => void;
   addExpensesFromRows: (rows: ParsedExpenseRow[], date?: string) => void;
   deleteExpense: (expenseId: string) => void;
@@ -120,11 +121,28 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
         }));
       },
       updateBudgetCategory: (categoryId, nextCategory) => {
+        setState((current) => {
+          const previousCategory = current.categories.find((category) => category.id === categoryId);
+
+          return {
+            ...current,
+            categories: current.categories.map((category) =>
+              category.id === categoryId ? { ...nextCategory, id: category.id } : category,
+            ),
+            expenses: current.expenses.map((expense) => {
+              if (!previousCategory || expense.category !== previousCategory.name) {
+                return expense;
+              }
+
+              return { ...expense, category: nextCategory.name };
+            }),
+          };
+        });
+      },
+      deleteBudgetCategory: (categoryId) => {
         setState((current) => ({
           ...current,
-          categories: current.categories.map((category) =>
-            category.id === categoryId ? { ...nextCategory, id: category.id } : category,
-          ),
+          categories: current.categories.filter((category) => category.id !== categoryId),
         }));
       },
       addExpense: (expense) => {
