@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { DataTable, type TableColumn } from "@/components/shared/data-table";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { parseReceiptText } from "@/lib/calculations";
 import { formatCurrency } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { DataTable, type TableColumn } from "@/components/ui/data-table";
 import { FieldShell, TextArea, TextInput } from "@/components/ui/field";
 
 type ParsedReceiptRow = ReturnType<typeof parseReceiptText>[number];

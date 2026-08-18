@@ -36,6 +36,8 @@ type ParsedExpenseRow = {
 };
 
 type LifeOsContextValue = LifeOsState & {
+  addBudgetCategory: (category: Omit<BudgetCategory, "id">) => void;
+  updateBudgetCategory: (categoryId: string, nextCategory: Omit<BudgetCategory, "id">) => void;
   addExpense: (expense: Omit<Expense, "id">) => void;
   addExpensesFromRows: (rows: ParsedExpenseRow[], date?: string) => void;
   deleteExpense: (expenseId: string) => void;
@@ -111,6 +113,20 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
   const value = useMemo<LifeOsContextValue>(
     () => ({
       ...state,
+      addBudgetCategory: (category) => {
+        setState((current) => ({
+          ...current,
+          categories: [{ ...category, id: createId("cat") }, ...current.categories],
+        }));
+      },
+      updateBudgetCategory: (categoryId, nextCategory) => {
+        setState((current) => ({
+          ...current,
+          categories: current.categories.map((category) =>
+            category.id === categoryId ? { ...nextCategory, id: category.id } : category,
+          ),
+        }));
+      },
       addExpense: (expense) => {
         setState((current) => ({
           ...current,

@@ -1,8 +1,8 @@
 "use client";
 
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { DataTable, type TableColumn } from "@/components/shared/data-table";
 import { Card } from "@/components/ui/card";
-import { DataTable, type TableColumn } from "@/components/ui/data-table";
 import type { TimerSession } from "@/lib/types";
 
 function formatDuration(seconds: number) {

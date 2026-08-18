@@ -20,6 +20,11 @@ export type BudgetCategory = {
   monthlyLimit: number;
   weeklyLimit?: number;
   dailyLimit?: number;
+  startDate?: string;
+  endDate?: string;
+  status?: "active" | "paused" | "completed";
+  note?: string;
+  extraNote?: string;
   color: string;
   isActive: boolean;
 };

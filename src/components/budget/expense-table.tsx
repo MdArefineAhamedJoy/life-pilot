@@ -1,7 +1,7 @@
 import type { Expense } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
+import { DataTable, type TableColumn } from "@/components/shared/data-table";
 import { Badge } from "@/components/ui/badge";
-import { DataTable, type TableColumn } from "@/components/ui/data-table";
 
 type ExpenseTableProps = {
   expenses: Expense[];

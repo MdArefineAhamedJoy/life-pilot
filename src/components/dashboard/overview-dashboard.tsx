@@ -19,9 +19,14 @@ import {
   WalletCards,
   XCircle,
   Zap,
-  type LucideIcon,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
+import {
+  SharedCard,
+  SharedCardButton,
+  SharedCardHeader,
+  StatCard,
+} from "@/components/shared/card";
 import type { BudgetCategory, Expense, RoutineTask } from "@/lib/types";
 import { getRoutineProgress, getTotalSpent } from "@/lib/calculations";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -30,33 +35,6 @@ type OverviewDashboardProps = {
   categories: BudgetCategory[];
   expenses: Expense[];
   tasks: RoutineTask[];
-};
-
-type SummaryCardProps = {
-  label: string;
-  value: string;
-  detail: string;
-  progress: number;
-  icon: LucideIcon;
-  tone: "emerald" | "red" | "blue";
-};
-
-const toneStyles = {
-  emerald: {
-    icon: "bg-emerald-50 text-emerald-500",
-    value: "text-emerald-600",
-    bar: "bg-emerald-500",
-  },
-  red: {
-    icon: "bg-red-50 text-red-500",
-    value: "text-red-500",
-    bar: "bg-red-500",
-  },
-  blue: {
-    icon: "bg-blue-50 text-blue-500",
-    value: "text-blue-500",
-    bar: "bg-blue-500",
-  },
 };
 
 const weekPoints = [
@@ -106,90 +84,16 @@ const dashboardTabs: Array<{ id: DashboardTab; label: string }> = [
   { id: "reminders", label: "Reminders" },
 ];
 
-function DashboardCard({
-  className,
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section
-      className={cn(
-        "min-w-0 border border-slate-200 bg-white p-6 shadow-[0_10px_34px_rgba(15,23,42,0.06)]",
-        className,
-      )}
-    >
-      {children}
-    </section>
-  );
-}
-
-function CardHeader({ title, action }: { title: string; action?: ReactNode }) {
-  return (
-    <div className="mb-5 flex items-center justify-between gap-3">
-      <h2 className="truncate text-base font-semibold text-slate-950">{title}</h2>
-      {action}
-    </div>
-  );
-}
-
-function SmallButton({ children }: { children: ReactNode }) {
-  return (
-    <button
-      className="inline-flex min-h-10 items-center gap-2 border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-emerald-500/40 hover:text-emerald-600"
-      type="button"
-    >
-      {children}
-    </button>
-  );
-}
-
-function SummaryCard({ label, value, detail, progress, icon: Icon, tone }: SummaryCardProps) {
-  const colors = toneStyles[tone];
-
-  return (
-    <DashboardCard className="relative p-5">
-      <MoreVertical
-        aria-hidden="true"
-        className="absolute right-4 top-5 size-4 text-slate-500"
-        strokeWidth={1.9}
-      />
-      <div className="grid min-w-0 grid-cols-[44px_minmax(0,1fr)] items-center gap-3 pr-5">
-        <span className={cn("flex size-11 items-center justify-center rounded-full", colors.icon)}>
-          <Icon aria-hidden="true" className="size-5" strokeWidth={1.9} />
-        </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-slate-700">{label}</p>
-          <p
-            className={cn(
-              "mt-2 truncate font-mono text-[clamp(1.35rem,1.75vw,2rem)] font-semibold leading-tight",
-              colors.value,
-            )}
-            title={value}
-          >
-            {value}
-          </p>
-          <p className="mt-2 truncate text-sm font-medium text-slate-500">{detail}</p>
-        </div>
-      </div>
-      <div className="mt-7 h-1.5 overflow-hidden rounded-full bg-slate-200">
-        <div className={cn("h-full rounded-full", colors.bar)} style={{ width: `${Math.min(progress, 100)}%` }} />
-      </div>
-    </DashboardCard>
-  );
-}
-
 function ExpenseOverview({ totalSpent }: { totalSpent: number }) {
   return (
-    <DashboardCard>
-      <CardHeader
+    <SharedCard>
+      <SharedCardHeader
         title="Expense Overview (This Week)"
         action={
-          <SmallButton>
+          <SharedCardButton>
             This Week
             <ChevronDown aria-hidden="true" className="size-3.5" />
-          </SmallButton>
+          </SharedCardButton>
         }
       />
       <div className="relative h-[320px]">
@@ -256,14 +160,14 @@ function ExpenseOverview({ totalSpent }: { totalSpent: number }) {
           <p className="mt-2 text-sm font-medium text-slate-500">vs last week</p>
         </div>
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
 function CategoryDistribution({ totalSpent }: { totalSpent: number }) {
   return (
-    <DashboardCard>
-      <CardHeader title="Category Distribution" />
+    <SharedCard>
+      <SharedCardHeader title="Category Distribution" />
       <div className="grid items-center gap-10 lg:grid-cols-[360px_minmax(0,1fr)]">
         <div className="relative mx-auto size-72 rounded-full bg-[conic-gradient(#10b981_0_40%,#3b82f6_40%_65%,#f97316_65%_80%,#8b5cf6_80%_90%,#94a3b8_90%_100%)]">
           <div className="absolute inset-[76px] flex flex-col items-center justify-center rounded-full bg-white px-2 text-center">
@@ -290,7 +194,7 @@ function CategoryDistribution({ totalSpent }: { totalSpent: number }) {
           </Link>
         </div>
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
@@ -298,8 +202,8 @@ function RoutineTimeline({ tasks }: { tasks: RoutineTask[] }) {
   const taskTitles = new Set(tasks.map((task) => task.title));
 
   return (
-    <DashboardCard>
-      <CardHeader title="Today's Routine" action={<SmallButton>View All</SmallButton>} />
+    <SharedCard>
+      <SharedCardHeader title="Today's Routine" action={<SharedCardButton>View All</SharedCardButton>} />
       <div className="space-y-4">
         {routineSlots.map((slot, index) => {
           const isKnownTask = taskTitles.has(slot.title);
@@ -346,7 +250,7 @@ function RoutineTimeline({ tasks }: { tasks: RoutineTask[] }) {
           );
         })}
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
@@ -360,8 +264,8 @@ function RecentExpenses() {
   ];
 
   return (
-    <DashboardCard>
-      <CardHeader title="Recent Expenses" action={<SmallButton>View All</SmallButton>} />
+    <SharedCard>
+      <SharedCardHeader title="Recent Expenses" action={<SharedCardButton>View All</SharedCardButton>} />
       <div className="overflow-x-auto">
         <table className="w-full min-w-[620px] text-sm">
           <thead>
@@ -413,7 +317,7 @@ function RecentExpenses() {
           </tfoot>
         </table>
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
@@ -426,8 +330,8 @@ function UpcomingReminders() {
   ];
 
   return (
-    <DashboardCard>
-      <CardHeader title="Upcoming Reminders" action={<SmallButton>View All</SmallButton>} />
+    <SharedCard>
+      <SharedCardHeader title="Upcoming Reminders" action={<SharedCardButton>View All</SharedCardButton>} />
       <div className="space-y-4">
         {reminders.map((reminder) => {
           const Icon = reminder.icon;
@@ -447,7 +351,7 @@ function UpcomingReminders() {
           );
         })}
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
@@ -465,8 +369,8 @@ function TaskSummary({ routineProgress, missedCount }: { routineProgress: number
   ];
 
   return (
-    <DashboardCard>
-      <CardHeader title="Today's Tasks" action={<SmallButton>View All</SmallButton>} />
+    <SharedCard>
+      <SharedCardHeader title="Today's Tasks" action={<SharedCardButton>View All</SharedCardButton>} />
       <div className="flex flex-wrap gap-2">
         {stats.map((stat) => (
           <span
@@ -503,14 +407,14 @@ function TaskSummary({ routineProgress, missedCount }: { routineProgress: number
           </div>
         ))}
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
 function QuickAddPanel() {
   return (
-    <DashboardCard>
-      <CardHeader title="Quick Add" />
+    <SharedCard>
+      <SharedCardHeader title="Quick Add" />
       <div className="grid gap-3">
         {quickActions.map((action) => (
           <Link
@@ -530,7 +434,7 @@ function QuickAddPanel() {
           </Link>
         ))}
       </div>
-    </DashboardCard>
+    </SharedCard>
   );
 }
 
@@ -616,7 +520,7 @@ export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashb
       </div>
 
       <div className="grid min-w-0 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard
+        <StatCard
           detail={`of ${formatCurrency(totalBudget)}`}
           icon={WalletCards}
           label="Today's Budget"
@@ -624,7 +528,7 @@ export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashb
           tone="emerald"
           value={formatCurrency(totalBudget / 30)}
         />
-        <SummaryCard
+        <StatCard
           detail={`${budgetProgress}% of budget`}
           icon={CreditCard}
           label="Today's Expense"
@@ -632,7 +536,7 @@ export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashb
           tone="red"
           value={formatCurrency(todaySpent || totalSpent)}
         />
-        <SummaryCard
+        <StatCard
           detail={`${100 - budgetProgress}% left`}
           icon={WalletCards}
           label="Remaining Budget"
@@ -640,7 +544,7 @@ export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashb
           tone="blue"
           value={formatCurrency(remainingBudget)}
         />
-        <SummaryCard
+        <StatCard
           detail={`of ${formatCurrency(totalBudget)}`}
           icon={PiggyBank}
           label="Monthly Savings"
