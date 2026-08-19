@@ -37,7 +37,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard, accent: "bg-emerald-500" },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, accent: "bg-emerald-500" },
   { label: "Budget", href: "/budget", icon: WalletCards, accent: "bg-blue-500" },
   { label: "Expenses", href: "/expenses", icon: NotebookTabs, accent: "bg-red-500" },
   { label: "Receipt Scanner", href: "/receipt-scanner", icon: ScanLine, accent: "bg-blue-500" },
@@ -61,6 +61,8 @@ type AppShellProps = {
   children: ReactNode;
 };
 
+const publicRoutes = new Set(["/", "/login", "/register"]);
+
 function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
   return <Icon aria-hidden="true" className="size-4" strokeWidth={1.9} />;
 }
@@ -73,8 +75,13 @@ export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  if (publicRoutes.has(pathname)) {
+    return <>{children}</>;
+  }
+
   const primaryMobileItems = navItems.filter((item) =>
-    ["/", "/budget", "/expenses", "/routine", "/timer"].includes(item.href),
+    ["/dashboard", "/budget", "/expenses", "/routine", "/timer"].includes(item.href),
   );
 
   return (
@@ -110,7 +117,7 @@ export function AppShell({ children }: AppShellProps) {
                     "flex min-w-0 items-center rounded-md py-1",
                     isSidebarCollapsed ? "justify-center px-0" : "flex-1 gap-3 px-2",
                   )}
-                  href="/"
+                  href="/dashboard"
                 >
                   <span className="flex size-11 items-center justify-center rounded-md bg-emerald-500 text-sm font-semibold text-white shadow-sm">
                     LP
@@ -251,7 +258,7 @@ export function AppShell({ children }: AppShellProps) {
         <div className="min-w-0">
           <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur lg:hidden">
             <div className="px-3 py-3 sm:px-5 sm:py-4">
-              <Link href="/">
+              <Link href="/dashboard">
                 <p className="text-sm font-medium text-emerald-600">Life Pilot</p>
                 <h1 className="text-xl font-semibold">Daily planner</h1>
               </Link>
