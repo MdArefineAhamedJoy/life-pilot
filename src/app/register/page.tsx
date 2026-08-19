@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Bot, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { Bot, CalendarCheck, ShieldCheck, WalletCards } from "lucide-react";
+import { RegisterStepForm } from "@/components/auth/register-step-form";
 
 export const metadata: Metadata = {
   title: "Register | Life Pilot AI",
@@ -9,130 +10,125 @@ export const metadata: Metadata = {
 
 export default function RegisterPage() {
   return (
-    <main className="min-h-dvh bg-slate-50 text-slate-900">
-      <div className="mx-auto grid min-h-dvh max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
-        <section className="flex min-w-0 items-center justify-center py-8">
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <Link className="flex w-fit items-center gap-3 rounded-md" href="/">
-                <span className="flex size-10 items-center justify-center rounded-md bg-emerald-600 text-sm font-semibold text-white">
-                  AI
+    <main className="h-dvh overflow-hidden bg-slate-50 text-slate-900">
+      <div className="grid h-full lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="auth-register-brand hidden min-w-0 overflow-hidden bg-[#07111f] px-8 text-white lg:flex lg:items-center lg:justify-end">
+          <div className="relative z-10 w-full max-w-[32rem]">
+            <Link className="flex w-fit items-center gap-3 rounded-md" href="/">
+              <span className="life-brand-logo grid size-9 shrink-0 place-items-center rounded-xl text-sm font-bold text-white">
+                AI
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                  Life Pilot
                 </span>
-                <span>
-                  <span className="block text-xs font-semibold text-emerald-700">Life Pilot</span>
-                  <span className="block text-base font-semibold text-slate-950">AI Planner</span>
+                <span className="block truncate text-sm font-semibold text-white">
+                  AI Planner
                 </span>
-              </Link>
+              </span>
+            </Link>
+
+            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.08] px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-emerald-200 shadow-[0_16px_40px_-30px_rgba(82,242,184,0.9)]">
+              <ShieldCheck aria-hidden="true" className="size-3.5" strokeWidth={2} />
+              Private life cockpit
             </div>
 
-            <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-              <div>
-                <p className="text-sm font-semibold text-blue-700">Start free</p>
-                <h1 className="mt-2 text-3xl font-semibold text-slate-950">Create your account</h1>
-                <p className="mt-3 text-sm leading-6 text-slate-600">
-                  Set up your AI planning workspace for budgets, routines, tasks, and personal reports.
-                </p>
+            <div className="auth-cockpit mt-4 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.055] p-5 shadow-[0_28px_80px_-50px_rgba(0,0,0,0.9)]">
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { label: "Budget", value: "82%", Icon: WalletCards },
+                  { label: "Routine", value: "91", Icon: CalendarCheck },
+                  { label: "AI", value: "3", Icon: Bot },
+                ].map(({ label, value, Icon }) => (
+                  <div
+                    className="auth-stat-card rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                    key={label}
+                  >
+                    <Icon
+                      aria-hidden="true"
+                      className="size-4 text-emerald-200"
+                      strokeWidth={2}
+                    />
+                    <span className="mt-3 block text-2xl font-semibold text-white">
+                      {value}
+                    </span>
+                    <span className="mt-1 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-slate-400">
+                      {label}
+                    </span>
+                  </div>
+                ))}
               </div>
 
-              <div className="mt-8 space-y-5">
-                <label className="block space-y-2">
-                  <span className="text-sm font-medium text-slate-900">Full name</span>
-                  <span className="relative block">
-                    <UserRound aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
-                    <input
-                      className="h-11 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20"
-                      name="name"
-                      placeholder="Your name"
-                      required
-                      type="text"
-                    />
+              <div className="relative mt-5 h-[200px] rounded-3xl border border-white/10 bg-[#0b1728] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                <div className="auth-signal-map absolute inset-0" aria-hidden="true" />
+                <div className="auth-scan-line" aria-hidden="true" />
+                <div className="relative grid h-full place-items-center">
+                  <div className="auth-radar-ring grid size-30 place-items-center rounded-full border border-emerald-300/25 bg-emerald-300/10">
+                    <span className="auth-core-orb" aria-hidden="true" />
+                  </div>
+                  <span className="auth-node left-[15%] top-[31%]">
+                    <WalletCards aria-hidden="true" className="size-4" />
                   </span>
-                </label>
-
-                <label className="block space-y-2">
-                  <span className="text-sm font-medium text-slate-900">Email address</span>
-                  <span className="relative block">
-                    <Mail aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
-                    <input
-                      className="h-11 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20"
-                      name="email"
-                      placeholder="you@example.com"
-                      required
-                      type="email"
-                    />
+                  <span className="auth-node auth-node-delay-a right-[15%] top-[32%]">
+                    <CalendarCheck aria-hidden="true" className="size-4" />
                   </span>
-                </label>
-
-                <label className="block space-y-2">
-                  <span className="text-sm font-medium text-slate-900">Password</span>
-                  <span className="relative block">
-                    <LockKeyhole aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" strokeWidth={2} />
-                    <input
-                      className="h-11 w-full rounded-md border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20"
-                      minLength={8}
-                      name="password"
-                      placeholder="At least 8 characters"
-                      required
-                      type="password"
-                    />
+                  <span className="auth-node auth-node-delay-b bottom-[9%] left-[45%]">
+                    <Bot aria-hidden="true" className="size-4" />
                   </span>
-                </label>
+                </div>
+              </div>
 
-                <label className="flex items-start gap-3 text-sm leading-6 text-slate-600">
-                  <input className="mt-1 size-4 shrink-0 rounded border-slate-300 text-emerald-600" required type="checkbox" />
-                  <span>I agree to use Life Pilot AI for personal planning and understand this prototype has no backend authentication yet.</span>
-                </label>
+              <div className="mt-4 grid gap-2">
+                {["Money guardrail", "Focus block", "AI review"].map(
+                  (item, index) => (
+                    <div className="flex items-center gap-3" key={item}>
+                      <span className="w-24 text-[0.7rem] font-semibold text-slate-300">
+                        {item}
+                      </span>
+                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                        <span
+                          className="auth-meter block h-full rounded-full bg-emerald-300"
+                          style={{ animationDelay: `${index * 0.45}s` }}
+                        />
+                      </span>
+                    </div>
+                  ),
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
 
+        <section className="flex min-h-0 min-w-0 items-center justify-center px-6 py-4 lg:px-10">
+          <div className="w-full max-w-[19rem] sm:max-w-md">
+            <div>
+              <div className="lg:hidden">
                 <Link
-                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
-                  href="/dashboard"
+                  className="mx-auto mb-2 flex w-fit items-center gap-2 rounded-md sm:mb-4 sm:gap-3"
+                  href="/"
                 >
-                  Create account
-                  <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
+                  <span className="life-brand-logo grid size-9 shrink-0 place-items-center rounded-xl text-sm font-bold text-white sm:size-10">
+                    AI
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-xs font-semibold uppercase tracking-[0.14em] text-emerald-700">
+                      Life Pilot
+                    </span>
+                    <span className="block truncate text-base font-semibold text-slate-950">
+                      AI Planner
+                    </span>
+                  </span>
                 </Link>
               </div>
+              <RegisterStepForm />
 
-              <p className="mt-6 text-center text-sm text-slate-600">
-                Already have an account?{" "}
+              <p className="mt-4 text-center text-sm text-slate-600">
+                Have account?{" "}
                 <Link className="font-semibold text-emerald-700 hover:text-emerald-800" href="/login">
                   Login
                 </Link>
               </p>
             </div>
-          </div>
-        </section>
-
-        <section className="hidden min-w-0 flex-col justify-between rounded-lg bg-white p-8 shadow-sm ring-1 ring-slate-200 lg:flex">
-          <div className="inline-flex w-fit items-center gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-semibold text-blue-800">
-            <Bot aria-hidden="true" className="size-4" strokeWidth={2} />
-            AI setup preview
-          </div>
-
-          <div className="space-y-4">
-            {[
-              ["Profile", "Tell Life Pilot what matters this month."],
-              ["Budget", "Connect spending categories to daily decisions."],
-              ["Routine", "Turn habits into a plan you can actually follow."],
-            ].map(([title, description], index) => (
-              <div className="flex gap-4 rounded-lg border border-slate-200 bg-slate-50 p-4" key={title}>
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-slate-900 text-sm font-semibold text-white">
-                  {index + 1}
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-slate-950">{title}</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <h2 className="text-3xl font-semibold leading-tight text-slate-950">
-              Build a personal AI workspace around your real life.
-            </h2>
-            <p className="mt-4 text-sm leading-6 text-slate-600">
-              Start with the dashboard today, then layer in AI recommendations as your data becomes more useful.
-            </p>
           </div>
         </section>
       </div>
