@@ -44,7 +44,10 @@ type LifeOsContextValue = LifeOsState & {
   deleteExpense: (expenseId: string) => void;
   updateCategoryLimit: (categoryId: string, monthlyLimit: number) => void;
   addTask: (task: Omit<RoutineTask, "id" | "status" | "repeatRule"> & Partial<Pick<RoutineTask, "status" | "repeatRule">>) => void;
+  updateTask: (taskId: string, nextTask: Partial<Omit<RoutineTask, "id">>) => void;
   updateTaskStatus: (taskId: string, status: RoutineStatus) => void;
+  deleteTask: (taskId: string) => void;
+  reorderTasks: (orderedTaskIds: string[]) => void;
   addTimerSession: (session: Omit<TimerSession, "id" | "createdAt">) => void;
   addNote: (note: Pick<LifeNote, "title" | "body"> & { tags?: string[] }) => void;
   updateSettings: (nextSettings: Partial<LifeSettings>) => void;
@@ -191,6 +194,7 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
             {
               ...task,
               id: createId("task"),
+              order: task.order ?? current.tasks.length + 1,
               status: task.status ?? "pending",
               repeatRule: task.repeatRule ?? "daily",
             },
@@ -198,10 +202,41 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
           ],
         }));
       },
+      updateTask: (taskId, nextTask) => {
+        setState((current) => ({
+          ...current,
+          tasks: current.tasks.map((task) => (task.id === taskId ? { ...task, ...nextTask } : task)),
+        }));
+      },
       updateTaskStatus: (taskId, status) => {
         setState((current) => ({
           ...current,
-          tasks: current.tasks.map((task) => (task.id === taskId ? { ...task, status } : task)),
+          tasks: current.tasks.map((task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+                  status,
+                  completedAt: status === "completed" ? new Date().toISOString() : task.completedAt,
+                }
+              : task,
+          ),
+        }));
+      },
+      deleteTask: (taskId) => {
+        setState((current) => ({
+          ...current,
+          tasks: current.tasks.filter((task) => task.id !== taskId),
+        }));
+      },
+      reorderTasks: (orderedTaskIds) => {
+        const orderMap = new Map(orderedTaskIds.map((taskId, index) => [taskId, index + 1]));
+
+        setState((current) => ({
+          ...current,
+          tasks: current.tasks.map((task) => ({
+            ...task,
+            order: orderMap.get(task.id) ?? task.order,
+          })),
         }));
       },
       addTimerSession: (session) => {
