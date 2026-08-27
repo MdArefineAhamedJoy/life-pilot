@@ -21,6 +21,9 @@ type DataTableProps<Row> = {
   paginated?: boolean;
   minHeightClassName?: string;
   className?: string;
+  tableClassName?: string;
+  rowClassName?: string;
+  cellClassName?: string;
 };
 
 export function DataTable<Row>({
@@ -32,6 +35,9 @@ export function DataTable<Row>({
   paginated = true,
   minHeightClassName = "min-h-[600px]",
   className,
+  tableClassName,
+  rowClassName,
+  cellClassName,
 }: DataTableProps<Row>) {
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
@@ -53,7 +59,7 @@ export function DataTable<Row>({
   return (
     <div className={cn("flex min-w-0 flex-col overflow-hidden rounded-md border border-slate-200 bg-white", minHeightClassName, className)}>
       <div className="min-h-0 flex-1 overflow-x-auto">
-        <table className="min-w-[900px] divide-y divide-slate-200 text-sm md:min-w-full">
+        <table className={cn("min-w-[900px] divide-y divide-slate-200 text-sm md:min-w-full", tableClassName)}>
           <thead className="bg-slate-50">
             <tr>
               {columns.map((column) => (
@@ -74,12 +80,13 @@ export function DataTable<Row>({
           <tbody className="divide-y divide-slate-200 bg-white">
             {visibleRows.length > 0 ? (
               visibleRows.map((row) => (
-                <tr className="transition-colors hover:bg-slate-50" key={getRowKey(row)}>
+                <tr className={cn("transition-colors hover:bg-slate-50", rowClassName)} key={getRowKey(row)}>
                   {columns.map((column) => (
                     <td
                       className={cn(
                         "whitespace-nowrap px-4 py-4 text-slate-700",
                         column.align === "right" ? "text-right" : "text-left",
+                        cellClassName,
                       )}
                       key={column.key}
                     >

@@ -1,26 +1,24 @@
 "use client";
 
-import { NotesManager } from "@/components/life/notes-manager";
-import { PersonalDatabase } from "@/components/life/personal-database";
-import { useLifeOs } from "@/components/state/life-os-provider";
-import { lifeSections } from "@/lib/life-os-data";
+import { NotesAiAssistantDrawer } from "./components/notes-ai-assistant";
+import { NotesCreateAction, NotesManager } from "@/app/notes/components/notes-manager";
 import { SectionHeader } from "@/components/ui/section-header";
 
 export default function NotesPage() {
-  const { notes } = useLifeOs();
-  const sections = lifeSections.map((section) =>
-    section.id === "life-notes" ? { ...section, itemCount: notes.length } : section,
-  );
-
   return (
     <div className="min-w-0 space-y-6">
-      <SectionHeader
-        eyebrow="Notes"
-        title="Personal life database"
-        description="Store ideas, health reminders, shopping lists, goals, and daily reflections."
-      />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <SectionHeader
+          eyebrow="Notes"
+          title="Personal life database"
+          description="Store ideas, health reminders, shopping lists, goals, and daily reflections."
+        />
+        <div className="flex flex-wrap items-center gap-2 lg:shrink-0 lg:justify-end">
+          <NotesAiAssistantDrawer />
+          <NotesCreateAction />
+        </div>
+      </div>
       <NotesManager />
-      <PersonalDatabase sections={sections} />
     </div>
   );
 }

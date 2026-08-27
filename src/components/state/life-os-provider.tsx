@@ -50,6 +50,8 @@ type LifeOsContextValue = LifeOsState & {
   reorderTasks: (orderedTaskIds: string[]) => void;
   addTimerSession: (session: Omit<TimerSession, "id" | "createdAt">) => void;
   addNote: (note: Pick<LifeNote, "title" | "body"> & { tags?: string[] }) => void;
+  updateNote: (noteId: string, nextNote: Pick<LifeNote, "title" | "body"> & { tags?: string[] }) => void;
+  deleteNote: (noteId: string) => void;
   updateSettings: (nextSettings: Partial<LifeSettings>) => void;
   restoreData: (nextState: Partial<LifeOsState>) => void;
   resetData: () => void;
@@ -267,6 +269,29 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
             },
             ...current.notes,
           ],
+        }));
+      },
+      updateNote: (noteId, nextNote) => {
+        const timestamp = new Date().toISOString();
+        setState((current) => ({
+          ...current,
+          notes: current.notes.map((note) =>
+            note.id === noteId
+              ? {
+                  ...note,
+                  title: nextNote.title,
+                  body: nextNote.body,
+                  tags: nextNote.tags ?? [],
+                  updatedAt: timestamp,
+                }
+              : note,
+          ),
+        }));
+      },
+      deleteNote: (noteId) => {
+        setState((current) => ({
+          ...current,
+          notes: current.notes.filter((note) => note.id !== noteId),
         }));
       },
       updateSettings: (nextSettings) => {
