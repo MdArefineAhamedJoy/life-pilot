@@ -52,7 +52,8 @@ type LifeOsContextValue = LifeOsState & {
   resetData: () => void;
 };
 
-const storageKey = "life-pilot-state-v1";
+// Bump the key so old browser demo data is never used as an offline fallback.
+const storageKey = "life-pilot-state-v2";
 
 const initialState: LifeOsState = {
   categories: budgetCategories,
@@ -113,10 +114,14 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    const controller = new AbortController();
     let isMounted = true;
+    let activeController: AbortController | undefined;
 
     async function hydrateState() {
+      activeController?.abort();
+      const controller = new AbortController();
+      activeController = controller;
+      setIsHydrated(false);
       const localState = readInitialState();
 
       if (isMounted) {
@@ -124,7 +129,7 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
       }
 
       try {
-        const remoteState = await lifeOsStateService.get();
+        const remoteState = await lifeOsStateService.get(controller.signal);
 
         if (isMounted) {
           dispatch(replaceLifeOsState({
@@ -143,10 +148,13 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
     }
 
     void hydrateState();
+    const onAuthChanged = () => void hydrateState();
+    window.addEventListener("life-pilot:auth-changed", onAuthChanged);
 
     return () => {
       isMounted = false;
-      controller.abort();
+      activeController?.abort();
+      window.removeEventListener("life-pilot:auth-changed", onAuthChanged);
     };
   }, [dispatch]);
 

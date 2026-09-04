@@ -88,7 +88,7 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
               <FieldShell label="Item name">
                 <TextInput
                   name="itemName"
-                  placeholder="Fish, rice, baby wipes"
+                  placeholder="Enter an item name"
                   required
                 />
               </FieldShell>

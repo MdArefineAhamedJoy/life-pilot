@@ -16,7 +16,7 @@ type ParsedReceiptRow = ReturnType<typeof parseReceiptText>[number];
 
 export default function ReceiptScannerPage() {
   const { addExpensesFromRows } = useLifeOs();
-  const [rawText, setRawText] = useState("Potato 80\nFish 520\nBaby food 650");
+  const [rawText, setRawText] = useState("");
   const [saveDate, setSaveDate] = useState("");
   const [imageName, setImageName] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
@@ -115,7 +115,7 @@ export default function ReceiptScannerPage() {
                   setRawText(event.target.value);
                   setSavedMessage("");
                 }}
-                placeholder={"Potato 80\nFish 520\nBaby food 650"}
+                placeholder={"Item name and amount, one per line\nExample item 120"}
                 value={rawText}
               />
             </FieldShell>

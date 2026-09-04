@@ -17,9 +17,25 @@ export const authService = {
   },
   async logout() {
     await apiClient.post("/auth/logout");
-    if (typeof window !== "undefined") window.localStorage.removeItem(authStorageKey);
+    this.clearSession();
   },
   saveSession(session: AuthResponse) {
     window.localStorage.setItem(authStorageKey, JSON.stringify(session));
+    window.dispatchEvent(new Event("life-pilot:auth-changed"));
+  },
+  getSession() {
+    if (typeof window === "undefined") return null;
+
+    try {
+      return JSON.parse(window.localStorage.getItem(authStorageKey) ?? "null") as AuthResponse | null;
+    } catch {
+      return null;
+    }
+  },
+  clearSession() {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(authStorageKey);
+      window.dispatchEvent(new Event("life-pilot:auth-changed"));
+    }
   },
 };

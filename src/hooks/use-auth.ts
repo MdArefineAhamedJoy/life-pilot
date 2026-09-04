@@ -39,5 +39,14 @@ export function useAuth() {
     }
   }, []);
 
-  return { error, isSubmitting, login, register };
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } catch {
+      // A local logout must still succeed if an expired token is rejected by the API.
+      authService.clearSession();
+    }
+  }, []);
+
+  return { error, isSubmitting, login, logout, register };
 }

@@ -15,6 +15,8 @@ import {
   UserRound,
 } from "lucide-react";
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { useAccount } from "@/hooks/use-account";
+import { ApiHealthStatus } from "@/components/settings/api-health-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -27,12 +29,12 @@ type ProfileDraft = Pick<
 >;
 
 const fallbackProfile: ProfileDraft = {
-  profileName: "Md Arefine Ahamed Joy",
-  profileEmail: "mdarefine05@gmail.com",
-  profilePhone: "+880 1XXX XXXXXX",
-  profileLocation: "Dhaka, Bangladesh",
-  profileRole: "Personal Life OS owner",
-  profileBio: "Managing budget, routine, notes, and daily life data from one local workspace.",
+  profileName: "",
+  profileEmail: "",
+  profilePhone: "",
+  profileLocation: "",
+  profileRole: "",
+  profileBio: "",
   profileImage: "",
 };
 
@@ -75,6 +77,12 @@ export function SettingsPanel() {
     timerSessions,
     updateSettings,
   } = useLifeOs();
+  const {
+    isRequestingRecovery,
+    isSavingProfile,
+    requestPasswordRecovery: requestRemotePasswordRecovery,
+    saveProfile: saveRemoteProfile,
+  } = useAccount();
   const backupInputRef = useRef<HTMLInputElement | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement | null>(null);
   const [notificationStatus, setNotificationStatus] = useState(settings.notificationEnabled ? "granted" : "default");
@@ -87,10 +95,13 @@ export function SettingsPanel() {
   const profileInitials = useMemo(() => getInitials(profileDraft.profileName), [profileDraft.profileName]);
 
   useEffect(() => {
-    const nextProfile = createProfileDraft(settings);
+    const timeoutId = window.setTimeout(() => {
+      const nextProfile = createProfileDraft(settings);
+      setProfileDraft(nextProfile);
+      setRecoveryEmail(nextProfile.profileEmail);
+    }, 0);
 
-    setProfileDraft(nextProfile);
-    setRecoveryEmail(nextProfile.profileEmail);
+    return () => window.clearTimeout(timeoutId);
   }, [settings]);
 
   async function requestNotifications() {
@@ -124,7 +135,7 @@ export function SettingsPanel() {
     reader.readAsDataURL(file);
   }
 
-  function saveProfile(event: FormEvent<HTMLFormElement>) {
+  async function saveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const nextProfile = {
@@ -142,11 +153,23 @@ export function SettingsPanel() {
       return;
     }
 
-    updateSettings(nextProfile);
-    setProfileMessage("Profile updated.");
+    try {
+      await saveRemoteProfile({
+        name: nextProfile.profileName,
+        phone: nextProfile.profilePhone,
+        location: nextProfile.profileLocation,
+        role: nextProfile.profileRole,
+        bio: nextProfile.profileBio,
+        imageUrl: nextProfile.profileImage,
+      });
+      updateSettings(nextProfile);
+      setProfileMessage("Profile updated.");
+    } catch (cause) {
+      setProfileMessage(cause instanceof Error ? cause.message : "Profile could not be updated.");
+    }
   }
 
-  function requestPasswordRecovery(event: FormEvent<HTMLFormElement>) {
+  async function requestPasswordRecovery(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedEmail = recoveryEmail.trim();
 
@@ -158,7 +181,12 @@ export function SettingsPanel() {
       return;
     }
 
-    setRecoveryMessage(`Password recovery request saved for ${trimmedEmail}.`);
+    try {
+      await requestRemotePasswordRecovery(trimmedEmail);
+      setRecoveryMessage("If an account exists, password recovery instructions will be sent shortly.");
+    } catch (cause) {
+      setRecoveryError(cause instanceof Error ? cause.message : "Password recovery request failed.");
+    }
   }
 
   function exportData() {
@@ -331,10 +359,11 @@ export function SettingsPanel() {
               <p className="min-h-5 text-sm font-medium text-slate-600">{profileMessage}</p>
               <Button
                 className="w-full sm:w-auto"
+                disabled={isSavingProfile}
                 icon={<Save aria-hidden="true" className="size-4" />}
                 type="submit"
               >
-                Save profile
+                {isSavingProfile ? "Saving..." : "Save profile"}
               </Button>
             </div>
           </form>
@@ -382,6 +411,7 @@ export function SettingsPanel() {
       </div>
 
       <div className="min-w-0 space-y-5">
+        <ApiHealthStatus />
         <Card title="Password Recovery" eyebrow="Security" action={<ShieldCheck className="size-5 text-emerald-600" />}>
           <form className="space-y-4" onSubmit={requestPasswordRecovery}>
             <FieldShell label="Recovery email">
@@ -405,11 +435,12 @@ export function SettingsPanel() {
             </FieldShell>
             <Button
               className="w-full"
+              disabled={isRequestingRecovery}
               icon={<KeyRound aria-hidden="true" className="size-4" />}
               type="submit"
               variant="secondary"
             >
-              Send reset link
+              {isRequestingRecovery ? "Sending..." : "Send reset link"}
             </Button>
             {recoveryError ? <p className="text-sm font-medium text-red-600">{recoveryError}</p> : null}
             {recoveryMessage ? (
@@ -445,7 +476,7 @@ export function SettingsPanel() {
                 Import JSON
               </Button>
               <Button className="w-full" onClick={resetData} type="button" variant="danger">
-                Reset demo data
+                Reset all data
               </Button>
             </div>
             <input

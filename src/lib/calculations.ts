@@ -49,7 +49,7 @@ export function parseReceiptText(rawText: string) {
       return {
         id: `parsed-${index + 1}`,
         itemName: itemName || "Unknown item",
-        category: "Kacha Bajar",
+        category: "Uncategorized",
         quantity: 1,
         amount,
       };

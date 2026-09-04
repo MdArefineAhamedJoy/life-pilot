@@ -93,23 +93,7 @@ function hasAnyTerm(text: string, terms: string[]) {
 
 function getMatchedCategory(note: LifeNote, categories: BudgetCategory[]) {
   const text = noteText(note);
-  return categories.find((category) => text.includes(category.name.toLowerCase()))?.name ?? getFallbackCategory(text);
-}
-
-function getFallbackCategory(text: string) {
-  if (text.includes("baby")) {
-    return "Baby Cost";
-  }
-
-  if (text.includes("rice") || text.includes("oil") || text.includes("grocery")) {
-    return "Modi Bajar";
-  }
-
-  if (text.includes("bajar") || text.includes("fish") || text.includes("vegetable") || text.includes("market")) {
-    return "Kacha Bajar";
-  }
-
-  return "Personal Cost";
+  return categories.find((category) => text.includes(category.name.toLowerCase()))?.name ?? categories[0]?.name ?? "Uncategorized";
 }
 
 function extractAmounts(notes: LifeNote[]) {

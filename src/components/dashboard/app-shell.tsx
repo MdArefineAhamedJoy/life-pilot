@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Bot,
   CalendarDays,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -72,11 +73,19 @@ function getAccountInitials(name: string) {
 
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { settings } = useLifeOs();
+  const { logout } = useAuth();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const accountName = settings.profileName || "Md Arefine Ahamed Joy";
-  const accountEmail = settings.profileEmail || "mdarefine05@gmail.com";
+  const accountName = settings.profileName || "Life Pilot user";
+  const accountEmail = settings.profileEmail || "No profile email";
+
+  async function handleLogout() {
+    await logout();
+    setIsAccountMenuOpen(false);
+    router.replace("/login");
+  }
 
   if (publicRoutes.has(pathname)) {
     return <>{children}</>;
@@ -214,7 +223,7 @@ export function AppShell({ children }: AppShellProps) {
                   <Link
                     className="flex min-h-11 items-center gap-3 border-b border-slate-200 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-emerald-600"
                     href="/settings"
-                    onClick={() => setIsAccountMenuOpen(false)}
+                    onClick={handleLogout}
                   >
                     <Settings aria-hidden="true" className="size-4" strokeWidth={1.9} />
                     Account Settings

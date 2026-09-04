@@ -26,6 +26,11 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError<{ message?: string | string[] }>) => {
+    if (error.response?.status === 401 && typeof window !== "undefined") {
+      window.localStorage.removeItem(authStorageKey);
+      window.dispatchEvent(new Event("life-pilot:unauthorized"));
+    }
+
     const message = error.response?.data?.message;
     const detail = Array.isArray(message) ? message.join(", ") : message;
     return Promise.reject(new Error(detail || error.message || "Something went wrong. Please try again."));

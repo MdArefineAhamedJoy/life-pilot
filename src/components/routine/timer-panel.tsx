@@ -18,8 +18,8 @@ export function TimerPanel() {
   const [isRunning, setIsRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [mode, setMode] = useState("stopwatch");
-  const [title, setTitle] = useState("Focused work block");
-  const [category, setCategory] = useState("Work");
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("General");
   const [savedMessage, setSavedMessage] = useState("");
 
   useEffect(() => {
@@ -38,10 +38,11 @@ export function TimerPanel() {
       <div className="grid min-w-0 gap-5 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
         <div className="grid min-w-0 gap-4 sm:grid-cols-2">
           <FieldShell label="Session title">
-            <TextInput onChange={(event) => setTitle(event.target.value)} placeholder="Focused work block" value={title} />
+            <TextInput onChange={(event) => setTitle(event.target.value)} placeholder="What are you tracking?" value={title} />
           </FieldShell>
           <FieldShell label="Category">
             <SelectInput onChange={(event) => setCategory(event.target.value)} value={category}>
+              <option>General</option>
               <option>Work</option>
               <option>Personal</option>
               <option>Home</option>
@@ -77,7 +78,7 @@ export function TimerPanel() {
               Reset
             </Button>
             <Button
-              disabled={seconds === 0}
+              disabled={seconds === 0 || !title.trim()}
               onClick={() => {
                 addTimerSession({
                   title,
