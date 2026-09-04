@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   budgetCategories,
   expenses,
@@ -9,24 +9,19 @@ import {
   settings,
   timerSessions,
 } from "@/lib/life-os-data";
+import { lifeOsStateService } from "@/services/life-os-state.service";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { replaceLifeOsState } from "@/store/life-os-slice";
 import type {
   BudgetCategory,
   Expense,
   LifeNote,
   LifeSettings,
+  LifeOsState,
   RoutineStatus,
   RoutineTask,
   TimerSession,
 } from "@/lib/types";
-
-type LifeOsState = {
-  categories: BudgetCategory[];
-  expenses: Expense[];
-  tasks: RoutineTask[];
-  timerSessions: TimerSession[];
-  notes: LifeNote[];
-  settings: LifeSettings;
-};
 
 type ParsedExpenseRow = {
   itemName: string;
@@ -89,32 +84,89 @@ function readInitialState() {
 
   try {
     const saved = window.localStorage.getItem(storageKey);
-    return saved ? { ...initialState, ...JSON.parse(saved) } : initialState;
+    if (!saved) {
+      return initialState;
+    }
+
+    const parsedState = JSON.parse(saved) as Partial<LifeOsState>;
+
+    return {
+      ...initialState,
+      ...parsedState,
+      settings: { ...initialState.settings, ...parsedState.settings },
+    };
   } catch {
     return initialState;
   }
 }
 
 export function LifeOsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<LifeOsState>(initialState);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const dispatch = useAppDispatch();
+  const state = useAppSelector((store) => store.lifeOs);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  const setState = useCallback(
+    (nextState: LifeOsState | ((current: LifeOsState) => LifeOsState)) => {
+      dispatch(replaceLifeOsState(typeof nextState === "function" ? nextState(state) : nextState));
+    },
+    [dispatch, state],
+  );
 
   useEffect(() => {
-    const timerId = window.setTimeout(() => {
-      setState(readInitialState());
-      setIsLoaded(true);
-    }, 0);
+    const controller = new AbortController();
+    let isMounted = true;
 
-    return () => window.clearTimeout(timerId);
-  }, []);
+    async function hydrateState() {
+      const localState = readInitialState();
+
+      if (isMounted) {
+        dispatch(replaceLifeOsState(localState));
+      }
+
+      try {
+        const remoteState = await lifeOsStateService.get();
+
+        if (isMounted) {
+          dispatch(replaceLifeOsState({
+            ...initialState,
+            ...remoteState,
+            settings: { ...initialState.settings, ...remoteState.settings },
+          }));
+        }
+      } catch {
+        // Keep the local offline state when the API is not running.
+      } finally {
+        if (isMounted) {
+          setIsHydrated(true);
+        }
+      }
+    }
+
+    void hydrateState();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (!isHydrated) {
       return;
     }
 
     window.localStorage.setItem(storageKey, JSON.stringify(state));
-  }, [isLoaded, state]);
+
+    const timerId = window.setTimeout(() => {
+      void lifeOsStateService.replace(state).catch(() => {
+        // Local storage remains the fallback if the backend is unavailable.
+      });
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timerId);
+    };
+  }, [isHydrated, state]);
 
   const value = useMemo<LifeOsContextValue>(
     () => ({
@@ -309,7 +361,7 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
       },
       resetData: () => setState(initialState),
     }),
-    [state],
+    [setState, state],
   );
 
   return <LifeOsContext.Provider value={value}>{children}</LifeOsContext.Provider>;

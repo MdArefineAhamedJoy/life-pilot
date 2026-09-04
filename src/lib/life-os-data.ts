@@ -238,6 +238,13 @@ export const notes: LifeNote[] = [
 ];
 
 export const settings: LifeSettings = {
+  profileName: "Md Arefine Ahamed Joy",
+  profileEmail: "mdarefine05@gmail.com",
+  profilePhone: "+880 1XXX XXXXXX",
+  profileLocation: "Dhaka, Bangladesh",
+  profileRole: "Personal Life OS owner",
+  profileBio: "Managing budget, routine, notes, and daily life data from one local workspace.",
+  profileImage: "",
   currency: "BDT",
   notificationEnabled: false,
   quietHoursStart: "22:30",

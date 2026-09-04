@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Poppins } from "next/font/google";
 import { AppShell } from "@/components/dashboard/app-shell";
 import { LifeOsProvider } from "@/components/state/life-os-provider";
+import { StoreProvider } from "@/store/provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -32,9 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${poppins.variable} ${jetBrainsMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        <LifeOsProvider>
-          <AppShell>{children}</AppShell>
-        </LifeOsProvider>
+        <StoreProvider>
+          <LifeOsProvider>
+            <AppShell>{children}</AppShell>
+          </LifeOsProvider>
+        </StoreProvider>
       </body>
     </html>
   );

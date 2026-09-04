@@ -7,9 +7,9 @@ export default function SettingsPage() {
   return (
     <div className="min-w-0 space-y-6">
       <SectionHeader
-        eyebrow="Settings"
-        title="Local data and app settings"
-        description="Configure currency, notifications, quiet hours, AI mode, export, import, and reset."
+        eyebrow="Account"
+        title="Account settings"
+        description="Manage profile, password recovery, app preferences, and local backup."
       />
       <SettingsPanel />
     </div>

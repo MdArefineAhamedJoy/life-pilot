@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Bell,
   Bot,
   CalendarDays,
   ChartColumn,
   ChevronsLeft,
   ChevronsRight,
-  HeartPulse,
   LayoutDashboard,
   ListChecks,
   ListTodo,
@@ -17,16 +15,13 @@ import {
   NotebookTabs,
   ScanLine,
   Settings,
-  ShoppingCart,
   StickyNote,
   Timer,
-  Trophy,
-  Users,
-  Utensils,
   WalletCards,
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { useLifeOs } from "@/components/state/life-os-provider";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -46,13 +41,6 @@ const navItems: NavItem[] = [
   { label: "Tasks", href: "/tasks", icon: ListTodo, accent: "bg-blue-500" },
   { label: "Timer", href: "/timer", icon: Timer, accent: "bg-blue-500" },
   { label: "Notes", href: "/notes", icon: StickyNote, accent: "bg-green-500" },
-  { label: "Goals", href: "/goals", icon: Trophy, accent: "bg-blue-500" },
-  { label: "Shopping", href: "/shopping", icon: ShoppingCart, accent: "bg-amber-500" },
-  { label: "Meal Planner", href: "/meal-planner", icon: Utensils, accent: "bg-emerald-500" },
-  { label: "Health", href: "/health", icon: HeartPulse, accent: "bg-red-500" },
-  { label: "Family", href: "/family", icon: Users, accent: "bg-blue-500" },
-  { label: "Reminder", href: "/reminder", icon: Bell, accent: "bg-amber-500" },
-  { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
 ];
@@ -71,10 +59,24 @@ function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function getAccountInitials(name: string) {
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("");
+
+  return initials || "LP";
+}
+
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
+  const { settings } = useLifeOs();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const accountName = settings.profileName || "Md Arefine Ahamed Joy";
+  const accountEmail = settings.profileEmail || "mdarefine05@gmail.com";
 
   if (publicRoutes.has(pathname)) {
     return <>{children}</>;
@@ -241,13 +243,26 @@ export function AppShell({ children }: AppShellProps) {
                 title={isSidebarCollapsed ? "My Account" : undefined}
                 type="button"
               >
-                <span className="profile-avatar shrink-0" aria-hidden="true" />
+                {settings.profileImage ? (
+                  <span
+                    className="size-12 shrink-0 rounded-full bg-slate-100 bg-cover bg-center shadow-sm ring-1 ring-slate-200"
+                    style={{ backgroundImage: `url(${settings.profileImage})` }}
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <span
+                    className="profile-avatar flex shrink-0 items-center justify-center text-xs font-semibold text-white"
+                    aria-hidden="true"
+                  >
+                    {getAccountInitials(accountName)}
+                  </span>
+                )}
                 <span className={cn("min-w-0 flex-1", isSidebarCollapsed && "sr-only")}>
                   <span className="block truncate text-sm font-semibold leading-5 text-slate-950">
-                    Md Arefine Ahamed Joy
+                    {accountName}
                   </span>
                   <span className="block truncate text-xs font-semibold leading-4 text-slate-500">
-                    mdarefine05@gmail.com
+                    {accountEmail}
                   </span>
                 </span>
               </button>

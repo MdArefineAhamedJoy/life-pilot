@@ -11,6 +11,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterStepForm() {
   const router = useRouter();
@@ -23,6 +24,7 @@ export function RegisterStepForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [accepted, setAccepted] = useState(false);
+  const { error, isSubmitting, register } = useAuth();
   const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canCreate =
     Boolean(profileImageName && fullName.trim() && phone.trim()) &&
@@ -51,6 +53,20 @@ export function RegisterStepForm() {
       return file ? URL.createObjectURL(file) : "";
     });
     setIsProfileImageOpen(false);
+  }
+
+  async function handleCreateAccount() {
+    try {
+      await register({
+        name: fullName,
+        email,
+        phone,
+        password,
+      });
+      router.push("/dashboard");
+    } catch {
+      // The reusable auth hook exposes the error state to the form.
+    }
   }
 
   return (
@@ -208,6 +224,8 @@ export function RegisterStepForm() {
           </p>
         ) : null}
 
+        {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
+
         <label className="flex items-start gap-3 text-sm leading-5 text-slate-600">
           <input
             className="mt-1 size-4 shrink-0 rounded border-slate-300 text-emerald-600"
@@ -221,11 +239,11 @@ export function RegisterStepForm() {
 
         <button
           className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:h-10"
-          disabled={!canCreate}
-          onClick={() => router.push("/dashboard")}
+          disabled={!canCreate || isSubmitting}
+          onClick={handleCreateAccount}
           type="button"
         >
-          Create account
+          {isSubmitting ? "Creating account..." : "Create account"}
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
         </button>
       </div>
