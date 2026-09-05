@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Camera, CheckCircle2, Circle, Clock3, CreditCard, ExternalLink, PiggyBank, Plus, WalletCards, XCircle } from "lucide-react";
 import { useState } from "react";
 import { SharedCard, SharedCardHeader, StatCard } from "@/components/shared/card";
+import { Tabs } from "@/components/ui/tabs";
 import { getCategorySpent, getRoutineProgress, getTotalSpent } from "@/lib/calculations";
 import type { BudgetCategory, Expense, RoutineTask } from "@/lib/types";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -190,7 +191,7 @@ function QuickAddPanel() {
 
 function DashboardTabPanel({ categories, expenses, tasks }: OverviewDashboardProps) {
   const [activeTab, setActiveTab] = useState<DashboardTab>("expense");
-  return <section className="min-w-0"><div className="border border-b-0 border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]"><div className="grid grid-cols-5">{dashboardTabs.map((tab) => <button aria-pressed={activeTab === tab.id} className={cn("min-h-14 min-w-0 truncate px-2 text-xs font-semibold transition sm:px-4 sm:text-sm", activeTab === tab.id ? "bg-emerald-500 text-white" : "text-slate-600 hover:bg-slate-50 hover:text-slate-950")} key={tab.id} onClick={() => setActiveTab(tab.id)} type="button">{tab.label}</button>)}</div></div>
+  return <section className="min-w-0"><Tabs ariaLabel="Dashboard views" fullWidth onValueChange={setActiveTab} tabs={dashboardTabs} value={activeTab} />
     {activeTab === "expense" && <ExpenseOverview expenses={expenses} />}
     {activeTab === "category" && <CategoryDistribution categories={categories} expenses={expenses} />}
     {activeTab === "routine" && <RoutineTimeline tasks={tasks} />}

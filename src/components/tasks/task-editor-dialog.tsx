@@ -47,13 +47,13 @@ export function TaskEditorDialog({ mode, onOpenChange, onSave, open, task }: Tas
 
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
-      <DialogContent className="flex max-h-[88vh] !w-[min(94vw,760px)] max-w-none grid-rows-none flex-col gap-0 overflow-hidden p-0">
+      <DialogContent className="flex h-[82vh] !w-[min(92vw,820px)] max-w-none grid-rows-none flex-col gap-0 overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-slate-200 px-5 py-4">
           <DialogTitle>{mode === "create" ? "Create task" : "Edit task"}</DialogTitle>
           <DialogDescription>Title is required. Add only the planning details that help you take the next action.</DialogDescription>
         </DialogHeader>
         <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
-          <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto p-5">
+          <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain p-5">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <FieldShell label="Task title">

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { FieldShell, SelectInput, TextInput } from "@/components/ui/field";
 
 function formatTimer(seconds: number) {
@@ -34,7 +33,11 @@ export function TimerPanel() {
   const status = useMemo(() => (isRunning ? "Running" : seconds > 0 ? "Paused" : "Ready"), [isRunning, seconds]);
 
   return (
-    <Card title="Timer And Focus" eyebrow="Time tracking" id="timer">
+    <section className="min-w-0" id="timer">
+      <div className="mb-4">
+        <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">Time tracking</p>
+        <h2 className="mt-1 text-xl font-semibold text-slate-800">Timer And Focus</h2>
+      </div>
       <div className="grid min-w-0 gap-5 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
         <div className="grid min-w-0 gap-4 sm:grid-cols-2">
           <FieldShell label="Session title">
@@ -98,6 +101,6 @@ export function TimerPanel() {
           {savedMessage && <p className="mt-3 text-sm font-medium text-green-500">{savedMessage}</p>}
         </div>
       </div>
-    </Card>
+    </section>
   );
 }

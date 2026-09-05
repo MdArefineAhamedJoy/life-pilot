@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SelectInput, TextArea } from "@/components/ui/field";
 import { SectionHeader } from "@/components/ui/section-header";
-import type { RoutineTask } from "@/lib/types";
 
 function Insight({ icon: Icon, title, detail, tone }: { icon: typeof Bot; title: string; detail: string; tone: string }) {
   return <div className="flex gap-3 border border-slate-200 bg-white p-4"><span className={`flex size-9 shrink-0 items-center justify-center rounded-full ${tone}`}><Icon className="size-4" /></span><div><p className="font-semibold text-slate-950">{title}</p><p className="mt-1 text-sm leading-6 text-slate-600">{detail}</p></div></div>;
