@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthSidePanel } from "@/components/auth/auth-side-panel";
 import { LoginForm } from "@/components/auth/login-form";
-import { OAuthOptions } from "@/components/auth/oauth-options";
 
 export const metadata: Metadata = {
   title: "Login | Life Pilot AI",
@@ -28,7 +27,7 @@ export default function LoginPage() {
 
               <LoginForm />
 
-              <OAuthOptions intent="login" />
+
 
               <p className="mt-3 text-center text-sm text-slate-600">
                 Don&apos;t have an account?{" "}

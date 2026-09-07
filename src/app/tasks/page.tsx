@@ -95,15 +95,12 @@ export default function TasksPage() {
   const totalTasks = Math.max(tasks.length, 1);
 
   function saveNewTask(draft: TaskDraft) {
-    addTask({ ...draft, order: tasks.length + 1 });
+    return addTask({ ...draft, order: tasks.length + 1 });
   }
 
   function saveEditedTask(draft: TaskDraft) {
-    if (!editingTask) return;
-    updateTask(editingTask.id, draft);
-    if (draft.status === "completed" && editingTask.status !== "completed") {
-      updateTaskStatus(editingTask.id, "completed");
-    }
+    if (!editingTask) return Promise.resolve(false);
+    return updateTask(editingTask.id, draft);
   }
 
   return (

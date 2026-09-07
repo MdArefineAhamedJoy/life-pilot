@@ -28,13 +28,13 @@ export default function AiPage() {
     return { attention, highPriority, nextTask, open };
   }, [tasks]);
 
-  function createFromIdea() {
+  async function createFromIdea() {
     const title = taskIdea.trim();
     if (!title) {
       setMessage("Write a task idea first.");
       return;
     }
-    addTask({
+    const saved = await addTask({
       title,
       category: "General",
       priority: "medium",
@@ -46,6 +46,7 @@ export default function AiPage() {
       status: "pending",
       note: "Created from the planning assistant.",
     });
+    if (!saved) return;
     setTaskIdea("");
     setMessage("Task created and queued in your task board.");
   }
@@ -72,7 +73,7 @@ export default function AiPage() {
       </section>
 
       <Card title="AI provider" eyebrow="Private by default" action={<Bot aria-hidden="true" className="size-5 text-emerald-600" />}>
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]"><label className="block space-y-2 text-sm font-semibold text-slate-700">AI mode<SelectInput onChange={(event) => updateSettings({ aiProvider: event.target.value as "off" | "free-api" | "local" })} value={settings.aiProvider}><option value="off">Off — no external AI requests</option><option value="local">Local model</option><option value="free-api">External provider</option></SelectInput></label><div className="border-l-2 border-slate-200 pl-4 text-sm leading-6 text-slate-600"><p><strong className="text-slate-800">Current setting:</strong> {settings.aiProvider === "off" ? "No external AI calls are enabled." : "Provider selection is saved to your protected settings."}</p><p className="mt-2">Your workspace has {notes.length} note{notes.length === 1 ? "" : "s"} available for future AI-assisted review. Credentials are never stored in the browser.</p></div></div>
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]"><label className="block space-y-2 text-sm font-semibold text-slate-700">AI mode<SelectInput onChange={(event) => updateSettings({ aiProvider: event.target.value as "off" | "free-api" | "local" })} value={settings.aiProvider}><option value="off">Off — no external AI requests</option><option value="local" disabled>Local model (not connected)</option><option value="free-api" disabled>External provider (not connected)</option></SelectInput></label><div className="border-l-2 border-slate-200 pl-4 text-sm leading-6 text-slate-600"><p><strong className="text-slate-800">Current setting:</strong> {settings.aiProvider === "off" ? "No external AI calls are enabled." : "No AI provider is connected. Planning currently uses local rules."}</p><p className="mt-2">Your workspace has {notes.length} note{notes.length === 1 ? "" : "s"} available for future AI-assisted review. Credentials are never stored in the browser.</p></div></div>
       </Card>
     </div>
   );

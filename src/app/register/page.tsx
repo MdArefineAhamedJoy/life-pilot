@@ -36,9 +36,9 @@ export default function RegisterPage() {
             <div className="auth-cockpit mt-4 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.055] p-5 shadow-[0_28px_80px_-50px_rgba(0,0,0,0.9)]">
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { label: "Budget", value: "82%", Icon: WalletCards },
-                  { label: "Routine", value: "91", Icon: CalendarCheck },
-                  { label: "AI", value: "3", Icon: Bot },
+                  { label: "Budget", value: "Plan", Icon: WalletCards },
+                  { label: "Routine", value: "Track", Icon: CalendarCheck },
+                  { label: "AI", value: "Review", Icon: Bot },
                 ].map(({ label, value, Icon }) => (
                   <div
                     className="auth-stat-card rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"

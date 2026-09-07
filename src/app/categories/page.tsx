@@ -200,7 +200,7 @@ export default function CategoriesPage() {
             ? `This will change "${statusChangeCategory.name}" from ${statusLabels[getCategoryStatus(statusChangeCategory)]} to ${statusLabels[getNextCategoryStatus(statusChangeCategory)]}.`
             : "This will change the selected category status."
         }
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!statusChangeCategory) {
             return;
           }
@@ -208,11 +208,12 @@ export default function CategoriesPage() {
           const status = getNextCategoryStatus(statusChangeCategory);
           const { id, ...nextCategory } = statusChangeCategory;
 
-          updateBudgetCategory(id, {
+          const saved = await updateBudgetCategory(id, {
             ...nextCategory,
             categoryStatus: status,
             isActive: status === "active",
           });
+          if (!saved) return false;
           setStatusChangeCategory(undefined);
         }}
         onOpenChange={(open) => !open && setStatusChangeCategory(undefined)}
@@ -227,12 +228,12 @@ export default function CategoriesPage() {
             ? `This will remove "${deleteCategory.name}" from category setup. Existing expense records keep their saved category text.`
             : "This will remove the selected category."
         }
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!deleteCategory) {
             return;
           }
 
-          deleteBudgetCategory(deleteCategory.id);
+          if (!await deleteBudgetCategory(deleteCategory.id)) return false;
           setDeleteCategory(undefined);
         }}
         onOpenChange={(open) => !open && setDeleteCategory(undefined)}

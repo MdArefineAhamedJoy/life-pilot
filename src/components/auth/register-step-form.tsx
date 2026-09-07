@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight,
@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterStepForm() {
   const router = useRouter();
-  const [profileImageName, setProfileImageName] = useState("");
+  const [imageError, setImageError] = useState("");
   const [profileImagePreview, setProfileImagePreview] = useState("");
   const [isProfileImageOpen, setIsProfileImageOpen] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -27,31 +27,24 @@ export function RegisterStepForm() {
   const { error, isSubmitting, register } = useAuth();
   const hasValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const canCreate =
-    Boolean(profileImageName && fullName.trim() && phone.trim()) &&
+    Boolean(fullName.trim() && phone.trim()) &&
     hasValidEmail &&
     password.length >= 8 &&
     confirmPassword === password &&
     accepted;
 
-  useEffect(() => {
-    return () => {
-      if (profileImagePreview) {
-        URL.revokeObjectURL(profileImagePreview);
-      }
-    };
-  }, [profileImagePreview]);
-
   function handleProfileImageChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
-
-    setProfileImageName(file?.name ?? "");
-    setProfileImagePreview((currentPreview) => {
-      if (currentPreview) {
-        URL.revokeObjectURL(currentPreview);
-      }
-
-      return file ? URL.createObjectURL(file) : "";
-    });
+    setImageError("");
+    if (!file) return;
+    if (!file.type.startsWith("image/") || file.size > 1024 * 1024) {
+      setImageError("Choose an image smaller than 1 MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setProfileImagePreview(String(reader.result ?? ""));
+    reader.onerror = () => setImageError("The image could not be read.");
+    reader.readAsDataURL(file);
     setIsProfileImageOpen(false);
   }
 
@@ -62,8 +55,10 @@ export function RegisterStepForm() {
         email,
         phone,
         password,
+        imageUrl: profileImagePreview || undefined,
       });
-      router.push("/dashboard");
+      router.replace("/dashboard");
+      router.refresh();
     } catch {
       // The reusable auth hook exposes the error state to the form.
     }
@@ -71,7 +66,7 @@ export function RegisterStepForm() {
 
   return (
     <>
-      <div className="mt-3 space-y-2.5 sm:mt-5 sm:space-y-3">
+      <form className="mt-3 space-y-2.5 sm:mt-5 sm:space-y-3" onSubmit={(event) => { event.preventDefault(); if (canCreate) void handleCreateAccount(); }}>
         <div className="flex justify-center">
           <div className="relative">
             {profileImagePreview ? (
@@ -91,7 +86,6 @@ export function RegisterStepForm() {
                   className="sr-only"
                   name="profileImage"
                   onChange={handleProfileImageChange}
-                  required
                   type="file"
                 />
               </label>
@@ -106,7 +100,6 @@ export function RegisterStepForm() {
                   className="sr-only"
                   name="profileImage"
                   onChange={handleProfileImageChange}
-                  required
                   type="file"
                 />
               </label>
@@ -224,6 +217,7 @@ export function RegisterStepForm() {
           </p>
         ) : null}
 
+        {imageError && <p role="alert" className="text-sm text-red-600">{imageError}</p>}
         {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
         <label className="flex items-start gap-3 text-sm leading-5 text-slate-600">
@@ -240,13 +234,12 @@ export function RegisterStepForm() {
         <button
           className="inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300 sm:h-10"
           disabled={!canCreate || isSubmitting}
-          onClick={handleCreateAccount}
-          type="button"
+          type="submit"
         >
           {isSubmitting ? "Creating account..." : "Create account"}
           <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
         </button>
-      </div>
+      </form>
 
       {profileImagePreview && isProfileImageOpen ? (
         <div

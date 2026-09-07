@@ -1,4 +1,5 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { CalendarDays, FileText, Target, WalletCards } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { BudgetCategory } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+
 
 type BudgetStatus = "active" | "paused" | "completed";
 
@@ -59,6 +60,7 @@ function DetailTile({
 }
 
 export function ViewBudgetModal({ budget, open, onOpenChange }: ViewBudgetModalProps) {
+  const formatCurrency = useFormatCurrency();
   const status = budget ? getBudgetStatus(budget) : "active";
 
   return (

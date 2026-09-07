@@ -43,7 +43,7 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -84,9 +84,9 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
     };
 
     if (category) {
-      updateBudgetCategory(category.id, nextCategory);
+      if (!await updateBudgetCategory(category.id, nextCategory)) return;
     } else {
-      addBudgetCategory(nextCategory);
+      if (!await addBudgetCategory(nextCategory)) return;
     }
 
     setError("");

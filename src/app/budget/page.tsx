@@ -1,5 +1,7 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
+import { localDateKey } from "@/lib/utils";
 import { Eye, MoreVertical, Pencil, Plus, RefreshCcw, WalletCards } from "lucide-react";
 import { useState } from "react";
 import { BudgetModal } from "@/app/budget/components/budget-modal";
@@ -14,7 +16,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getBudgetUsage, getTotalSpent } from "@/lib/calculations";
 import type { BudgetCategory } from "@/lib/types";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type BudgetStatus = "active" | "paused" | "completed";
 type BudgetModalMode = "create" | "edit";
@@ -51,6 +53,7 @@ function getNextBudgetStatus(status: BudgetStatus): BudgetStatus {
 }
 
 export default function BudgetPage() {
+  const formatCurrency = useFormatCurrency();
   const { categories, expenses, updateBudgetCategory } = useLifeOs();
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
   const [budgetModalMode, setBudgetModalMode] = useState<BudgetModalMode>("create");
@@ -61,7 +64,7 @@ export default function BudgetPage() {
   const budgetUsage = getBudgetUsage(categories, expenses);
   const totalBudget = budgetUsage.reduce((total, category) => total + category.monthlyLimit, 0);
   const totalSpent = budgetUsage.reduce((total, category) => total + category.spent, 0);
-  const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === "2026-08-05"));
+  const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === localDateKey()));
   const totalActiveBudget = categories
     .filter((category) => getBudgetStatus(category) === "active")
     .reduce((total, category) => total + category.monthlyLimit, 0);
@@ -278,7 +281,7 @@ export default function BudgetPage() {
             ? `This will change "${statusChangeBudget.name}" from ${statusLabels[getBudgetStatus(statusChangeBudget)]} to ${statusLabels[getNextBudgetStatus(getBudgetStatus(statusChangeBudget))]}.`
             : "This will change the selected budget status."
         }
-        onConfirm={() => {
+        onConfirm={async () => {
           if (!statusChangeBudget) {
             return;
           }
@@ -286,11 +289,12 @@ export default function BudgetPage() {
           const status = getNextBudgetStatus(getBudgetStatus(statusChangeBudget));
           const { id, ...nextCategory } = statusChangeBudget;
 
-          updateBudgetCategory(id, {
+          const saved = await updateBudgetCategory(id, {
             ...nextCategory,
             status,
             isActive: status === "active",
           });
+          if (!saved) return false;
           setStatusChangeBudget(undefined);
         }}
         onOpenChange={(open) => !open && setStatusChangeBudget(undefined)}

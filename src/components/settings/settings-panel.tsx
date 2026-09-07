@@ -15,6 +15,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { lifeOsStateService } from "@/services/life-os-state.service";
 import { useAccount } from "@/hooks/use-account";
 import { ApiHealthStatus } from "@/components/settings/api-health-status";
 import { Badge } from "@/components/ui/badge";
@@ -67,14 +68,9 @@ function isValidEmail(email: string) {
 
 export function SettingsPanel() {
   const {
-    categories,
-    expenses,
-    notes,
     resetData,
     restoreData,
     settings,
-    tasks,
-    timerSessions,
     updateSettings,
   } = useLifeOs();
   const {
@@ -128,6 +124,7 @@ export function SettingsPanel() {
       return;
     }
 
+    if (!file.type.startsWith("image/") || file.size > 1024 * 1024) { setProfileMessage("Choose an image smaller than 1 MB."); return; }
     const reader = new FileReader();
     reader.onload = () => {
       updateProfileField("profileImage", typeof reader.result === "string" ? reader.result : "");
@@ -162,7 +159,7 @@ export function SettingsPanel() {
         bio: nextProfile.profileBio,
         imageUrl: nextProfile.profileImage,
       });
-      updateSettings(nextProfile);
+      if (!await updateSettings(nextProfile)) return;
       setProfileMessage("Profile updated.");
     } catch (cause) {
       setProfileMessage(cause instanceof Error ? cause.message : "Profile could not be updated.");
@@ -189,8 +186,10 @@ export function SettingsPanel() {
     }
   }
 
-  function exportData() {
-    const payload = JSON.stringify({ categories, expenses, tasks, timerSessions, notes, settings }, null, 2);
+  async function exportData() {
+    let payload: string;
+    try { payload = JSON.stringify(await lifeOsStateService.get(), null, 2); }
+    catch (cause) { setProfileMessage(cause instanceof Error ? cause.message : "Backup failed."); return; }
     const blob = new Blob([payload], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -206,15 +205,19 @@ export function SettingsPanel() {
       return;
     }
 
-    const text = await file.text();
-    restoreData(JSON.parse(text));
-    event.target.value = "";
+    try {
+      const text = await file.text();
+      if (!window.confirm("Replace your current workspace with this backup?")) return;
+      if (await restoreData(JSON.parse(text))) setProfileMessage("Backup imported.");
+    } catch {
+      setProfileMessage("Choose a valid JSON backup. Nothing was imported.");
+    } finally { event.target.value = ""; }
   }
 
   return (
     <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.75fr)]">
       <div className="min-w-0 space-y-5">
-        <Card title="Profile" eyebrow="Account" action={<Badge tone="teal">Local profile</Badge>}>
+        <Card title="Profile" eyebrow="Account" action={<Badge tone="teal">Account profile</Badge>}>
           <form className="space-y-5" onSubmit={saveProfile}>
             <div className="flex flex-col gap-5 md:flex-row md:items-start">
               <div className="flex shrink-0 flex-col items-center gap-3 md:w-44">
@@ -302,7 +305,7 @@ export function SettingsPanel() {
                       onChange={(event) => updateProfileField("profileEmail", event.target.value)}
                       placeholder="you@example.com"
                       type="email"
-                      value={profileDraft.profileEmail}
+                      value={profileDraft.profileEmail} readOnly
                     />
                   </span>
                 </FieldShell>
@@ -388,8 +391,8 @@ export function SettingsPanel() {
                 value={settings.aiProvider}
               >
                 <option value="off">Off</option>
-                <option value="free-api">Free API key later</option>
-                <option value="local">Local model later</option>
+                <option value="free-api" disabled>External AI (not connected)</option>
+                <option value="local" disabled>Local model (not connected)</option>
               </SelectInput>
             </FieldShell>
             <FieldShell label="Quiet hours start">
@@ -452,7 +455,7 @@ export function SettingsPanel() {
           </form>
         </Card>
 
-        <Card title="Notifications And Data" eyebrow="Local first">
+        <Card title="Notifications And Data" eyebrow="Your workspace">
           <div className="space-y-4">
             <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-start gap-3">
@@ -475,7 +478,7 @@ export function SettingsPanel() {
               <Button className="w-full" onClick={() => backupInputRef.current?.click()} type="button" variant="outline">
                 Import JSON
               </Button>
-              <Button className="w-full" onClick={resetData} type="button" variant="danger">
+              <Button className="w-full" onClick={async () => { if (window.confirm("Permanently delete your budgets, expenses, tasks, timers, and notes?")) await resetData(); }} type="button" variant="danger">
                 Reset all data
               </Button>
             </div>

@@ -123,7 +123,7 @@ function NoteEditorDialog({
     onOpenChange(nextOpen);
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -174,9 +174,9 @@ function NoteEditorDialog({
     };
 
     if (isEdit && note) {
-      updateNote(note.id, nextNote);
+      if (!await updateNote(note.id, nextNote)) return;
     } else {
-      addNote(nextNote);
+      if (!await addNote(nextNote)) return;
       form.reset();
     }
 
@@ -545,9 +545,9 @@ export function NotesManager() {
             ? `This will permanently delete "${deleteTarget.title}" from saved notes.`
             : "This will delete the selected note."
         }
-        onConfirm={() => {
+        onConfirm={async () => {
           if (deleteTarget) {
-            deleteNote(deleteTarget.id);
+            return deleteNote(deleteTarget.id);
           }
         }}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}

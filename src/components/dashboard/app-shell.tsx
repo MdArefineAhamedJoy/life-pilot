@@ -44,13 +44,21 @@ const navItems: NavItem[] = [
   { label: "Notes", href: "/notes", icon: StickyNote, accent: "bg-green-500" },
   { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
+  { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
+  { label: "Shopping", href: "/shopping", icon: ListTodo, accent: "bg-emerald-500" },
+  { label: "Health", href: "/health", icon: StickyNote, accent: "bg-emerald-500" },
+  { label: "Family", href: "/family", icon: StickyNote, accent: "bg-emerald-500" },
+  { label: "Goals", href: "/goals", icon: ListChecks, accent: "bg-emerald-500" },
+  { label: "Meal planner", href: "/meal-planner", icon: CalendarDays, accent: "bg-emerald-500" },
+  { label: "Reminders", href: "/reminder", icon: CalendarDays, accent: "bg-emerald-500" },
+  { label: "Settings", href: "/settings", icon: Settings, accent: "bg-emerald-500" },
 ];
 
 type AppShellProps = {
   children: ReactNode;
 };
 
-const publicRoutes = new Set(["/", "/login", "/register"]);
+const publicRoutes = new Set(["/login", "/register"]);
 
 function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
   return <Icon aria-hidden="true" className="size-4" strokeWidth={1.9} />;
@@ -135,7 +143,7 @@ export function AppShell({ children }: AppShellProps) {
                   </span>
                   <span className={cn("min-w-0", isSidebarCollapsed && "sr-only")}>
                     <span className="block truncate text-xs font-medium text-emerald-600">
-                      Personal local-first planner
+                      Personal planner
                     </span>
                     <span className="block truncate text-xl font-semibold tracking-normal text-slate-800">
                       Life Pilot
@@ -223,14 +231,14 @@ export function AppShell({ children }: AppShellProps) {
                   <Link
                     className="flex min-h-11 items-center gap-3 border-b border-slate-200 px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-emerald-600"
                     href="/settings"
-                    onClick={handleLogout}
+                    onClick={() => setIsAccountMenuOpen(false)}
                   >
                     <Settings aria-hidden="true" className="size-4" strokeWidth={1.9} />
                     Account Settings
                   </Link>
                   <button
                     className="flex min-h-11 w-full items-center gap-3 px-4 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
-                    onClick={() => setIsAccountMenuOpen(false)}
+                    onClick={handleLogout}
                     type="button"
                   >
                     <LogOut aria-hidden="true" className="size-4" strokeWidth={1.9} />
@@ -286,6 +294,7 @@ export function AppShell({ children }: AppShellProps) {
                 <p className="text-sm font-medium text-emerald-600">Life Pilot</p>
                 <h1 className="text-xl font-semibold">Daily planner</h1>
               </Link>
+              <button className="mt-2 text-sm font-semibold text-red-600" onClick={handleLogout} type="button">Log out</button>
               <nav className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 sm:mt-4" aria-label="Mobile navigation">
                 {navItems.map((item) => (
                   <Link

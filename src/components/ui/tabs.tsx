@@ -20,7 +20,7 @@ type TabsProps<T extends string> = {
 export function Tabs<T extends string>({ ariaLabel, fullWidth = false, onValueChange, tabs, value }: TabsProps<T>) {
   return (
     <div className={cn(fullWidth ? "border border-b-0 border-slate-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]" : "border-b border-slate-200")}>
-      <div className={cn(fullWidth ? "grid" : "inline-flex max-w-full overflow-x-auto")} style={fullWidth ? { gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` } : undefined}>
+      <div role="group" aria-label={ariaLabel} className={cn(fullWidth ? "grid" : "inline-flex max-w-full overflow-x-auto")} style={fullWidth ? { gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` } : undefined}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (

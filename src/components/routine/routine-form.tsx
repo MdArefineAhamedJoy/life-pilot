@@ -8,12 +8,12 @@ import { FieldShell, SelectInput, TextArea, TextInput } from "@/components/ui/fi
 export function RoutineForm() {
   const { addTask } = useLifeOs();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    addTask({
+    const saved = await addTask({
       title: String(data.get("title") ?? ""),
       category: String(data.get("category") ?? "Personal"),
       priority: String(data.get("priority") ?? "medium") as "low" | "medium" | "high",
@@ -23,6 +23,7 @@ export function RoutineForm() {
       note: String(data.get("note") ?? ""),
       repeatRule: String(data.get("repeatRule") ?? "daily") as "daily" | "weekly" | "custom" | "once",
     });
+    if (!saved) return;
 
     form.reset();
   }

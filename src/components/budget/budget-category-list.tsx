@@ -1,6 +1,8 @@
+"use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 import type { BudgetCategory, Expense } from "@/lib/types";
 import { getBudgetUsage } from "@/lib/calculations";
-import { formatCurrency } from "@/lib/utils";
+
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
@@ -11,6 +13,7 @@ type BudgetCategoryListProps = {
 };
 
 export function BudgetCategoryList({ categories, expenses }: BudgetCategoryListProps) {
+  const formatCurrency = useFormatCurrency();
   const usage = getBudgetUsage(categories, expenses);
 
   return (

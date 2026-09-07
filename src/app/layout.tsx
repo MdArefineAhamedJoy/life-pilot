@@ -35,11 +35,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <StoreProvider>
-          <LifeOsProvider>
-            <AuthGate>
+          <AuthGate>
+            <LifeOsProvider>
               <AppShell>{children}</AppShell>
-            </AuthGate>
-          </LifeOsProvider>
+            </LifeOsProvider>
+          </AuthGate>
         </StoreProvider>
       </body>
     </html>

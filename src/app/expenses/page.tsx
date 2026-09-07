@@ -11,7 +11,7 @@ import { SelectInput, TextInput } from "@/components/ui/field";
 import { SectionHeader } from "@/components/ui/section-header";
 
 export default function ExpensesPage() {
-  const { categories, expenses } = useLifeOs();
+  const { categories, expenses, settings } = useLifeOs();
 
   const [search, setSearch] = useState("");
   const [date, setDate] = useState("");
@@ -66,7 +66,7 @@ export default function ExpensesPage() {
           label="Total spent"
           progress={totalExpenseAmount > 0 ? Math.round((stats.total / totalExpenseAmount) * 100) : 0}
           tone="red"
-          value={stats.total.toLocaleString(undefined, { style: "currency", currency: "BDT" })}
+          value={stats.total.toLocaleString(undefined, { style: "currency", currency: settings.currency })}
         />
         <StatCard
           detail={`of ${expenses.length} total records`}
@@ -82,7 +82,7 @@ export default function ExpensesPage() {
           label="Average / entry"
           progress={stats.total > 0 ? Math.min(Math.round((stats.avg / stats.total) * 100), 100) : 0}
           tone="emerald"
-          value={stats.avg.toLocaleString(undefined, { style: "currency", currency: "BDT" })}
+          value={stats.avg.toLocaleString(undefined, { style: "currency", currency: settings.currency })}
         />
       </div>
 

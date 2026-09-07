@@ -1,41 +1,24 @@
-import { apiClient, authStorageKey } from "@/services/api-client";
-
+import { apiClient } from "@/services/api-client";
 export type AuthUser = { id: string; name: string; email: string; phone?: string; imageUrl?: string };
-export type AuthResponse = { user: AuthUser; token: string; expiresAt: string };
+export type AuthResponse = { user: AuthUser; expiresAt: string };
 export type LoginPayload = { email: string; password: string };
 export type RegisterPayload = { name: string; email: string; phone: string; password: string; imageUrl?: string };
 
+function notifyAuthChange() {
+  // Share only an event marker between tabs. Credentials stay in an HttpOnly cookie.
+  try {
+    window.localStorage.removeItem("life-pilot-auth");
+    window.localStorage.setItem("life-pilot-auth-event", crypto.randomUUID());
+  } catch { /* Browser storage may be disabled. */ }
+  window.dispatchEvent(new Event("life-pilot:auth-changed"));
+}
 export const authService = {
-  async login(payload: LoginPayload) {
-    return (await apiClient.post<AuthResponse>("/auth/login", payload)).data;
-  },
-  async register(payload: RegisterPayload) {
-    return (await apiClient.post<AuthResponse>("/auth/register", payload)).data;
-  },
-  async currentUser() {
-    return (await apiClient.get<AuthUser>("/auth/me")).data;
-  },
+  async login(payload: LoginPayload) { return (await apiClient.post<AuthResponse>("/auth/login", payload)).data; },
+  async register(payload: RegisterPayload) { return (await apiClient.post<AuthResponse>("/auth/register", payload)).data; },
+  async currentUser() { return (await apiClient.get<AuthUser>("/auth/me")).data; },
   async logout() {
-    await apiClient.post("/auth/logout");
-    this.clearSession();
+    try { await apiClient.post("/auth/logout"); } finally { notifyAuthChange(); }
   },
-  saveSession(session: AuthResponse) {
-    window.localStorage.setItem(authStorageKey, JSON.stringify(session));
-    window.dispatchEvent(new Event("life-pilot:auth-changed"));
-  },
-  getSession() {
-    if (typeof window === "undefined") return null;
-
-    try {
-      return JSON.parse(window.localStorage.getItem(authStorageKey) ?? "null") as AuthResponse | null;
-    } catch {
-      return null;
-    }
-  },
-  clearSession() {
-    if (typeof window !== "undefined") {
-      window.localStorage.removeItem(authStorageKey);
-      window.dispatchEvent(new Event("life-pilot:auth-changed"));
-    }
-  },
+  saveSession: notifyAuthChange,
+  clearSession: notifyAuthChange,
 };

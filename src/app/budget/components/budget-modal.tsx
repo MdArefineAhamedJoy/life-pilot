@@ -48,7 +48,7 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -78,9 +78,9 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     };
 
     if (isEdit && budget) {
-      updateBudgetCategory(budget.id, nextBudget);
+      if (!await updateBudgetCategory(budget.id, nextBudget)) return;
     } else if (selectedCategory) {
-      updateBudgetCategory(selectedCategory.id, nextBudget);
+      if (!await updateBudgetCategory(selectedCategory.id, nextBudget)) return;
       form.reset();
       setHasExtraNote(false);
     }

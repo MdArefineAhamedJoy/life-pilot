@@ -1,4 +1,5 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { CalendarDays, FileImage, ReceiptText, Save, ScanText, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -10,11 +11,12 @@ import { Button } from "@/components/ui/button";
 import { FieldShell, TextArea, TextInput } from "@/components/ui/field";
 import { SectionHeader } from "@/components/ui/section-header";
 import { parseReceiptText } from "@/lib/calculations";
-import { formatCurrency } from "@/lib/utils";
+
 
 type ParsedReceiptRow = ReturnType<typeof parseReceiptText>[number];
 
 export default function ReceiptScannerPage() {
+  const formatCurrency = useFormatCurrency();
   const { addExpensesFromRows } = useLifeOs();
   const [rawText, setRawText] = useState("");
   const [saveDate, setSaveDate] = useState("");
@@ -41,8 +43,9 @@ export default function ReceiptScannerPage() {
     },
   ];
 
-  function handleSave() {
-    addExpensesFromRows(validRows, saveDate || undefined);
+  async function handleSave() {
+    if (!await addExpensesFromRows(validRows, saveDate || undefined)) return;
+    setRawText("");
     setSavedMessage(`${validRows.length} rows saved to expenses.`);
   }
 
@@ -57,7 +60,7 @@ export default function ReceiptScannerPage() {
       <SectionHeader
         eyebrow="Scan slip"
         title="Receipt text to expense table"
-        description="Paste bajar slip text or attach an image placeholder, review parsed rows, then save them as expenses."
+        description="Paste receipt text, review parsed rows, then save them as expenses."
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -81,7 +84,7 @@ export default function ReceiptScannerPage() {
           detail={imageName ? "Uploaded reference" : "Manual paste"}
           icon={FileImage}
           label="Image source"
-          progress={imageName ? 100 : 25}
+          progress={imageName ? 100 : 0}
           tone="amber"
           value={imageName || "Text entry"}
         />
@@ -119,8 +122,9 @@ export default function ReceiptScannerPage() {
                 value={rawText}
               />
             </FieldShell>
-            <FieldShell hint="OCR is not connected yet. The file name is kept as a source reference." label="Receipt image">
+            <FieldShell hint="Image OCR is not connected. Paste receipt text to add expenses." label="Receipt image">
               <TextInput
+                disabled
                 accept="image/*"
                 className="h-11 bg-white"
                 onChange={(event) => setImageName(event.target.files?.[0]?.name ?? "")}

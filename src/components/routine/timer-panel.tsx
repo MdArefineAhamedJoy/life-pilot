@@ -82,14 +82,16 @@ export function TimerPanel() {
             </Button>
             <Button
               disabled={seconds === 0 || !title.trim()}
-              onClick={() => {
-                addTimerSession({
+              onClick={async () => {
+                const saved = await addTimerSession({
                   title,
                   category,
                   durationSeconds: seconds,
                   mode: mode as "timer" | "stopwatch" | "focus",
                 });
                 setIsRunning(false);
+                if (!saved) return;
+                setSeconds(0);
                 setSavedMessage("Timer session saved.");
               }}
               type="button"

@@ -21,7 +21,7 @@ type ConfirmationModalProps = {
   confirmLabel?: string;
   cancelLabel?: string;
   variant?: ConfirmationModalVariant;
-  onConfirm: () => void;
+  onConfirm: () => void | boolean | Promise<void | boolean>;
 };
 
 export function ConfirmationModal({
@@ -35,8 +35,8 @@ export function ConfirmationModal({
   variant = "default",
   onConfirm,
 }: ConfirmationModalProps) {
-  function handleConfirm() {
-    onConfirm();
+  async function handleConfirm() {
+    if (await onConfirm() === false) return;
     onOpenChange(false);
   }
 

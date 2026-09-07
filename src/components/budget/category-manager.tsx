@@ -1,13 +1,15 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { useState } from "react";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FieldShell, TextInput } from "@/components/ui/field";
-import { formatCurrency } from "@/lib/utils";
+
 
 export function CategoryManager() {
+  const formatCurrency = useFormatCurrency();
   const { categories, updateCategoryLimit } = useLifeOs();
   const [draftLimits, setDraftLimits] = useState(() =>
     Object.fromEntries(categories.map((category) => [category.id, String(category.monthlyLimit)])),

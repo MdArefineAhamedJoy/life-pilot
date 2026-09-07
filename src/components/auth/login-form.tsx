@@ -1,28 +1,33 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
+import { accountService } from "@/services/account.service";
 import { useAuth } from "@/hooks/use-auth";
 
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [recoveryMessage, setRecoveryMessage] = useState("");
+  const [requestingRecovery, setRequestingRecovery] = useState(false);
   const { error, isSubmitting, login } = useAuth();
 
   async function handleLogin() {
     try {
       await login({ email, password });
-      router.push("/dashboard");
+      const next = new URLSearchParams(window.location.search).get("next");
+      const destination = next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : "/dashboard";
+      router.replace(destination);
+      router.refresh();
     } catch {
       // The reusable auth hook exposes the error state to the form.
     }
   }
 
   return (
-    <div className="mt-5 space-y-3">
+    <form className="mt-5 space-y-3" onSubmit={(event) => { event.preventDefault(); void handleLogin(); }}>
       <label className="block space-y-2">
         <span className="text-sm font-medium text-slate-900">Email address</span>
         <span className="relative block">
@@ -63,27 +68,23 @@ export function LoginForm() {
         </span>
       </label>
 
-      <div className="flex items-center justify-between gap-4 text-sm">
-        <label className="flex min-w-0 items-center gap-2 text-slate-600">
-          <input className="size-4 rounded border-slate-300 text-emerald-600" name="remember" type="checkbox" />
-          <span className="truncate">Remember me</span>
-        </label>
-        <Link className="shrink-0 font-semibold text-emerald-700 hover:text-emerald-800" href="/login">
-          Forgot password?
-        </Link>
-      </div>
-
+      <button type="button" disabled={!email || requestingRecovery} className="text-sm font-semibold text-emerald-700" onClick={async () => {
+        setRequestingRecovery(true);
+        try { await accountService.requestPasswordRecovery(email); setRecoveryMessage("Recovery instructions requested."); }
+        catch (cause) { setRecoveryMessage(cause instanceof Error ? cause.message : "Recovery request failed."); }
+        finally { setRequestingRecovery(false); }
+      }}>{requestingRecovery ? "Requesting?" : "Forgot password?"}</button>
+      {recoveryMessage && <p role="status" className="text-sm text-slate-700">{recoveryMessage}</p>}
       {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
       <button
         className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-300"
         disabled={isSubmitting || !email || !password}
-        onClick={handleLogin}
-        type="button"
+        type="submit"
       >
         {isSubmitting ? "Logging in..." : "Login"}
         <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
       </button>
-    </div>
+    </form>
   );
 }

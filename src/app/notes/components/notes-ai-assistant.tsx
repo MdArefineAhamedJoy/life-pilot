@@ -1,4 +1,6 @@
 "use client";
+import { localDateKey } from "@/lib/utils";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { useMemo, useState } from "react";
 import {
@@ -24,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 import { getBudgetUsage, getTotalSpent } from "@/lib/calculations";
 import type { BudgetCategory, LifeNote, RoutineTask } from "@/lib/types";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type AssistantView = "summary" | "money" | "reminders" | "expenses";
 
@@ -196,12 +198,13 @@ function InsightRow({
 }
 
 export function NotesAiAssistant() {
-  const { categories, expenses, notes, settings, tasks } = useLifeOs();
+  const formatCurrency = useFormatCurrency();
+  const { categories, expenses, notes, tasks } = useLifeOs();
   const [activeView, setActiveView] = useState<AssistantView>("summary");
 
   const analysis = useMemo(() => {
     const budgetUsage = getBudgetUsage(categories, expenses);
-    const totalSpent = getTotalSpent(expenses);
+    const totalSpent = getTotalSpent(expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)));
     const totalBudget = budgetUsage.reduce((total, category) => total + category.monthlyLimit, 0);
     const remaining = totalBudget - totalSpent;
     const moneyNotes = notes.filter((note) => hasAnyTerm(noteText(note), moneyTerms));
@@ -245,7 +248,7 @@ export function NotesAiAssistant() {
   }, [categories, expenses, notes, tasks]);
 
   const hasNotes = notes.length > 0;
-  const assistantStatus = settings.aiProvider === "off" ? "Local review" : settings.aiProvider;
+  const assistantStatus = "Local rule-based review";
 
   return (
     <SharedCard className="overflow-hidden !p-0">

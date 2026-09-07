@@ -1,4 +1,6 @@
+"use client";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useWorkspaceSaving } from "@/lib/workspace-saving";
 import { cn } from "@/lib/utils";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -15,6 +17,7 @@ const variants = {
 };
 
 export function Button({ className, variant = "primary", icon, children, ...props }: ButtonProps) {
+  const isSaving = useWorkspaceSaving();
   return (
     <button
       className={cn(
@@ -23,6 +26,7 @@ export function Button({ className, variant = "primary", icon, children, ...prop
         className,
       )}
       {...props}
+      disabled={props.disabled || isSaving}
     >
       {icon}
       {children}

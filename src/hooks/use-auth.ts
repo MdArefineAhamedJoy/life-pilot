@@ -12,7 +12,7 @@ export function useAuth() {
     setIsSubmitting(true);
     try {
       const session = await authService.login(payload);
-      authService.saveSession(session);
+      authService.saveSession();
       return session;
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "Login failed.";
@@ -28,7 +28,7 @@ export function useAuth() {
     setIsSubmitting(true);
     try {
       const session = await authService.register(payload);
-      authService.saveSession(session);
+      authService.saveSession();
       return session;
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "Registration failed.";

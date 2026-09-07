@@ -79,7 +79,7 @@ export default function RoutinePage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("Notification" in window) || permission !== "granted") {
+    if (typeof window === "undefined" || !("Notification" in window) || permission !== "granted" || !settings.notificationEnabled) {
       return;
     }
 
@@ -110,7 +110,7 @@ export default function RoutinePage() {
     return () => {
       timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
     };
-  }, [orderedTasks, permission, settings.quietHoursEnd, settings.quietHoursStart]);
+  }, [orderedTasks, permission, settings.notificationEnabled, settings.quietHoursEnd, settings.quietHoursStart]);
 
   async function requestNotificationAccess() {
     if (typeof window === "undefined" || !("Notification" in window)) {
@@ -140,9 +140,8 @@ export default function RoutinePage() {
     reorderTasks(ids);
   }
 
-  function startTask(task: RoutineTask) {
-    setActiveTaskId(task.id);
-    updateTaskStatus(task.id, "active");
+  async function startTask(task: RoutineTask) {
+    if (await updateTaskStatus(task.id, "active")) setActiveTaskId(task.id);
   }
 
   function startRoutine() {
@@ -151,13 +150,13 @@ export default function RoutinePage() {
     }
   }
 
-  function completeCurrentTask() {
+  async function completeCurrentTask() {
     if (!currentTask) {
       return;
     }
 
     const nextTask = getNextRunnableRoutineTask(orderedTasks, currentTaskIndex);
-    updateTaskStatus(currentTask.id, "completed");
+    if (!await updateTaskStatus(currentTask.id, "completed")) return;
 
     if (nextTask) {
       startTask(nextTask);
@@ -166,13 +165,13 @@ export default function RoutinePage() {
     }
   }
 
-  function skipCurrentTask() {
+  async function skipCurrentTask() {
     if (!currentTask) {
       return;
     }
 
     const nextTask = getNextRunnableRoutineTask(orderedTasks, currentTaskIndex);
-    updateTaskStatus(currentTask.id, "skipped");
+    if (!await updateTaskStatus(currentTask.id, "skipped")) return;
 
     if (nextTask) {
       startTask(nextTask);
@@ -190,11 +189,10 @@ export default function RoutinePage() {
     });
   }
 
-  function resetRoutine() {
-    orderedTasks.forEach((task) => {
-      updateTask(task.id, { completedAt: undefined });
-      updateTaskStatus(task.id, "pending");
-    });
+  async function resetRoutine() {
+    for (const task of orderedTasks) {
+      if (!await updateTaskStatus(task.id, "pending")) return;
+    }
     setActiveTaskId(null);
   }
 

@@ -12,7 +12,7 @@ export type TaskDraft = Omit<RoutineTask, "id" | "completedAt">;
 type TaskEditorDialogProps = {
   mode: "create" | "edit";
   onOpenChange: (open: boolean) => void;
-  onSave: (task: TaskDraft) => void;
+  onSave: (task: TaskDraft) => Promise<boolean>;
   open: boolean;
   task?: RoutineTask;
 };
@@ -20,14 +20,14 @@ type TaskEditorDialogProps = {
 const statuses: RoutineStatus[] = ["pending", "active", "completed", "skipped", "delayed", "missed"];
 
 export function TaskEditorDialog({ mode, onOpenChange, onSave, open, task }: TaskEditorDialogProps) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const title = String(data.get("title") ?? "").trim();
 
     if (!title) return;
 
-    onSave({
+    const saved = await onSave({
       title,
       category: String(data.get("category") ?? "General").trim() || "General",
       priority: String(data.get("priority") ?? "medium") as RoutineTask["priority"],
@@ -42,6 +42,7 @@ export function TaskEditorDialog({ mode, onOpenChange, onSave, open, task }: Tas
       reminderAt: String(data.get("reminderAt") ?? ""),
       note: String(data.get("note") ?? "").trim(),
     });
+    if (!saved) return;
     onOpenChange(false);
   }
 

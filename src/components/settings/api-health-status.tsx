@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 
 export function ApiHealthStatus() {
   const { health, isLoading } = useApiHealth();
-  const isOnline = Boolean(health);
+  const isOnline = health?.status === "ok";
 
   return (
     <Card

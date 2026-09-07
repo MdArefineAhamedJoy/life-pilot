@@ -1,4 +1,5 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
   TextInput,
 } from "@/components/ui/field";
 import type { BudgetCategory } from "@/lib/types";
-import { formatCurrency } from "@/lib/utils";
+import { localDateKey } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -27,6 +28,7 @@ type AddExpenseDialogProps = {
 };
 
 export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
+  const formatCurrency = useFormatCurrency();
   const { addExpense } = useLifeOs();
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("0");
@@ -38,13 +40,13 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
     return parsedAmount * parsedQuantity;
   }, [amount, quantity]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    addExpense({
-      date: String(data.get("date") ?? new Date().toISOString().slice(0, 10)),
+    const saved = await addExpense({
+      date: String(data.get("date") || localDateKey()),
       itemName: String(data.get("itemName") ?? ""),
       category: String(data.get("category") ?? ""),
       amount: previewTotal,
@@ -54,6 +56,7 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
       note: String(data.get("note") ?? ""),
       sourceType: "manual",
     });
+    if (!saved) return;
 
     setAmount("0");
     setQuantity("1");
@@ -93,10 +96,10 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
                 />
               </FieldShell>
               <FieldShell label="Date">
-                <TextInput name="date" type="date" />
+                <TextInput defaultValue={localDateKey()} name="date" type="date" required />
               </FieldShell>
               <FieldShell label="Category">
-                <SelectInput name="category">
+                <SelectInput name="category"><option value="Uncategorized">Uncategorized</option>
                   {categories.map((category) => (
                     <option key={category.id}>{category.name}</option>
                   ))}

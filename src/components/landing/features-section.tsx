@@ -54,7 +54,7 @@ export function FeaturesSection() {
                           {item}
                         </span>
                         <span className="h-2 w-24 overflow-hidden rounded-full bg-[var(--life-border)]">
-                          <span className="block h-full w-2/3 rounded-full bg-[var(--life-accent)]" />
+                          <span className="block h-full w-0 rounded-full bg-[var(--life-accent)]" />
                         </span>
                       </div>
                     ),

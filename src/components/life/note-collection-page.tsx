@@ -27,11 +27,11 @@ export function NoteCollectionPage({ tag, eyebrow, title, description, addLabel,
     [notes, tag],
   );
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!noteTitle.trim()) return;
 
-    addNote({ title: noteTitle.trim(), body: noteBody.trim(), tags: [tag] });
+    if (!await addNote({ title: noteTitle.trim(), body: noteBody.trim(), tags: [tag] })) return;
     setNoteTitle("");
     setNoteBody("");
     setIsCreating(false);

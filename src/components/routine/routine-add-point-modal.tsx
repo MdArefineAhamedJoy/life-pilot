@@ -20,13 +20,13 @@ export type RoutinePointDraft = Omit<RoutineTask, "id" | "status" | "repeatRule"
 
 type RoutineAddPointModalProps = {
   nextOrder: number;
-  onAddPoint: (task: RoutinePointDraft) => void;
+  onAddPoint: (task: RoutinePointDraft) => Promise<boolean>;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 };
 
 export function RoutineAddPointModal({ nextOrder, onAddPoint, onOpenChange, open }: RoutineAddPointModalProps) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -40,7 +40,7 @@ export function RoutineAddPointModal({ nextOrder, onAddPoint, onOpenChange, open
       return;
     }
 
-    onAddPoint({
+    const saved = await onAddPoint({
       title,
       category: String(data.get("category") ?? "Personal"),
       priority: String(data.get("priority") ?? "medium") as RoutineTask["priority"],
@@ -54,6 +54,7 @@ export function RoutineAddPointModal({ nextOrder, onAddPoint, onOpenChange, open
       reminderAt: alertEnabled ? addMinutes(plannedStart, -alertOffsetMinutes) : "",
       note: String(data.get("note") ?? "").trim(),
     });
+    if (!saved) return;
 
     form.reset();
     onOpenChange(false);

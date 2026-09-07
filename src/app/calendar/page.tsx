@@ -1,4 +1,5 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { CalendarDays, ChevronLeft, ChevronRight, ListChecks, ReceiptText } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -7,7 +8,7 @@ import { useLifeOs } from "@/components/state/life-os-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/section-header";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type CalendarEvent = {
   id: string;
@@ -68,6 +69,7 @@ function eventToneClasses(tone: CalendarEvent["tone"]) {
 }
 
 export default function CalendarPage() {
+  const formatCurrency = useFormatCurrency();
   const { categories, expenses, tasks } = useLifeOs();
   const todayKey = formatDateKey(new Date());
   const [viewDate, setViewDate] = useState(() => startOfMonth(new Date()));
@@ -118,7 +120,7 @@ export default function CalendarPage() {
     });
 
     return [...expenseEvents, ...taskEvents, ...budgetEvents];
-  }, [categories, expenses, tasks, todayKey]);
+  }, [categories, expenses, tasks, todayKey, formatCurrency]);
 
   const eventsByDate = useMemo(() => {
     return events.reduce<Record<string, CalendarEvent[]>>((grouped, event) => {
@@ -181,7 +183,6 @@ export default function CalendarPage() {
           detail="Current view"
           icon={CalendarDays}
           label="Month"
-          progress={100}
           tone="emerald"
           value={formatMonthTitle(viewDate)}
         />
@@ -189,7 +190,6 @@ export default function CalendarPage() {
           detail="Expenses this month"
           icon={ReceiptText}
           label="Month expenses"
-          progress={monthExpenseTotal > 0 ? 100 : 0}
           tone="red"
           value={formatCurrency(monthExpenseTotal)}
         />
@@ -197,7 +197,6 @@ export default function CalendarPage() {
           detail="Calendar items"
           icon={ListChecks}
           label="Events"
-          progress={events.length > 0 ? 100 : 0}
           tone="blue"
           value={String(events.length)}
         />

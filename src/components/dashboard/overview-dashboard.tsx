@@ -1,5 +1,7 @@
 "use client";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
+import { localDateKey } from "@/lib/utils";
 import Link from "next/link";
 import { Camera, CheckCircle2, Circle, Clock3, CreditCard, ExternalLink, PiggyBank, Plus, WalletCards, XCircle } from "lucide-react";
 import { useState } from "react";
@@ -7,7 +9,7 @@ import { SharedCard, SharedCardHeader, StatCard } from "@/components/shared/card
 import { Tabs } from "@/components/ui/tabs";
 import { getCategorySpent, getRoutineProgress, getTotalSpent } from "@/lib/calculations";
 import type { BudgetCategory, Expense, RoutineTask } from "@/lib/types";
-import { cn, formatCurrency } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type OverviewDashboardProps = {
   categories: BudgetCategory[];
@@ -41,7 +43,7 @@ function getWeekSpend(expenses: Expense[]) {
   return Array.from({ length: 7 }, (_, index) => {
     const date = new Date(today);
     date.setDate(today.getDate() - 6 + index);
-    const key = date.toISOString().slice(0, 10);
+    const key = localDateKey(date);
     return {
       day: new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(date),
       value: getTotalSpent(expenses.filter((expense) => expense.date === key)),
@@ -50,6 +52,7 @@ function getWeekSpend(expenses: Expense[]) {
 }
 
 function ExpenseOverview({ expenses }: { expenses: Expense[] }) {
+  const formatCurrency = useFormatCurrency();
   const points = getWeekSpend(expenses);
   const maxValue = Math.max(...points.map((point) => point.value), 1);
   const weeklyTotal = points.reduce((total, point) => total + point.value, 0);
@@ -84,6 +87,7 @@ function ExpenseOverview({ expenses }: { expenses: Expense[] }) {
 }
 
 function CategoryDistribution({ categories, expenses }: { categories: BudgetCategory[]; expenses: Expense[] }) {
+  const formatCurrency = useFormatCurrency();
   const rows = categories.map((category) => ({
     ...category,
     spent: getCategorySpent(expenses, category.name),
@@ -141,6 +145,7 @@ function RoutineTimeline({ tasks }: { tasks: RoutineTask[] }) {
 }
 
 function RecentExpenses({ expenses }: { expenses: Expense[] }) {
+  const formatCurrency = useFormatCurrency();
   const rows = [...expenses].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
   return (
     <SharedCard>
@@ -201,10 +206,11 @@ function DashboardTabPanel({ categories, expenses, tasks }: OverviewDashboardPro
 }
 
 export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashboardProps) {
+  const formatCurrency = useFormatCurrency();
   const totalBudget = categories.reduce((total, category) => total + category.monthlyLimit, 0);
-  const totalSpent = getTotalSpent(expenses);
+  const totalSpent = getTotalSpent(expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)));
   const remainingBudget = totalBudget - totalSpent;
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = localDateKey();
   const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === todayKey));
   const budgetProgress = totalBudget > 0 ? Math.min(Math.round((totalSpent / totalBudget) * 100), 100) : 0;
   const dateLabel = new Intl.DateTimeFormat(undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date());

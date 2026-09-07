@@ -26,32 +26,7 @@ export const proofPoints = [
   "AI stays optional",
 ];
 
-export const signalCards = [
-  {
-    label: "Budget health",
-    value: "82%",
-    detail: "Monthly guardrail",
-    tone: "life-chip-green",
-  },
-  {
-    label: "Focus time",
-    value: "3h 20m",
-    detail: "Planned today",
-    tone: "life-chip-blue",
-  },
-  {
-    label: "Routine score",
-    value: "91",
-    detail: "Weekly trend",
-    tone: "life-chip-amber",
-  },
-  {
-    label: "Open reminders",
-    value: "12",
-    detail: "Needs review",
-    tone: "life-chip-rose",
-  },
-];
+export const signalCards: Array<{ label: string; value: string; detail: string; tone: string }> = [];
 
 export const features = [
   {
@@ -132,28 +107,7 @@ export const workflow = [
   },
 ];
 
-export const dashboardRows = [
-  {
-    title: "Grocery budget drift",
-    detail: "BDT 2,400 should stay reserved",
-    time: "now",
-  },
-  {
-    title: "Study block protected",
-    detail: "Timer suggests 2 focus rounds",
-    time: "11m",
-  },
-  {
-    title: "Family reminder due",
-    detail: "Call and pharmacy pickup",
-    time: "24m",
-  },
-  {
-    title: "Weekly report ready",
-    detail: "Budget, routine, and goals combined",
-    time: "1h",
-  },
-];
+export const dashboardRows: Array<{ title: string; detail: string; time: string }> = [];
 
 export const prompts = [
   "What should I prioritize before 6 PM?",
