@@ -8,7 +8,7 @@ export const useAuthenticatedUser = () => useContext(AuthUserContext);
 export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isPublic = pathname === "/login" || pathname === "/register";
+  const isPublic = pathname === "/" || pathname === "/login" || pathname === "/register";
   const [user, setUser] = useState<AuthUser | null>(null);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);

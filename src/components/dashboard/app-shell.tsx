@@ -58,7 +58,7 @@ type AppShellProps = {
   children: ReactNode;
 };
 
-const publicRoutes = new Set(["/login", "/register"]);
+const publicRoutes = new Set(["/", "/login", "/register"]);
 
 function NavIcon({ icon: Icon }: { icon: LucideIcon }) {
   return <Icon aria-hidden="true" className="size-4" strokeWidth={1.9} />;
