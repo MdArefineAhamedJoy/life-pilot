@@ -3,14 +3,6 @@ import { backendUrl, sessionCookie } from "@/lib/server-api";
 
 const publicEndpoints = new Set(["POST auth/login", "POST auth/register", "POST account/password-recovery", "GET health"]);
 
-function requestOrigin(request: NextRequest) {
-  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
-  if (!host) return request.nextUrl.origin;
-
-  const protocol = request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(/:$/, "");
-  return `${protocol}://${host}`;
-}
-
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const { path: segments } = await context.params;
   if (segments.some((part) => !/^[a-zA-Z0-9:_-]+$/.test(part))) {
@@ -20,8 +12,7 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   const token = request.cookies.get(sessionCookie)?.value;
   const logout = path === "auth/logout" && request.method === "POST";
   if (!["GET", "HEAD"].includes(request.method)) {
-    const origin = request.headers.get("origin");
-    if ((origin && origin !== requestOrigin(request)) || request.headers.get("sec-fetch-site") === "cross-site") {
+    if (request.headers.get("sec-fetch-site") === "cross-site") {
       return NextResponse.json({ message: "Request origin is not allowed." }, { status: 403 });
     }
   }
