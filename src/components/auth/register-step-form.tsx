@@ -68,7 +68,7 @@ export function RegisterStepForm() {
     <>
       <form className="mt-3 space-y-2.5 sm:mt-5 sm:space-y-3" onSubmit={(event) => { event.preventDefault(); if (canCreate) void handleCreateAccount(); }}>
         <div className="flex justify-center">
-          <div className="relative">
+          <div className="relative text-center">
             {profileImagePreview ? (
               <button
                 aria-label="View profile image"
@@ -104,6 +104,7 @@ export function RegisterStepForm() {
                 />
               </label>
             ) : null}
+            <p className="mt-2 text-xs text-slate-500">Profile photo (optional)</p>
           </div>
         </div>
 
