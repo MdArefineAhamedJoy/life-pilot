@@ -38,8 +38,8 @@ export const authService = {
   async register(payload: RegisterPayload) {
     return unwrapResponse(apiClient.post<AuthResponse>("/auth/register", payload));
   },
-  async currentUser() {
-    return unwrapResponse(apiClient.get<AuthUser>("/auth/me"));
+  async currentUser(config?: ApiRequestConfig) {
+    return unwrapResponse(apiClient.get<AuthUser>("/auth/me", config));
   },
   async logout() {
     try {

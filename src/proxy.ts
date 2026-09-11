@@ -64,7 +64,7 @@ export async function proxy(request: NextRequest) {
         }
       }
       if (result.ok) {
-        const response = authPage
+        const response = publicPage
           ? NextResponse.redirect(new URL("/dashboard", request.url))
           : NextResponse.next();
         if (renewedSession) setSessionCookies(response, renewedSession, request);
