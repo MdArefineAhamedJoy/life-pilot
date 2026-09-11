@@ -1,4 +1,4 @@
-import axios, { AxiosError, type AxiosResponse } from "axios";
+import axios, { AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { toast } from "sonner";
 
 export type ApiResponse<T> = {
@@ -14,6 +14,11 @@ export type ApiResponse<T> = {
   };
 };
 
+export type ApiRequestConfig = AxiosRequestConfig & {
+  suppressToast?: boolean;
+  suppressUnauthorized?: boolean;
+};
+
 export async function unwrapResponse<T>(request: Promise<AxiosResponse<T>>) {
   return (await request).data;
 }
@@ -26,15 +31,21 @@ const apiClientConfig = {
 };
 
 function handleApiError(error: AxiosError<{ message?: string | string[] }>) {
+  const requestConfig = error.config as ApiRequestConfig | undefined;
   const publicRequest = ["/auth/login", "/auth/register", "/account/password-recovery"].includes(
     error.config?.url ?? ""
   );
-  if (error.response?.status === 401 && !publicRequest && typeof window !== "undefined") {
+  if (
+    error.response?.status === 401 &&
+    !publicRequest &&
+    !requestConfig?.suppressUnauthorized &&
+    typeof window !== "undefined"
+  ) {
     window.dispatchEvent(new Event("life-pilot:unauthorized"));
   }
   const message = error.response?.data?.message;
   const detail = Array.isArray(message) ? message.join(", ") : message;
-  if (typeof window !== "undefined") {
+  if (!requestConfig?.suppressToast && typeof window !== "undefined") {
     toast.error(detail || error.message || "The request failed. Please try again.");
   }
   return Promise.reject(
@@ -46,11 +57,17 @@ export const apiClient = axios.create(apiClientConfig);
 export const apiEnvelopeClient = axios.create(apiClientConfig);
 
 apiClient.interceptors.response.use((response) => {
+  const requestConfig = response.config as ApiRequestConfig;
   const payload = response.data as Partial<ApiResponse<unknown>>;
   if (typeof payload?.success === "boolean" && "data" in payload) {
     response.data = payload.data;
     const method = response.config.method?.toUpperCase();
-    if (method && method !== "GET" && typeof window !== "undefined") {
+    if (
+      method &&
+      method !== "GET" &&
+      !requestConfig.suppressToast &&
+      typeof window !== "undefined"
+    ) {
       toast.success(payload.message || "Request completed successfully.");
     }
   }

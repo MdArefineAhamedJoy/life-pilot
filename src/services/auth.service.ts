@@ -1,4 +1,4 @@
-import { apiClient, unwrapResponse } from "@/services/api-client";
+import { apiClient, type ApiRequestConfig, unwrapResponse } from "@/services/api-client";
 export type AuthUser = {
   id: string;
   name: string;
@@ -7,7 +7,7 @@ export type AuthUser = {
   imageUrl?: string;
 };
 export type AuthResponse = { user: AuthUser; expiresAt: string };
-export type LoginPayload = { email: string; password: string };
+export type LoginPayload = { email: string; password: string; rememberMe?: boolean };
 export type RegisterPayload = {
   name: string;
   email: string;
@@ -16,15 +16,20 @@ export type RegisterPayload = {
   imageUrl?: string;
 };
 
-function notifyAuthChange() {
+type AuthChangeReason = "login" | "logout";
+
+function notifyAuthChange(reason: AuthChangeReason = "login") {
   // Share only an event marker between tabs. Credentials stay in an HttpOnly cookie.
   try {
     window.localStorage.removeItem("life-pilot-auth");
-    window.localStorage.setItem("life-pilot-auth-event", crypto.randomUUID());
+    window.localStorage.setItem(
+      "life-pilot-auth-event",
+      JSON.stringify({ id: crypto.randomUUID(), reason })
+    );
   } catch {
     /* Browser storage may be disabled. */
   }
-  window.dispatchEvent(new Event("life-pilot:auth-changed"));
+  window.dispatchEvent(new CustomEvent("life-pilot:auth-changed", { detail: { reason } }));
 }
 export const authService = {
   async login(payload: LoginPayload) {
@@ -38,11 +43,14 @@ export const authService = {
   },
   async logout() {
     try {
-      await apiClient.post("/auth/logout");
+      await apiClient.post("/auth/logout", undefined, {
+        suppressToast: true,
+        suppressUnauthorized: true,
+      } as ApiRequestConfig);
     } finally {
-      notifyAuthChange();
+      notifyAuthChange("logout");
     }
   },
   saveSession: notifyAuthChange,
-  clearSession: notifyAuthChange,
+  clearSession: () => notifyAuthChange("logout"),
 };

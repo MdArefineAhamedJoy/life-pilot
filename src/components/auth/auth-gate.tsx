@@ -5,6 +5,9 @@ import { authService, type AuthUser } from "@/services/auth.service";
 
 const AuthUserContext = createContext<AuthUser | null>(null);
 export const useAuthenticatedUser = () => useContext(AuthUserContext);
+
+type AuthChangeEvent = CustomEvent<{ reason?: "login" | "logout" }>;
+
 export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -33,21 +36,40 @@ export function AuthGate({ children }: { children: ReactNode }) {
       setUser(null);
       void check();
     };
-    const unauthorized = () => {
+    const signOut = () => {
       ++generation;
       setUser(null);
+      setError("");
       router.replace("/login");
     };
+    const unauthorized = () => signOut();
+    const onAuthChange = (event: Event) => {
+      if ((event as AuthChangeEvent).detail?.reason === "logout") {
+        signOut();
+        return;
+      }
+      invalidate();
+    };
     const onStorage = (event: StorageEvent) => {
-      if (event.key === "life-pilot-auth-event") invalidate();
+      if (event.key !== "life-pilot-auth-event") return;
+
+      try {
+        if (JSON.parse(event.newValue ?? "{}").reason === "logout") {
+          signOut();
+          return;
+        }
+      } catch {
+        // Legacy auth events are treated as a general session change.
+      }
+      invalidate();
     };
     void check();
-    window.addEventListener("life-pilot:auth-changed", invalidate);
+    window.addEventListener("life-pilot:auth-changed", onAuthChange);
     window.addEventListener("life-pilot:unauthorized", unauthorized);
     window.addEventListener("storage", onStorage);
     return () => {
       active = false;
-      window.removeEventListener("life-pilot:auth-changed", invalidate);
+      window.removeEventListener("life-pilot:auth-changed", onAuthChange);
       window.removeEventListener("life-pilot:unauthorized", unauthorized);
       window.removeEventListener("storage", onStorage);
     };

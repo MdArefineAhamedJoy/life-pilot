@@ -78,7 +78,8 @@ function UserWorkspace({ children }: { children: ReactNode }) {
   const current = useRef(initialLifeOsState);
   const active = useRef(false);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
-  const [ready, setReady] = useState(false);
+  // Budget owns its own data requests, so it must not wait for the legacy workspace load.
+  const [ready, setReady] = useState(() => pathname === "/budget");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(0);
   const [attempt, setAttempt] = useState(0);
@@ -99,8 +100,6 @@ function UserWorkspace({ children }: { children: ReactNode }) {
         active.current = false;
       };
     if (pathname === "/budget") {
-      setReady(true);
-      setError("");
       return () => {
         active.current = false;
       };

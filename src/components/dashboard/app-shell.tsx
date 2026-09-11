@@ -21,6 +21,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
+import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { useLifeOs } from "@/components/state/life-os-provider";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,7 @@ export function AppShell({ children }: AppShellProps) {
   const { settings } = useLifeOs();
   const { logout } = useAuth();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isLogoutConfirmationOpen, setIsLogoutConfirmationOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const accountName = settings.profileName || "Life Pilot user";
   const accountEmail = settings.profileEmail || "No profile email";
@@ -237,7 +239,10 @@ export function AppShell({ children }: AppShellProps) {
                   </Link>
                   <button
                     className="flex min-h-11 w-full items-center gap-3 px-4 text-left text-sm font-medium text-red-500 transition hover:bg-red-50"
-                    onClick={handleLogout}
+                    onClick={() => {
+                      setIsAccountMenuOpen(false);
+                      setIsLogoutConfirmationOpen(true);
+                    }}
                     type="button"
                   >
                     <LogOut aria-hidden="true" className="size-4" strokeWidth={1.9} />
@@ -297,7 +302,7 @@ export function AppShell({ children }: AppShellProps) {
               </Link>
               <button
                 className="mt-2 text-sm font-semibold text-red-600"
-                onClick={handleLogout}
+                onClick={() => setIsLogoutConfirmationOpen(true)}
                 type="button"
               >
                 Log out
@@ -350,6 +355,16 @@ export function AppShell({ children }: AppShellProps) {
           );
         })}
       </nav>
+      <ConfirmationModal
+        actionLabel="Log out"
+        cancelLabel="Cancel"
+        description="You will need to sign in again to access your Life Pilot workspace."
+        onConfirm={handleLogout}
+        onOpenChange={setIsLogoutConfirmationOpen}
+        open={isLogoutConfirmationOpen}
+        title="Log out of Life Pilot?"
+        variant="danger"
+      />
     </div>
   );
 }

@@ -7,17 +7,41 @@ import { accountService } from "@/services/account.service";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 
+const rememberedEmailKey = "life-pilot-remembered-email";
+
+function getRememberedEmail() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  try {
+    return window.localStorage.getItem(rememberedEmailKey) ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(getRememberedEmail);
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(() => Boolean(getRememberedEmail()));
   const [recoveryMessage, setRecoveryMessage] = useState("");
   const [requestingRecovery, setRequestingRecovery] = useState(false);
   const { error, isSubmitting, login } = useAuth();
 
   async function handleLogin() {
     try {
-      await login({ email, password });
+      await login({ email, password, rememberMe });
+      try {
+        if (rememberMe) {
+          window.localStorage.setItem(rememberedEmailKey, email.trim().toLowerCase());
+        } else {
+          window.localStorage.removeItem(rememberedEmailKey);
+        }
+      } catch {
+        // Remember me is optional and must not prevent a successful login.
+      }
       const next = new URLSearchParams(window.location.search).get("next");
       const destination =
         next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\")
@@ -78,24 +102,37 @@ export function LoginForm() {
         </span>
       </label>
 
-      <button
-        type="button"
-        disabled={!email || requestingRecovery}
-        className="text-sm font-semibold text-emerald-700"
-        onClick={async () => {
-          setRequestingRecovery(true);
-          try {
-            await accountService.requestPasswordRecovery(email);
-            setRecoveryMessage("Recovery instructions requested.");
-          } catch (cause) {
-            setRecoveryMessage(cause instanceof Error ? cause.message : "Recovery request failed.");
-          } finally {
-            setRequestingRecovery(false);
-          }
-        }}
-      >
-        {requestingRecovery ? "Requesting?" : "Forgot password?"}
-      </button>
+      <div className="flex items-center justify-between gap-3">
+        <label className="inline-flex items-center gap-2 text-sm text-slate-600">
+          <input
+            checked={rememberMe}
+            className="size-4 rounded border-slate-300 accent-emerald-600"
+            onChange={(event) => setRememberMe(event.target.checked)}
+            type="checkbox"
+          />
+          Remember me
+        </label>
+        <button
+          className="text-sm font-semibold text-emerald-700"
+          disabled={!email || requestingRecovery}
+          onClick={async () => {
+            setRequestingRecovery(true);
+            try {
+              await accountService.requestPasswordRecovery(email);
+              setRecoveryMessage("Recovery instructions requested.");
+            } catch (cause) {
+              setRecoveryMessage(
+                cause instanceof Error ? cause.message : "Recovery request failed."
+              );
+            } finally {
+              setRequestingRecovery(false);
+            }
+          }}
+          type="button"
+        >
+          {requestingRecovery ? "Requesting?" : "Forgot password?"}
+        </button>
+      </div>
       {recoveryMessage && (
         <p role="status" className="text-sm text-slate-700">
           {recoveryMessage}

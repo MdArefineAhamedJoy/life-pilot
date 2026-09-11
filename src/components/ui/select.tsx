@@ -54,12 +54,6 @@ export function SelectInput({
   const [internalValue, setInternalValue] = React.useState(defaultSelectedValue);
   const selectedValue = isControlled ? toStringValue(value) : internalValue;
 
-  React.useEffect(() => {
-    if (!isControlled && defaultValue === undefined && !internalValue && options[0]?.value) {
-      setInternalValue(options[0].value);
-    }
-  }, [defaultValue, internalValue, isControlled, options]);
-
   function handleValueChange(nextValue: string) {
     const next = nextValue === emptyOptionValue ? "" : nextValue;
 
