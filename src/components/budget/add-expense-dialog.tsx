@@ -1,7 +1,7 @@
 "use client";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 
-import { useLifeOs } from "@/components/state/life-os-provider";
+import { Skeleton } from "@/components/shared/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,21 +13,26 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldShell, SelectInput, TextArea, TextInput } from "@/components/ui/field";
-import type { BudgetCategory } from "@/lib/types";
 import { localDateKey } from "@/lib/utils";
+import { categoriesService } from "@/services/categories.service";
+import { expensesService } from "@/services/expenses.service";
+import type { BudgetCategory } from "@/lib/types";
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type AddExpenseDialogProps = {
-  categories: BudgetCategory[];
+  onSaved: () => void;
 };
 
-export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
+export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
   const formatCurrency = useFormatCurrency();
-  const { addExpense } = useLifeOs();
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("0");
   const [quantity, setQuantity] = useState("1");
+  const [categories, setCategories] = useState<BudgetCategory[]>([]);
+  const [error, setError] = useState("");
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const previewTotal = useMemo(() => {
     const parsedAmount = Number(amount) || 0;
@@ -35,28 +40,54 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
     return parsedAmount * parsedQuantity;
   }, [amount, quantity]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    async function loadCategories() {
+      setIsCategoriesLoading(true);
+      setError("");
+
+      try {
+        setCategories(await categoriesService.list());
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Failed to load categories.");
+      } finally {
+        setIsCategoriesLoading(false);
+      }
+    }
+
+    void loadCategories();
+  }, [isOpen]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    const saved = await addExpense({
-      date: String(data.get("date") || localDateKey()),
-      itemName: String(data.get("itemName") ?? ""),
-      category: String(data.get("category") ?? ""),
-      amount: previewTotal,
-      quantity: Number(data.get("quantity")) || 1,
-      unit: String(data.get("unit") ?? ""),
-      paymentMethod: String(data.get("paymentMethod") ?? ""),
-      note: String(data.get("note") ?? ""),
-      sourceType: "manual",
-    });
-    if (!saved) return;
-
-    setAmount("0");
-    setQuantity("1");
-    form.reset();
-    setIsOpen(false);
+    setIsSaving(true);
+    setError("");
+    try {
+      await expensesService.create({
+        date: String(data.get("date") || localDateKey()),
+        itemName: String(data.get("itemName") ?? ""),
+        category: String(data.get("category") ?? ""),
+        amount: previewTotal,
+        quantity: Number(data.get("quantity")) || 1,
+        unit: String(data.get("unit") ?? ""),
+        paymentMethod: String(data.get("paymentMethod") ?? ""),
+        note: String(data.get("note") ?? ""),
+        sourceType: "manual",
+      });
+      setAmount("0");
+      setQuantity("1");
+      form.reset();
+      setIsOpen(false);
+      onSaved();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Failed to save expense.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
@@ -75,7 +106,7 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
           <DialogTitle>Manual Expense Entry</DialogTitle>
           <DialogDescription>Add cost details and save the record.</DialogDescription>
         </DialogHeader>
-        <form className="flex min-h-0 flex-1  flex-col overflow-hidden" onSubmit={handleSubmit}>
+        <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
             <div className="grid min-w-0 grid-cols-1 gap-4 p-4 md:grid-cols-2">
               <FieldShell label="Item name">
@@ -85,12 +116,16 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
                 <TextInput defaultValue={localDateKey()} name="date" type="date" required />
               </FieldShell>
               <FieldShell label="Category">
-                <SelectInput name="category">
-                  <option value="Uncategorized">Uncategorized</option>
-                  {categories.map((category) => (
-                    <option key={category.id}>{category.name}</option>
-                  ))}
-                </SelectInput>
+                {isCategoriesLoading ? (
+                  <Skeleton className="h-9 w-full" />
+                ) : (
+                  <SelectInput disabled={isSaving} name="category">
+                    <option value="Uncategorized">Uncategorized</option>
+                    {categories.map((category) => (
+                      <option key={category.id}>{category.name}</option>
+                    ))}
+                  </SelectInput>
+                )}
               </FieldShell>
               <FieldShell label="Unit price">
                 <TextInput
@@ -131,14 +166,26 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
                   <TextArea className="min-h-20" name="note" placeholder="Optional details" />
                 </FieldShell>
               </div>
+              {error && (
+                <p className="md:col-span-2 text-sm text-red-600" role="alert">
+                  {error}
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter className="shrink-0 border-t border-slate-200 ">
             <div className="px-4 py-2">
-              <Button onClick={() => setIsOpen(false)} type="button" variant="outline">
+              <Button
+                disabled={isSaving}
+                onClick={() => setIsOpen(false)}
+                type="button"
+                variant="outline"
+              >
                 Cancel
               </Button>
-              <Button type="submit">Save expense</Button>
+              <Button disabled={isSaving || isCategoriesLoading} type="submit">
+                {isSaving ? "Saving..." : "Save expense"}
+              </Button>
             </div>
           </DialogFooter>
         </form>

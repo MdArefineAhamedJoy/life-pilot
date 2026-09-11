@@ -1,5 +1,10 @@
-import type { Expense } from "@/lib/types";
-import { apiClient, listRequestParams, unwrapResponse } from "@/services/api-client";
+import type { Expense, ExpenseFilters, ExpenseSummary } from "@/types/expense.types";
+import {
+  apiClient,
+  apiEnvelopeClient,
+  type ApiResponse,
+  unwrapResponse,
+} from "@/services/api-client";
 
 export type ParsedExpenseRow = {
   itemName: string;
@@ -7,10 +12,23 @@ export type ParsedExpenseRow = {
   amount: number;
   quantity?: number;
 };
+
+type ExpenseListParams = ExpenseFilters & {
+  page: number;
+  limit: number;
+};
+
 export const expensesService = {
-  async list() {
+  async list(params: ExpenseListParams): Promise<ApiResponse<Expense[]>> {
     return unwrapResponse(
-      apiClient.get<Expense[]>("/life-os/expenses", { params: listRequestParams })
+      apiEnvelopeClient.get<ApiResponse<Expense[]>>("/life-os/expenses", { params })
+    );
+  },
+  async getSummary(filters: ExpenseFilters): Promise<ApiResponse<ExpenseSummary>> {
+    return unwrapResponse(
+      apiEnvelopeClient.get<ApiResponse<ExpenseSummary>>("/life-os/expenses/summary", {
+        params: filters,
+      })
     );
   },
   async create(payload: Omit<Expense, "id">) {

@@ -79,7 +79,7 @@ function UserWorkspace({ children }: { children: ReactNode }) {
   const active = useRef(false);
   const queue = useRef<Promise<unknown>>(Promise.resolve());
   // Budget owns its own data requests, so it must not wait for the legacy workspace load.
-  const [ready, setReady] = useState(() => pathname === "/budget");
+  const [ready, setReady] = useState(() => pathname === "/budget" || pathname === "/expenses");
   const [error, setError] = useState("");
   const [pending, setPending] = useState(0);
   const [attempt, setAttempt] = useState(0);
@@ -99,7 +99,7 @@ function UserWorkspace({ children }: { children: ReactNode }) {
       return () => {
         active.current = false;
       };
-    if (pathname === "/budget") {
+    if (pathname === "/budget" || pathname === "/expenses") {
       return () => {
         active.current = false;
       };
@@ -110,7 +110,7 @@ function UserWorkspace({ children }: { children: ReactNode }) {
         const [categories, expenses, tasks, timerSessions, notes, settings, profile] =
           await Promise.all([
             categoriesService.list(),
-            expensesService.list(),
+            expensesService.list({ page: 1, limit: 100 }).then((response) => response.data),
             tasksService.list(),
             timerSessionsService.list(),
             notesService.list(),
