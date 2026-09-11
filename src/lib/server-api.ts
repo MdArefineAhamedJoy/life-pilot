@@ -1,5 +1,6 @@
 export const accessTokenCookie = "life-pilot-access";
 export const refreshTokenCookie = "life-pilot-refresh";
+export const legacySessionCookie = "life-pilot-session";
 export function backendUrl(path: string) {
   const base = (
     process.env.API_BASE_URL ||

@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { accessTokenCookie, backendUrl, refreshTokenCookie } from "@/lib/server-api";
+import {
+  accessTokenCookie,
+  backendUrl,
+  legacySessionCookie,
+  refreshTokenCookie,
+} from "@/lib/server-api";
 
 type SessionTokens = {
   accessToken: string;
@@ -24,6 +29,7 @@ function setSessionCookies(response: NextResponse, session: SessionTokens, reque
     path: "/",
     expires: new Date(session.refreshExpiresAt),
   });
+  response.cookies.delete(legacySessionCookie);
 }
 
 export async function proxy(request: NextRequest) {
@@ -82,6 +88,7 @@ export async function proxy(request: NextRequest) {
   const response = publicPage ? NextResponse.next() : NextResponse.redirect(destination);
   response.cookies.delete(accessTokenCookie);
   response.cookies.delete(refreshTokenCookie);
+  response.cookies.delete(legacySessionCookie);
   return response;
 }
 export const config = { matcher: ["/((?!api/|_next/static|_next/image|favicon.ico).*)"] };

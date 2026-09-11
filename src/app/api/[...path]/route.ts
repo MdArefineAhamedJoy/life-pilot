@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { accessTokenCookie, backendUrl, refreshTokenCookie } from "@/lib/server-api";
+import {
+  accessTokenCookie,
+  backendUrl,
+  legacySessionCookie,
+  refreshTokenCookie,
+} from "@/lib/server-api";
 
 const publicEndpoints = new Set([
   "POST auth/login",
@@ -40,11 +45,13 @@ function setSessionCookies(response: NextResponse, session: SessionTokens, reque
     path: "/",
     expires: new Date(session.refreshExpiresAt),
   });
+  response.cookies.delete(legacySessionCookie);
 }
 
 function clearSessionCookies(response: NextResponse) {
   response.cookies.delete(accessTokenCookie);
   response.cookies.delete(refreshTokenCookie);
+  response.cookies.delete(legacySessionCookie);
 }
 
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
