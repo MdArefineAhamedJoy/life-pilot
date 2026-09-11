@@ -20,12 +20,8 @@ export function WorkflowSection() {
               <div className="grid size-10 place-items-center rounded-full border border-[var(--life-accent-line)] bg-[var(--life-accent-soft)] font-mono text-sm font-bold text-[var(--life-accent)]">
                 {String(index + 1).padStart(2, "0")}
               </div>
-              <h3 className="mt-6 text-lg font-semibold text-[var(--life-text)]">
-                {step.title}
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-[var(--life-muted)]">
-                {step.description}
-              </p>
+              <h3 className="mt-6 text-lg font-semibold text-[var(--life-text)]">{step.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-[var(--life-muted)]">{step.description}</p>
             </article>
           ))}
         </div>

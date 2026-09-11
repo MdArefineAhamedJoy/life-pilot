@@ -2,10 +2,7 @@
 
 import { StatCard } from "@/components/shared/card";
 import { useLifeOs } from "@/components/state/life-os-provider";
-import {
-  TaskEditorDialog,
-  type TaskDraft,
-} from "@/components/tasks/task-editor-dialog";
+import { TaskEditorDialog, type TaskDraft } from "@/components/tasks/task-editor-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SelectInput, TextInput } from "@/components/ui/field";
@@ -45,15 +42,10 @@ const statusStyle: Record<RoutineStatus, string> = {
 };
 
 export default function TasksPage() {
-  const { addTask, deleteTask, tasks, updateTask, updateTaskStatus } =
-    useLifeOs();
+  const { addTask, deleteTask, tasks, updateTask, updateTaskStatus } = useLifeOs();
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | RoutineStatus>(
-    "all",
-  );
-  const [priorityFilter, setPriorityFilter] = useState<
-    "all" | RoutineTask["priority"]
-  >("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | RoutineStatus>("all");
+  const [priorityFilter, setPriorityFilter] = useState<"all" | RoutineTask["priority"]>("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<RoutineTask | undefined>();
 
@@ -61,9 +53,7 @@ export default function TasksPage() {
     const term = query.trim().toLowerCase();
     return [...tasks]
       .filter((task) => statusFilter === "all" || task.status === statusFilter)
-      .filter(
-        (task) => priorityFilter === "all" || task.priority === priorityFilter,
-      )
+      .filter((task) => priorityFilter === "all" || task.priority === priorityFilter)
       .filter(
         (task) =>
           !term ||
@@ -71,11 +61,10 @@ export default function TasksPage() {
             .filter(Boolean)
             .join(" ")
             .toLowerCase()
-            .includes(term),
+            .includes(term)
       )
       .sort((left, right) => {
-        const statusOrder =
-          left.status === "active" ? -1 : right.status === "active" ? 1 : 0;
+        const statusOrder = left.status === "active" ? -1 : right.status === "active" ? 1 : 0;
         return (
           statusOrder ||
           (left.order ?? 9999) - (right.order ?? 9999) ||
@@ -88,9 +77,7 @@ export default function TasksPage() {
     active: tasks.filter((task) => task.status === "active").length,
     pending: tasks.filter((task) => task.status === "pending").length,
     completed: tasks.filter((task) => task.status === "completed").length,
-    needsAttention: tasks.filter((task) =>
-      ["delayed", "missed"].includes(task.status),
-    ).length,
+    needsAttention: tasks.filter((task) => ["delayed", "missed"].includes(task.status)).length,
   };
   const totalTasks = Math.max(tasks.length, 1);
 
@@ -147,11 +134,7 @@ export default function TasksPage() {
           value={String(metrics.completed)}
         />
         <StatCard
-          detail={
-            metrics.needsAttention
-              ? "review delayed work"
-              : "everything is on track"
-          }
+          detail={metrics.needsAttention ? "review delayed work" : "everything is on track"}
           icon={CircleAlert}
           label="Needs Attention"
           progress={Math.round((metrics.needsAttention / totalTasks) * 100)}
@@ -170,9 +153,7 @@ export default function TasksPage() {
           />
           <SelectInput
             aria-label="Filter by status"
-            onChange={(event) =>
-              setStatusFilter(event.target.value as "all" | RoutineStatus)
-            }
+            onChange={(event) => setStatusFilter(event.target.value as "all" | RoutineStatus)}
             value={statusFilter}
           >
             {statusOptions.map((option) => (
@@ -184,9 +165,7 @@ export default function TasksPage() {
           <SelectInput
             aria-label="Filter by priority"
             onChange={(event) =>
-              setPriorityFilter(
-                event.target.value as "all" | RoutineTask["priority"],
-              )
+              setPriorityFilter(event.target.value as "all" | RoutineTask["priority"])
             }
             value={priorityFilter}
           >
@@ -198,37 +177,29 @@ export default function TasksPage() {
         </div>
         <div className="mt-4 flex items-center gap-2 text-sm font-medium text-slate-500">
           <ListFilter className="size-4" />
-          {filteredTasks.length} task{filteredTasks.length === 1 ? "" : "s"}{" "}
-          shown
+          {filteredTasks.length} task{filteredTasks.length === 1 ? "" : "s"} shown
         </div>
 
         <div className="mt-4 space-y-3">
           {filteredTasks.length === 0 ? (
             <div className="border border-dashed border-slate-300 bg-slate-50 px-4 py-12 text-center">
               <CircleCheck className="mx-auto size-7 text-slate-400" />
-              <p className="mt-3 font-semibold text-slate-800">
-                No matching tasks
-              </p>
+              <p className="mt-3 font-semibold text-slate-800">No matching tasks</p>
               <p className="mt-1 text-sm text-slate-500">
                 Create a task or adjust the filters to see your work.
               </p>
             </div>
           ) : (
             filteredTasks.map((task) => (
-              <Card
-                className="rounded-none p-4 transition hover:border-emerald-300"
-                key={task.id}
-              >
+              <Card className="rounded-none p-4 transition hover:border-emerald-300" key={task.id}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-base font-semibold text-slate-950">
-                        {task.title}
-                      </h2>
+                      <h2 className="text-base font-semibold text-slate-950">{task.title}</h2>
                       <span
                         className={cn(
                           "rounded-full px-2.5 py-1 text-xs font-semibold",
-                          statusStyle[task.status],
+                          statusStyle[task.status]
                         )}
                       >
                         {task.status}
@@ -238,8 +209,7 @@ export default function TasksPage() {
                       </span>
                     </div>
                     <p className="mt-2 text-sm font-medium text-slate-600">
-                      {task.category} · {task.plannedStart}–{task.plannedEnd} ·{" "}
-                      {task.repeatRule}
+                      {task.category} · {task.plannedStart}–{task.plannedEnd} · {task.repeatRule}
                     </p>
                     {task.note && (
                       <p className="mt-2 max-w-3xl whitespace-pre-wrap text-sm leading-6 text-slate-600">
@@ -262,10 +232,7 @@ export default function TasksPage() {
                       aria-label={`Set ${task.title} status`}
                       className="w-36"
                       onChange={(event) =>
-                        updateTaskStatus(
-                          task.id,
-                          event.target.value as RoutineStatus,
-                        )
+                        updateTaskStatus(task.id, event.target.value as RoutineStatus)
                       }
                       value={task.status}
                     >

@@ -46,24 +46,33 @@ export default function RoutinePage() {
   const orderedTasks = useMemo(() => sortRoutineTasks(tasks), [tasks]);
   const visibleTasks = useMemo(
     () => orderedTasks.filter((task) => isTaskInRoutineWindow(task, routineWindow)),
-    [orderedTasks, routineWindow],
+    [orderedTasks, routineWindow]
   );
   const completedCount = orderedTasks.filter((task) => task.status === "completed").length;
   const alertCount = orderedTasks.filter((task) => task.alertEnabled).length;
-  const missedCount = orderedTasks.filter((task) => getRoutineDisplayStatus(task) === "missed").length;
-  const progress = orderedTasks.length > 0 ? Math.round((completedCount / orderedTasks.length) * 100) : 0;
+  const missedCount = orderedTasks.filter(
+    (task) => getRoutineDisplayStatus(task) === "missed"
+  ).length;
+  const progress =
+    orderedTasks.length > 0 ? Math.round((completedCount / orderedTasks.length) * 100) : 0;
   const currentTask =
     orderedTasks.find((task) => task.id === activeTaskId) ??
     orderedTasks.find((task) => task.status === "active") ??
     getNextRunnableRoutineTask(orderedTasks);
-  const currentTaskIndex = currentTask ? orderedTasks.findIndex((task) => task.id === currentTask.id) : -1;
+  const currentTaskIndex = currentTask
+    ? orderedTasks.findIndex((task) => task.id === currentTask.id)
+    : -1;
   const currentTaskPosition = currentTaskIndex >= 0 ? currentTaskIndex + 1 : 0;
-  const upcomingTask = currentTaskIndex >= 0 ? getNextRunnableRoutineTask(orderedTasks, currentTaskIndex) : undefined;
+  const upcomingTask =
+    currentTaskIndex >= 0 ? getNextRunnableRoutineTask(orderedTasks, currentTaskIndex) : undefined;
   const nextAlert = orderedTasks
     .filter((task) => task.alertEnabled && !["completed", "skipped"].includes(task.status))
-    .sort((a, b) => timeToMinutes(getRoutineAlertTime(a)) - timeToMinutes(getRoutineAlertTime(b)))[0];
+    .sort(
+      (a, b) => timeToMinutes(getRoutineAlertTime(a)) - timeToMinutes(getRoutineAlertTime(b))
+    )[0];
   const notificationMessage =
-    liveAlert ?? (nextAlert ? `Next alert: ${nextAlert.title} at ${getRoutineAlertTime(nextAlert)}` : undefined);
+    liveAlert ??
+    (nextAlert ? `Next alert: ${nextAlert.title} at ${getRoutineAlertTime(nextAlert)}` : undefined);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -79,7 +88,12 @@ export default function RoutinePage() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !("Notification" in window) || permission !== "granted" || !settings.notificationEnabled) {
+    if (
+      typeof window === "undefined" ||
+      !("Notification" in window) ||
+      permission !== "granted" ||
+      !settings.notificationEnabled
+    ) {
       return;
     }
 
@@ -110,7 +124,13 @@ export default function RoutinePage() {
     return () => {
       timeoutIds.forEach((timeoutId) => window.clearTimeout(timeoutId));
     };
-  }, [orderedTasks, permission, settings.notificationEnabled, settings.quietHoursEnd, settings.quietHoursStart]);
+  }, [
+    orderedTasks,
+    permission,
+    settings.notificationEnabled,
+    settings.quietHoursEnd,
+    settings.quietHoursStart,
+  ]);
 
   async function requestNotificationAccess() {
     if (typeof window === "undefined" || !("Notification" in window)) {
@@ -156,7 +176,7 @@ export default function RoutinePage() {
     }
 
     const nextTask = getNextRunnableRoutineTask(orderedTasks, currentTaskIndex);
-    if (!await updateTaskStatus(currentTask.id, "completed")) return;
+    if (!(await updateTaskStatus(currentTask.id, "completed"))) return;
 
     if (nextTask) {
       startTask(nextTask);
@@ -171,7 +191,7 @@ export default function RoutinePage() {
     }
 
     const nextTask = getNextRunnableRoutineTask(orderedTasks, currentTaskIndex);
-    if (!await updateTaskStatus(currentTask.id, "skipped")) return;
+    if (!(await updateTaskStatus(currentTask.id, "skipped"))) return;
 
     if (nextTask) {
       startTask(nextTask);
@@ -191,7 +211,7 @@ export default function RoutinePage() {
 
   async function resetRoutine() {
     for (const task of orderedTasks) {
-      if (!await updateTaskStatus(task.id, "pending")) return;
+      if (!(await updateTaskStatus(task.id, "pending"))) return;
     }
     setActiveTaskId(null);
   }
@@ -205,7 +225,11 @@ export default function RoutinePage() {
           description="A khata-style ordered routine with points, alerts, run mode, and quick review for the day."
         />
         <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap xl:shrink-0 xl:justify-end">
-          <Button icon={<Plus className="h-4 w-4" />} onClick={() => setIsAddModalOpen(true)} type="button">
+          <Button
+            icon={<Plus className="h-4 w-4" />}
+            onClick={() => setIsAddModalOpen(true)}
+            type="button"
+          >
             Add routine point
           </Button>
           <RoutineNotificationToast
@@ -216,14 +240,25 @@ export default function RoutinePage() {
             open={isNotificationToastOpen}
           />
           <Button
-            icon={permission === "granted" ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            icon={
+              permission === "granted" ? (
+                <Bell className="h-4 w-4" />
+              ) : (
+                <BellOff className="h-4 w-4" />
+              )
+            }
             onClick={requestNotificationAccess}
             type="button"
             variant={permission === "granted" ? "secondary" : "outline"}
           >
             {permission === "granted" ? "Alerts on" : "Enable alerts"}
           </Button>
-          <Button icon={<RotateCcw className="h-4 w-4" />} onClick={resetRoutine} type="button" variant="outline">
+          <Button
+            icon={<RotateCcw className="h-4 w-4" />}
+            onClick={resetRoutine}
+            type="button"
+            variant="outline"
+          >
             Reset day
           </Button>
         </div>
@@ -275,7 +310,8 @@ export default function RoutinePage() {
 
       {permission === "unsupported" && (
         <p className="text-sm text-slate-500">
-          Browser notifications are not supported here. In-app alerts will still appear while this page is open.
+          Browser notifications are not supported here. In-app alerts will still appear while this
+          page is open.
         </p>
       )}
     </div>

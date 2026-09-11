@@ -143,5 +143,7 @@ export function getTodayAtTime(time: string) {
 }
 
 export function getNextRunnableRoutineTask(tasks: RoutineTask[], fromIndex = -1) {
-  return tasks.find((task, index) => index > fromIndex && !["completed", "skipped"].includes(task.status));
+  return tasks.find(
+    (task, index) => index > fromIndex && !["completed", "skipped"].includes(task.status)
+  );
 }

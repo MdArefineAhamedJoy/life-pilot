@@ -6,9 +6,15 @@ import { Button } from "@/components/ui/button";
 import { FieldShell, SelectInput, TextInput } from "@/components/ui/field";
 
 function formatTimer(seconds: number) {
-  const hours = Math.floor(seconds / 3600).toString().padStart(2, "0");
-  const minutes = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
-  const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+  const hours = Math.floor(seconds / 3600)
+    .toString()
+    .padStart(2, "0");
+  const minutes = Math.floor((seconds % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
+  const secs = Math.floor(seconds % 60)
+    .toString()
+    .padStart(2, "0");
   return `${hours}:${minutes}:${secs}`;
 }
 
@@ -30,18 +36,27 @@ export function TimerPanel() {
     return () => window.clearInterval(timerId);
   }, [isRunning]);
 
-  const status = useMemo(() => (isRunning ? "Running" : seconds > 0 ? "Paused" : "Ready"), [isRunning, seconds]);
+  const status = useMemo(
+    () => (isRunning ? "Running" : seconds > 0 ? "Paused" : "Ready"),
+    [isRunning, seconds]
+  );
 
   return (
     <section className="min-w-0" id="timer">
       <div className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">Time tracking</p>
+        <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">
+          Time tracking
+        </p>
         <h2 className="mt-1 text-xl font-semibold text-slate-800">Timer And Focus</h2>
       </div>
       <div className="grid min-w-0 gap-5 2xl:grid-cols-[minmax(0,1fr)_auto] 2xl:items-end">
         <div className="grid min-w-0 gap-4 sm:grid-cols-2">
           <FieldShell label="Session title">
-            <TextInput onChange={(event) => setTitle(event.target.value)} placeholder="What are you tracking?" value={title} />
+            <TextInput
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="What are you tracking?"
+              value={title}
+            />
           </FieldShell>
           <FieldShell label="Category">
             <SelectInput onChange={(event) => setCategory(event.target.value)} value={category}>
@@ -63,8 +78,12 @@ export function TimerPanel() {
           </FieldShell>
         </div>
         <div className="min-w-0 rounded-md border border-slate-200 bg-slate-50 p-4 text-center">
-          <p className="text-sm font-medium text-slate-500">{status} | {mode}</p>
-          <p className="mt-2 break-words font-mono text-3xl font-semibold text-slate-800 sm:text-4xl">{formatTimer(seconds)}</p>
+          <p className="text-sm font-medium text-slate-500">
+            {status} | {mode}
+          </p>
+          <p className="mt-2 break-words font-mono text-3xl font-semibold text-slate-800 sm:text-4xl">
+            {formatTimer(seconds)}
+          </p>
           <div className="mt-4 grid gap-2 min-[420px]:grid-cols-3">
             <Button onClick={() => setIsRunning((current) => !current)} type="button">
               {isRunning ? "Pause" : "Start"}
@@ -100,7 +119,9 @@ export function TimerPanel() {
               Save
             </Button>
           </div>
-          {savedMessage && <p className="mt-3 text-sm font-medium text-green-500">{savedMessage}</p>}
+          {savedMessage && (
+            <p className="mt-3 text-sm font-medium text-green-500">{savedMessage}</p>
+          )}
         </div>
       </div>
     </section>

@@ -13,9 +13,7 @@ export function AiPromptSection() {
               <Bot aria-hidden="true" className="size-6" strokeWidth={2} />
             </span>
             <div>
-              <p className="text-sm font-semibold text-[var(--life-accent)]">
-                Ask Life Pilot AI
-              </p>
+              <p className="text-sm font-semibold text-[var(--life-accent)]">Ask Life Pilot AI</p>
               <h2 className="text-2xl font-semibold text-[var(--life-text)]">
                 Natural language planning prompts.
               </h2>
@@ -39,8 +37,8 @@ export function AiPromptSection() {
             The assistant reads context, then gives focused answers.
           </h2>
           <p className="text-base leading-7 text-[var(--life-muted)]">
-            Reviewable suggestions keep the product practical: budget signals,
-            routine tradeoffs, focus timing, and small next steps.
+            Reviewable suggestions keep the product practical: budget signals, routine tradeoffs,
+            focus timing, and small next steps.
           </p>
         </div>
       </div>

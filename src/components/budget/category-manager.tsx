@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FieldShell, TextInput } from "@/components/ui/field";
 
-
 export function CategoryManager() {
   const formatCurrency = useFormatCurrency();
   const { categories, updateCategoryLimit } = useLifeOs();
   const [draftLimits, setDraftLimits] = useState(() =>
-    Object.fromEntries(categories.map((category) => [category.id, String(category.monthlyLimit)])),
+    Object.fromEntries(categories.map((category) => [category.id, String(category.monthlyLimit)]))
   );
 
   return (
@@ -34,10 +33,14 @@ export function CategoryManager() {
               />
             </FieldShell>
             <div className="mt-3 flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center min-[420px]:justify-between">
-              <span className="text-xs text-slate-500">Current {formatCurrency(category.monthlyLimit)}</span>
+              <span className="text-xs text-slate-500">
+                Current {formatCurrency(category.monthlyLimit)}
+              </span>
               <Button
                 className="min-h-9 px-3 py-1 text-xs min-[420px]:min-h-8"
-                onClick={() => updateCategoryLimit(category.id, Number(draftLimits[category.id]) || 0)}
+                onClick={() =>
+                  updateCategoryLimit(category.id, Number(draftLimits[category.id]) || 0)
+                }
                 type="button"
                 variant="secondary"
               >

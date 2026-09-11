@@ -26,7 +26,13 @@ import type { LifeSettings } from "@/lib/types";
 
 type ProfileDraft = Pick<
   LifeSettings,
-  "profileName" | "profileEmail" | "profilePhone" | "profileLocation" | "profileRole" | "profileBio" | "profileImage"
+  | "profileName"
+  | "profileEmail"
+  | "profilePhone"
+  | "profileLocation"
+  | "profileRole"
+  | "profileBio"
+  | "profileImage"
 >;
 
 const fallbackProfile: ProfileDraft = {
@@ -67,12 +73,7 @@ function isValidEmail(email: string) {
 }
 
 export function SettingsPanel() {
-  const {
-    resetData,
-    restoreData,
-    settings,
-    updateSettings,
-  } = useLifeOs();
+  const { resetData, restoreData, settings, updateSettings } = useLifeOs();
   const {
     isRequestingRecovery,
     isSavingProfile,
@@ -81,14 +82,23 @@ export function SettingsPanel() {
   } = useAccount();
   const backupInputRef = useRef<HTMLInputElement | null>(null);
   const profileImageInputRef = useRef<HTMLInputElement | null>(null);
-  const [notificationStatus, setNotificationStatus] = useState(settings.notificationEnabled ? "granted" : "default");
-  const [profileDraft, setProfileDraft] = useState<ProfileDraft>(() => createProfileDraft(settings));
+  const [notificationStatus, setNotificationStatus] = useState(
+    settings.notificationEnabled ? "granted" : "default"
+  );
+  const [profileDraft, setProfileDraft] = useState<ProfileDraft>(() =>
+    createProfileDraft(settings)
+  );
   const [profileMessage, setProfileMessage] = useState("");
-  const [recoveryEmail, setRecoveryEmail] = useState(settings.profileEmail ?? fallbackProfile.profileEmail);
+  const [recoveryEmail, setRecoveryEmail] = useState(
+    settings.profileEmail ?? fallbackProfile.profileEmail
+  );
   const [recoveryMessage, setRecoveryMessage] = useState("");
   const [recoveryError, setRecoveryError] = useState("");
 
-  const profileInitials = useMemo(() => getInitials(profileDraft.profileName), [profileDraft.profileName]);
+  const profileInitials = useMemo(
+    () => getInitials(profileDraft.profileName),
+    [profileDraft.profileName]
+  );
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -124,7 +134,10 @@ export function SettingsPanel() {
       return;
     }
 
-    if (!file.type.startsWith("image/") || file.size > 1024 * 1024) { setProfileMessage("Choose an image smaller than 1 MB."); return; }
+    if (!file.type.startsWith("image/") || file.size > 1024 * 1024) {
+      setProfileMessage("Choose an image smaller than 1 MB.");
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       updateProfileField("profileImage", typeof reader.result === "string" ? reader.result : "");
@@ -159,7 +172,7 @@ export function SettingsPanel() {
         bio: nextProfile.profileBio,
         imageUrl: nextProfile.profileImage,
       });
-      if (!await updateSettings(nextProfile)) return;
+      if (!(await updateSettings(nextProfile))) return;
       setProfileMessage("Profile updated.");
     } catch (cause) {
       setProfileMessage(cause instanceof Error ? cause.message : "Profile could not be updated.");
@@ -180,16 +193,24 @@ export function SettingsPanel() {
 
     try {
       await requestRemotePasswordRecovery(trimmedEmail);
-      setRecoveryMessage("If an account exists, password recovery instructions will be sent shortly.");
+      setRecoveryMessage(
+        "If an account exists, password recovery instructions will be sent shortly."
+      );
     } catch (cause) {
-      setRecoveryError(cause instanceof Error ? cause.message : "Password recovery request failed.");
+      setRecoveryError(
+        cause instanceof Error ? cause.message : "Password recovery request failed."
+      );
     }
   }
 
   async function exportData() {
     let payload: string;
-    try { payload = JSON.stringify(await lifeOsStateService.get(), null, 2); }
-    catch (cause) { setProfileMessage(cause instanceof Error ? cause.message : "Backup failed."); return; }
+    try {
+      payload = JSON.stringify(await lifeOsStateService.get(), null, 2);
+    } catch (cause) {
+      setProfileMessage(cause instanceof Error ? cause.message : "Backup failed.");
+      return;
+    }
     const blob = new Blob([payload], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -211,7 +232,9 @@ export function SettingsPanel() {
       if (await restoreData(JSON.parse(text))) setProfileMessage("Backup imported.");
     } catch {
       setProfileMessage("Choose a valid JSON backup. Nothing was imported.");
-    } finally { event.target.value = ""; }
+    } finally {
+      event.target.value = "";
+    }
   }
 
   return (
@@ -305,7 +328,8 @@ export function SettingsPanel() {
                       onChange={(event) => updateProfileField("profileEmail", event.target.value)}
                       placeholder="you@example.com"
                       type="email"
-                      value={profileDraft.profileEmail} readOnly
+                      value={profileDraft.profileEmail}
+                      readOnly
                     />
                   </span>
                 </FieldShell>
@@ -332,7 +356,9 @@ export function SettingsPanel() {
                     />
                     <TextInput
                       className="pl-10"
-                      onChange={(event) => updateProfileField("profileLocation", event.target.value)}
+                      onChange={(event) =>
+                        updateProfileField("profileLocation", event.target.value)
+                      }
                       placeholder="City, country"
                       value={profileDraft.profileLocation}
                     />
@@ -391,8 +417,12 @@ export function SettingsPanel() {
                 value={settings.aiProvider}
               >
                 <option value="off">Off</option>
-                <option value="free-api" disabled>External AI (not connected)</option>
-                <option value="local" disabled>Local model (not connected)</option>
+                <option value="free-api" disabled>
+                  External AI (not connected)
+                </option>
+                <option value="local" disabled>
+                  Local model (not connected)
+                </option>
               </SelectInput>
             </FieldShell>
             <FieldShell label="Quiet hours start">
@@ -415,7 +445,11 @@ export function SettingsPanel() {
 
       <div className="min-w-0 space-y-5">
         <ApiHealthStatus />
-        <Card title="Password Recovery" eyebrow="Security" action={<ShieldCheck className="size-5 text-emerald-600" />}>
+        <Card
+          title="Password Recovery"
+          eyebrow="Security"
+          action={<ShieldCheck className="size-5 text-emerald-600" />}
+        >
           <form className="space-y-4" onSubmit={requestPasswordRecovery}>
             <FieldShell label="Recovery email">
               <span className="relative block">
@@ -445,7 +479,9 @@ export function SettingsPanel() {
             >
               {isRequestingRecovery ? "Sending..." : "Send reset link"}
             </Button>
-            {recoveryError ? <p className="text-sm font-medium text-red-600">{recoveryError}</p> : null}
+            {recoveryError ? (
+              <p className="text-sm font-medium text-red-600">{recoveryError}</p>
+            ) : null}
             {recoveryMessage ? (
               <p className="flex items-start gap-2 text-sm font-medium text-emerald-700">
                 <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
@@ -464,10 +500,17 @@ export function SettingsPanel() {
                 </span>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-slate-800">Browser notifications</p>
-                  <p className="mt-1 text-sm text-slate-600">Current status: {notificationStatus}</p>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Current status: {notificationStatus}
+                  </p>
                 </div>
               </div>
-              <Button className="mt-3 w-full" onClick={requestNotifications} type="button" variant="outline">
+              <Button
+                className="mt-3 w-full"
+                onClick={requestNotifications}
+                type="button"
+                variant="outline"
+              >
                 Enable notifications
               </Button>
             </div>
@@ -475,10 +518,27 @@ export function SettingsPanel() {
               <Button className="w-full" onClick={exportData} type="button">
                 Export JSON
               </Button>
-              <Button className="w-full" onClick={() => backupInputRef.current?.click()} type="button" variant="outline">
+              <Button
+                className="w-full"
+                onClick={() => backupInputRef.current?.click()}
+                type="button"
+                variant="outline"
+              >
                 Import JSON
               </Button>
-              <Button className="w-full" onClick={async () => { if (window.confirm("Permanently delete your budgets, expenses, tasks, timers, and notes?")) await resetData(); }} type="button" variant="danger">
+              <Button
+                className="w-full"
+                onClick={async () => {
+                  if (
+                    window.confirm(
+                      "Permanently delete your budgets, expenses, tasks, timers, and notes?"
+                    )
+                  )
+                    await resetData();
+                }}
+                type="button"
+                variant="danger"
+              >
                 Reset all data
               </Button>
             </div>

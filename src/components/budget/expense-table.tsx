@@ -25,10 +25,30 @@ export function ExpenseTable({ expenses }: ExpenseTableProps) {
       align: "right",
       render: (expense) => <span className="font-mono">{formatCurrency(expense.amount)}</span>,
     },
-    { key: "actions", header: "Actions", render: (expense) => <Button variant="ghost" type="button" aria-label={`Delete ${expense.itemName}`} onClick={async () => {
-      if (window.confirm(`Delete ${expense.itemName}?`)) await deleteExpense(expense.id);
-    }}>Delete</Button> },
+    {
+      key: "actions",
+      header: "Actions",
+      render: (expense) => (
+        <Button
+          variant="ghost"
+          type="button"
+          aria-label={`Delete ${expense.itemName}`}
+          onClick={async () => {
+            if (window.confirm(`Delete ${expense.itemName}?`)) await deleteExpense(expense.id);
+          }}
+        >
+          Delete
+        </Button>
+      ),
+    },
   ];
 
-  return <DataTable columns={columns} emptyMessage="No expense saved yet." getRowKey={(expense) => expense.id} rows={expenses} />;
+  return (
+    <DataTable
+      columns={columns}
+      emptyMessage="No expense saved yet."
+      getRowKey={(expense) => expense.id}
+      rows={expenses}
+    />
+  );
 }

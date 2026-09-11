@@ -9,16 +9,20 @@ import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { getRoutineProgress, getTotalSpent } from "@/lib/calculations";
 
-
 export function ReportsDashboard() {
   const formatCurrency = useFormatCurrency();
   const { categories, expenses, tasks, timerSessions } = useLifeOs();
   const totalBudget = categories.reduce((sum, category) => sum + category.monthlyLimit, 0);
-  const totalSpent = getTotalSpent(expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)));
+  const totalSpent = getTotalSpent(
+    expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7))
+  );
   const routineProgress = getRoutineProgress(tasks);
-  const totalFocusSeconds = timerSessions.reduce((sum, session) => sum + session.durationSeconds, 0);
+  const totalFocusSeconds = timerSessions.reduce(
+    (sum, session) => sum + session.durationSeconds,
+    0
+  );
   const focusHours = (totalFocusSeconds / 3600).toFixed(1);
-  const share = (count: number) => tasks.length ? Math.round(count / tasks.length * 100) : 0;
+  const share = (count: number) => (tasks.length ? Math.round((count / tasks.length) * 100) : 0);
 
   return (
     <div className="space-y-5">
@@ -37,15 +41,37 @@ export function ReportsDashboard() {
           tone="indigo"
           value={`${routineProgress}%`}
         />
-        <MetricCard detail="Saved timer sessions" label="Focus time" tone="amber" value={`${focusHours}h`} />
+        <MetricCard
+          detail="Saved timer sessions"
+          label="Focus time"
+          tone="amber"
+          value={`${focusHours}h`}
+        />
       </div>
       <div className="grid min-w-0 gap-5 2xl:grid-cols-[1fr_1fr]">
         <BudgetCategoryList categories={categories} expenses={expenses} />
         <Card title="Work-Life Balance" eyebrow="Routine report">
           <div className="space-y-4">
-            <ProgressBar label="Work tasks" tone="indigo" value={share(tasks.filter((task) => task.category.toLowerCase() === "work").length)} />
-            <ProgressBar label="Family and personal tasks" tone="teal" value={share(tasks.filter((task) => ["family", "personal"].includes(task.category.toLowerCase())).length)} />
-            <ProgressBar label="Delayed or missed tasks" tone="rose" value={share(tasks.filter((task) => ["delayed", "missed"].includes(task.status)).length)} />
+            <ProgressBar
+              label="Work tasks"
+              tone="indigo"
+              value={share(tasks.filter((task) => task.category.toLowerCase() === "work").length)}
+            />
+            <ProgressBar
+              label="Family and personal tasks"
+              tone="teal"
+              value={share(
+                tasks.filter((task) => ["family", "personal"].includes(task.category.toLowerCase()))
+                  .length
+              )}
+            />
+            <ProgressBar
+              label="Delayed or missed tasks"
+              tone="rose"
+              value={share(
+                tasks.filter((task) => ["delayed", "missed"].includes(task.status)).length
+              )}
+            />
           </div>
         </Card>
       </div>

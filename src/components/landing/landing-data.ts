@@ -20,13 +20,10 @@ export const navItems = [
   { label: "Security", href: "#security" },
 ];
 
-export const proofPoints = [
-  "No credit card required",
-  "Local-first MVP",
-  "AI stays optional",
-];
+export const proofPoints = ["No credit card required", "Local-first MVP", "AI stays optional"];
 
-export const signalCards: Array<{ label: string; value: string; detail: string; tone: string }> = [];
+export const signalCards: Array<{ label: string; value: string; detail: string; tone: string }> =
+  [];
 
 export const features = [
   {
@@ -87,8 +84,7 @@ export const modules = [
 export const workflow = [
   {
     title: "Capture",
-    description:
-      "Add expenses, notes, reminders, routines, and tasks during the day.",
+    description: "Add expenses, notes, reminders, routines, and tasks during the day.",
   },
   {
     title: "Analyze",
@@ -97,13 +93,11 @@ export const workflow = [
   },
   {
     title: "Decide",
-    description:
-      "Review one clean plan with money, time, and personal goals in the same context.",
+    description: "Review one clean plan with money, time, and personal goals in the same context.",
   },
   {
     title: "Execute",
-    description:
-      "Open the working dashboard and move through your day without switching tools.",
+    description: "Open the working dashboard and move through your day without switching tools.",
   },
 ];
 
@@ -124,8 +118,7 @@ export const securityItems = [
   },
   {
     title: "Local-first flow",
-    detail:
-      "The MVP keeps personal planning data understandable and controlled.",
+    detail: "The MVP keeps personal planning data understandable and controlled.",
     icon: LockKeyhole,
   },
   {

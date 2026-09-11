@@ -1,6 +1,20 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Bell, BellOff, BookOpen, CheckCircle2, Circle, Clock, Pause, Play, SkipForward, TimerReset, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Bell,
+  BellOff,
+  BookOpen,
+  CheckCircle2,
+  Circle,
+  Clock,
+  Pause,
+  Play,
+  SkipForward,
+  TimerReset,
+  Trash2,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -54,12 +68,18 @@ export function RoutineNotebook({
     <section className="min-w-0">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">Notebook</p>
-          <h2 className="mt-1 break-words text-lg font-semibold text-slate-800">Today&apos;s points</h2>
+          <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">
+            Notebook
+          </p>
+          <h2 className="mt-1 break-words text-lg font-semibold text-slate-800">
+            Today&apos;s points
+          </h2>
         </div>
         <div className="grid grid-cols-2 gap-2 rounded-xl border border-slate-200 bg-slate-100 p-1 sm:grid-cols-4 lg:min-w-[520px]">
           {routineWindows.map((windowItem) => {
-            const tabCount = orderedTasks.filter((task) => isTaskInRoutineWindow(task, windowItem.id)).length;
+            const tabCount = orderedTasks.filter((task) =>
+              isTaskInRoutineWindow(task, windowItem.id)
+            ).length;
             const isActive = routineWindow === windowItem.id;
             const TabIcon = windowItem.Icon;
 
@@ -69,20 +89,25 @@ export function RoutineNotebook({
                   "flex min-h-11 min-w-0 items-center justify-between gap-2 rounded-lg px-3 text-left text-sm font-semibold transition",
                   isActive
                     ? "bg-white text-slate-950 shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
+                    : "text-slate-600 hover:bg-white/70 hover:text-slate-900"
                 )}
                 key={windowItem.id}
                 onClick={() => setRoutineWindow(windowItem.id)}
                 type="button"
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  <TabIcon className={cn("h-4 w-4 shrink-0", isActive ? "text-emerald-600" : "text-slate-400")} />
+                  <TabIcon
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      isActive ? "text-emerald-600" : "text-slate-400"
+                    )}
+                  />
                   <span className="truncate">{windowItem.label}</span>
                 </span>
                 <span
                   className={cn(
                     "grid h-6 min-w-6 shrink-0 place-items-center rounded-md px-1.5 text-xs",
-                    isActive ? "bg-emerald-50 text-emerald-700" : "bg-white text-slate-500",
+                    isActive ? "bg-emerald-50 text-emerald-700" : "bg-white text-slate-500"
                   )}
                 >
                   {tabCount}
@@ -111,7 +136,9 @@ export function RoutineNotebook({
               <article
                 className={cn(
                   "min-w-0 rounded-lg border p-3 transition",
-                  task.id === currentTaskId ? "border-blue-300 bg-blue-50" : "border-slate-200 bg-slate-50 hover:border-slate-300",
+                  task.id === currentTaskId
+                    ? "border-blue-300 bg-blue-50"
+                    : "border-slate-200 bg-slate-50 hover:border-slate-300"
                 )}
                 key={task.id}
               >
@@ -129,9 +156,23 @@ export function RoutineNotebook({
 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="min-w-0 break-words text-sm font-semibold text-slate-900 sm:text-base">{task.title}</h3>
-                      <Badge tone={getRoutineStatusTone(displayStatus)}>{routineStatusLabels[displayStatus]}</Badge>
-                      <Badge tone={task.priority === "high" ? "rose" : task.priority === "medium" ? "amber" : "neutral"}>{task.priority}</Badge>
+                      <h3 className="min-w-0 break-words text-sm font-semibold text-slate-900 sm:text-base">
+                        {task.title}
+                      </h3>
+                      <Badge tone={getRoutineStatusTone(displayStatus)}>
+                        {routineStatusLabels[displayStatus]}
+                      </Badge>
+                      <Badge
+                        tone={
+                          task.priority === "high"
+                            ? "rose"
+                            : task.priority === "medium"
+                              ? "amber"
+                              : "neutral"
+                        }
+                      >
+                        {task.priority}
+                      </Badge>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600">
                       <span className="inline-flex items-center gap-1">
@@ -147,15 +188,25 @@ export function RoutineNotebook({
                         {task.category}
                       </span>
                       <span className="inline-flex items-center gap-1">
-                        {task.alertEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                        {task.alertEnabled ? (
+                          <Bell className="h-4 w-4" />
+                        ) : (
+                          <BellOff className="h-4 w-4" />
+                        )}
                         {task.alertEnabled ? `Alert ${getRoutineAlertTime(task)}` : "No alert"}
                       </span>
                     </div>
-                    {task.note && <p className="mt-2 break-words text-sm text-slate-500">{task.note}</p>}
+                    {task.note && (
+                      <p className="mt-2 break-words text-sm text-slate-500">{task.note}</p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap lg:justify-end">
-                    <IconButton disabled={globalIndex === 0} label="Move up" onClick={() => onMoveTask(task.id, "up")}>
+                    <IconButton
+                      disabled={globalIndex === 0}
+                      label="Move up"
+                      onClick={() => onMoveTask(task.id, "up")}
+                    >
                       <ArrowUp className="h-4 w-4" />
                     </IconButton>
                     <IconButton
@@ -165,8 +216,15 @@ export function RoutineNotebook({
                     >
                       <ArrowDown className="h-4 w-4" />
                     </IconButton>
-                    <IconButton label={task.alertEnabled ? "Disable alert" : "Enable alert"} onClick={() => onToggleAlert(task)}>
-                      {task.alertEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                    <IconButton
+                      label={task.alertEnabled ? "Disable alert" : "Enable alert"}
+                      onClick={() => onToggleAlert(task)}
+                    >
+                      {task.alertEnabled ? (
+                        <Bell className="h-4 w-4" />
+                      ) : (
+                        <BellOff className="h-4 w-4" />
+                      )}
                     </IconButton>
                     <IconButton label="Delete point" onClick={() => onDeleteTask(task.id)}>
                       <Trash2 className="h-4 w-4" />
@@ -175,16 +233,40 @@ export function RoutineNotebook({
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-                  <Button className="h-8 px-3 text-xs" icon={<Play className="h-3.5 w-3.5" />} onClick={() => onStartTask(task)} type="button" variant={task.status === "active" ? "secondary" : "outline"}>
+                  <Button
+                    className="h-8 px-3 text-xs"
+                    icon={<Play className="h-3.5 w-3.5" />}
+                    onClick={() => onStartTask(task)}
+                    type="button"
+                    variant={task.status === "active" ? "secondary" : "outline"}
+                  >
                     Start
                   </Button>
-                  <Button className="h-8 px-3 text-xs" icon={<CheckCircle2 className="h-3.5 w-3.5" />} onClick={() => onCompleteTask(task.id)} type="button" variant="primary">
+                  <Button
+                    className="h-8 px-3 text-xs"
+                    icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+                    onClick={() => onCompleteTask(task.id)}
+                    type="button"
+                    variant="primary"
+                  >
                     Done
                   </Button>
-                  <Button className="h-8 px-3 text-xs" icon={<Pause className="h-3.5 w-3.5" />} onClick={() => onDelayTask(task)} type="button" variant="outline">
+                  <Button
+                    className="h-8 px-3 text-xs"
+                    icon={<Pause className="h-3.5 w-3.5" />}
+                    onClick={() => onDelayTask(task)}
+                    type="button"
+                    variant="outline"
+                  >
                     Delay 15m
                   </Button>
-                  <Button className="h-8 px-3 text-xs" icon={<SkipForward className="h-3.5 w-3.5" />} onClick={() => onSkipTask(task.id)} type="button" variant="ghost">
+                  <Button
+                    className="h-8 px-3 text-xs"
+                    icon={<SkipForward className="h-3.5 w-3.5" />}
+                    onClick={() => onSkipTask(task.id)}
+                    type="button"
+                    variant="ghost"
+                  >
                     Skip
                   </Button>
                 </div>

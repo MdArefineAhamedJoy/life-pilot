@@ -57,16 +57,27 @@ export function DataTable<Row>({
   }
 
   return (
-    <div className={cn("flex min-w-0 flex-col overflow-hidden rounded-md border border-slate-200 bg-white", minHeightClassName, className)}>
+    <div
+      className={cn(
+        "flex min-w-0 flex-col overflow-hidden rounded-md border border-slate-200 bg-white",
+        minHeightClassName,
+        className
+      )}
+    >
       <div className="min-h-0 flex-1 overflow-x-auto">
-        <table className={cn("min-w-[900px] divide-y divide-slate-200 text-sm md:min-w-full", tableClassName)}>
+        <table
+          className={cn(
+            "min-w-[900px] divide-y divide-slate-200 text-sm md:min-w-full",
+            tableClassName
+          )}
+        >
           <thead className="bg-slate-50">
             <tr>
               {columns.map((column) => (
                 <th
                   className={cn(
                     "h-12 whitespace-nowrap px-4 text-sm font-semibold text-slate-600",
-                    column.align === "right" ? "text-right" : "text-left",
+                    column.align === "right" ? "text-right" : "text-left"
                   )}
                   key={column.key}
                   scope="col"
@@ -80,13 +91,16 @@ export function DataTable<Row>({
           <tbody className="divide-y divide-slate-200 bg-white">
             {visibleRows.length > 0 ? (
               visibleRows.map((row) => (
-                <tr className={cn("transition-colors hover:bg-slate-50", rowClassName)} key={getRowKey(row)}>
+                <tr
+                  className={cn("transition-colors hover:bg-slate-50", rowClassName)}
+                  key={getRowKey(row)}
+                >
                   {columns.map((column) => (
                     <td
                       className={cn(
                         "whitespace-nowrap px-4 py-4 text-slate-700",
                         column.align === "right" ? "text-right" : "text-left",
-                        cellClassName,
+                        cellClassName
                       )}
                       key={column.key}
                     >

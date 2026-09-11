@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { backendUrl, sessionCookie } from "@/lib/server-api";
 
-const publicEndpoints = new Set(["POST auth/login", "POST auth/register", "POST account/password-recovery", "GET health"]);
+const publicEndpoints = new Set([
+  "POST auth/login",
+  "POST auth/register",
+  "POST account/password-recovery",
+  "GET health",
+]);
 
 async function forward(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
   const { path: segments } = await context.params;
@@ -23,24 +28,35 @@ async function forward(request: NextRequest, context: { params: Promise<{ path: 
   try {
     const upstream = await fetch(backendUrl(path) + request.nextUrl.search, {
       method: request.method,
-      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: ["GET", "HEAD"].includes(request.method) ? undefined : await request.text(),
-      cache: "no-store", signal: AbortSignal.timeout(15000),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
     });
     const data = await upstream.json();
     if (upstream.ok && ["auth/login", "auth/register"].includes(path)) {
       const { token: newToken, ...session } = data;
       response = NextResponse.json(session, { status: upstream.status });
       response.cookies.set(sessionCookie, newToken, {
-        httpOnly: true, sameSite: "lax", secure: request.nextUrl.protocol === "https:",
-        path: "/", expires: new Date(session.expiresAt),
+        httpOnly: true,
+        sameSite: "lax",
+        secure: request.nextUrl.protocol === "https:",
+        path: "/",
+        expires: new Date(session.expiresAt),
       });
     } else {
       response = NextResponse.json(data, { status: upstream.status });
-      if (upstream.status === 401 && !publicEndpoints.has(`${request.method} ${path}`)) response.cookies.delete(sessionCookie);
+      if (upstream.status === 401 && !publicEndpoints.has(`${request.method} ${path}`))
+        response.cookies.delete(sessionCookie);
     }
   } catch {
-    response = NextResponse.json({ message: "The server is unavailable. Please try again." }, { status: 503 });
+    response = NextResponse.json(
+      { message: "The server is unavailable. Please try again." },
+      { status: 503 }
+    );
   }
   if (logout) {
     response = NextResponse.json({ ok: true });

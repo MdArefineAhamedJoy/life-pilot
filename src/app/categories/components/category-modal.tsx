@@ -59,7 +59,8 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
 
     const exists = categories.some(
       (existingCategory) =>
-        existingCategory.id !== category?.id && existingCategory.name.toLowerCase() === name.toLowerCase(),
+        existingCategory.id !== category?.id &&
+        existingCategory.name.toLowerCase() === name.toLowerCase()
     );
 
     if (exists) {
@@ -84,9 +85,9 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
     };
 
     if (category) {
-      if (!await updateBudgetCategory(category.id, nextCategory)) return;
+      if (!(await updateBudgetCategory(category.id, nextCategory))) return;
     } else {
-      if (!await addBudgetCategory(nextCategory)) return;
+      if (!(await addBudgetCategory(nextCategory))) return;
     }
 
     setError("");
@@ -103,7 +104,7 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
             {isEdit
               ? "Update this reusable category for budget and expense records."
               : "Create a reusable category for budget and expense records."}
-            </DialogDescription>
+          </DialogDescription>
         </DialogHeader>
         <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
@@ -128,7 +129,10 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
               </FieldShell>
               <FieldShell label="Status">
                 <SelectInput
-                  defaultValue={category?.categoryStatus ?? (category?.isActive === false ? "blocked" : "active")}
+                  defaultValue={
+                    category?.categoryStatus ??
+                    (category?.isActive === false ? "blocked" : "active")
+                  }
                   name="status"
                 >
                   <option value="active">Active</option>

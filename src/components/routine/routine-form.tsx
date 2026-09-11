@@ -21,7 +21,8 @@ export function RoutineForm() {
       plannedEnd: String(data.get("plannedEnd") ?? "10:00"),
       reminderAt: String(data.get("reminderAt") ?? ""),
       note: String(data.get("note") ?? ""),
-      repeatRule: String(data.get("repeatRule") ?? "daily") as "daily" | "weekly" | "custom" | "once",
+      repeatRule: String(data.get("repeatRule") ?? "daily") as
+        "daily" | "weekly" | "custom" | "once",
     });
     if (!saved) return;
 
@@ -74,7 +75,9 @@ export function RoutineForm() {
           </FieldShell>
         </div>
         <div className="md:col-span-2">
-          <Button className="w-full sm:w-auto" type="submit">Add task</Button>
+          <Button className="w-full sm:w-auto" type="submit">
+            Add task
+          </Button>
         </div>
       </form>
     </Card>

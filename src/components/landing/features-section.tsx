@@ -11,8 +11,8 @@ export function FeaturesSection() {
             Everything personal planning needs, unified.
           </h2>
           <p className="mt-5 text-lg leading-8 text-[var(--life-muted)]">
-            One workspace replaces scattered notes, budget checks, routine
-            trackers, and reminder lists.
+            One workspace replaces scattered notes, budget checks, routine trackers, and reminder
+            lists.
           </p>
         </div>
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-6">
@@ -29,36 +29,24 @@ export function FeaturesSection() {
             >
               <div>
                 <div className="mb-5 grid size-12 place-items-center rounded-[14px] border border-[var(--life-accent-line)] bg-[var(--life-accent-soft)] text-[var(--life-accent)]">
-                  <Icon
-                    aria-hidden="true"
-                    className="size-6"
-                    strokeWidth={2}
-                  />
+                  <Icon aria-hidden="true" className="size-6" strokeWidth={2} />
                 </div>
-                <h3 className="text-xl font-semibold text-[var(--life-text)]">
-                  {title}
-                </h3>
-                <p className="mt-3 text-sm leading-6 text-[var(--life-muted)]">
-                  {description}
-                </p>
+                <h3 className="text-xl font-semibold text-[var(--life-text)]">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--life-muted)]">{description}</p>
               </div>
               {index === 0 ? (
                 <div className="mt-10 grid gap-3">
-                  {["Money drift", "Task pressure", "Focus window"].map(
-                    (item) => (
-                      <div
-                        className="flex items-center justify-between rounded-2xl border border-[var(--life-border)] bg-[color-mix(in_srgb,var(--life-surface-2)_70%,transparent)] px-4 py-3"
-                        key={item}
-                      >
-                        <span className="text-sm font-medium text-[var(--life-muted)]">
-                          {item}
-                        </span>
-                        <span className="h-2 w-24 overflow-hidden rounded-full bg-[var(--life-border)]">
-                          <span className="block h-full w-0 rounded-full bg-[var(--life-accent)]" />
-                        </span>
-                      </div>
-                    ),
-                  )}
+                  {["Money drift", "Task pressure", "Focus window"].map((item) => (
+                    <div
+                      className="flex items-center justify-between rounded-2xl border border-[var(--life-border)] bg-[color-mix(in_srgb,var(--life-surface-2)_70%,transparent)] px-4 py-3"
+                      key={item}
+                    >
+                      <span className="text-sm font-medium text-[var(--life-muted)]">{item}</span>
+                      <span className="h-2 w-24 overflow-hidden rounded-full bg-[var(--life-border)]">
+                        <span className="block h-full w-0 rounded-full bg-[var(--life-accent)]" />
+                      </span>
+                    </div>
+                  ))}
                 </div>
               ) : null}
             </article>

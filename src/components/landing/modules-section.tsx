@@ -14,8 +14,8 @@ export function ModulesSection() {
             Every life area feeds one planning brain.
           </h2>
           <p className="mt-5 text-base leading-7 text-[var(--life-muted)]">
-            The landing page connects into the working Life Pilot app, including
-            budget, routine, timer, notes, goals, reports, and more.
+            The landing page connects into the working Life Pilot app, including budget, routine,
+            timer, notes, goals, reports, and more.
           </p>
         </div>
 
@@ -28,12 +28,8 @@ export function ModulesSection() {
               <span className="grid size-11 place-items-center rounded-[14px] bg-[var(--life-accent-soft)] text-[var(--life-accent)]">
                 <Icon aria-hidden="true" className="size-5" strokeWidth={2} />
               </span>
-              <h3 className="mt-5 text-lg font-semibold text-[var(--life-text)]">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--life-muted)]">
-                {detail}
-              </p>
+              <h3 className="mt-5 text-lg font-semibold text-[var(--life-text)]">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--life-muted)]">{detail}</p>
             </article>
           ))}
         </div>

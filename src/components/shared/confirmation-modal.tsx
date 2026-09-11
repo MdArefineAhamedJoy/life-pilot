@@ -36,7 +36,7 @@ export function ConfirmationModal({
   onConfirm,
 }: ConfirmationModalProps) {
   async function handleConfirm() {
-    if (await onConfirm() === false) return;
+    if ((await onConfirm()) === false) return;
     onOpenChange(false);
   }
 

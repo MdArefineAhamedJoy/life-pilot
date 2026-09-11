@@ -19,17 +19,17 @@ Login/register establish an HttpOnly, SameSite=Lax session cookie, Secure over H
 
 Each collection loads from its own API. Mutations use focused CRUD endpoints, update Redux after success, and show failures without clearing forms. Writes are serialized within the workspace. Whole-state replacement is used only for confirmed backup import/reset. Different devices can still conflict when editing the same record; there is no offline write queue.
 
-| UI | Backend routes under `/api` |
-| --- | --- |
-| Login/register/logout | `/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout` |
-| Categories and budget | `/life-os/categories`, `/:id`, `/:id/limit` |
-| Expenses and receipt text | `/life-os/expenses`, `/bulk`, `/:id` |
-| Tasks and routine | `/life-os/tasks`, `/:id`, `/:id/status`, `/reorder` |
-| Timer history | `/life-os/timer-sessions` |
-| Notes, shopping, health, family, goals, meals, reminders | `/life-os/notes` with collection tags |
-| Preferences and account profile | `/life-os/settings`, `/account/profile` |
-| Backup/export/import/reset | `/life-os/state`, `/life-os/reset` |
-| Connection status | `/health`, `/health/db` |
+| UI                                                       | Backend routes under `/api`                                 |
+| -------------------------------------------------------- | ----------------------------------------------------------- |
+| Login/register/logout                                    | `/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout` |
+| Categories and budget                                    | `/life-os/categories`, `/:id`, `/:id/limit`                 |
+| Expenses and receipt text                                | `/life-os/expenses`, `/bulk`, `/:id`                        |
+| Tasks and routine                                        | `/life-os/tasks`, `/:id`, `/:id/status`, `/reorder`         |
+| Timer history                                            | `/life-os/timer-sessions`                                   |
+| Notes, shopping, health, family, goals, meals, reminders | `/life-os/notes` with collection tags                       |
+| Preferences and account profile                          | `/life-os/settings`, `/account/profile`                     |
+| Backup/export/import/reset                               | `/life-os/state`, `/life-os/reset`                          |
+| Connection status                                        | `/health`, `/health/db`                                     |
 
 Dashboard, reports and calendar derive values from authenticated collections. New accounts start empty. Currency follows the saved preference; changing currency changes display units and does not convert historical amounts.
 

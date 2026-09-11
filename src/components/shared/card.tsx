@@ -55,7 +55,7 @@ export function SharedCard({ className, children }: SharedCardProps) {
     <section
       className={cn(
         "min-w-0 border border-slate-200 bg-white p-6 shadow-[0_10px_34px_rgba(15,23,42,0.06)]",
-        className,
+        className
       )}
     >
       {children}
@@ -102,7 +102,7 @@ export function StatCard({ label, value, detail, progress, icon: Icon, tone }: S
           <p
             className={cn(
               "mt-2 truncate font-mono text-[clamp(1.35rem,1.75vw,2rem)] font-semibold leading-tight",
-              colors.value,
+              colors.value
             )}
             title={value}
           >
@@ -111,9 +111,14 @@ export function StatCard({ label, value, detail, progress, icon: Icon, tone }: S
           <p className="mt-2 truncate text-sm font-medium text-slate-500">{detail}</p>
         </div>
       </div>
-      {progress !== undefined && <div className="mt-7 h-1.5 overflow-hidden rounded-full bg-slate-200">
-        <div className={cn("h-full rounded-full", colors.bar)} style={{ width: `${Math.max(0, Math.min(progress, 100))}%` }} />
-      </div>}
+      {progress !== undefined && (
+        <div className="mt-7 h-1.5 overflow-hidden rounded-full bg-slate-200">
+          <div
+            className={cn("h-full rounded-full", colors.bar)}
+            style={{ width: `${Math.max(0, Math.min(progress, 100))}%` }}
+          />
+        </div>
+      )}
     </SharedCard>
   );
 }

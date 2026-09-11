@@ -16,17 +16,13 @@ export function FinalCtaSection() {
             Build a personal AI workspace around your real life.
           </h2>
           <p className="mx-auto mb-8 mt-5 max-w-[58ch] text-base leading-7 text-[var(--life-muted)]">
-            Login and registration pages are ready for the prototype, and the
-            working app is available at the dashboard route.
+            Login and registration pages are ready for the prototype, and the working app is
+            available at the dashboard route.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <PrimaryLink href="/register">
               Register now
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4"
-                strokeWidth={2}
-              />
+              <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
             </PrimaryLink>
             <GhostLink href="/login">
               <Clock3 aria-hidden="true" className="size-4" strokeWidth={2} />

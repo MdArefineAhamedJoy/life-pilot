@@ -40,14 +40,21 @@ const relatedAreas = [
 const priorities = ["Low", "Medium", "High"];
 
 function getNoteField(note: LifeNote, field: string) {
-  const line = note.body.split(/\r?\n/).find((item) => item.toLowerCase().startsWith(`${field.toLowerCase()}:`));
+  const line = note.body
+    .split(/\r?\n/)
+    .find((item) => item.toLowerCase().startsWith(`${field.toLowerCase()}:`));
   return line?.slice(field.length + 1).trim() ?? "";
 }
 
 function getNoteDetails(note: LifeNote) {
   return note.body
     .split(/\r?\n/)
-    .filter((line) => !/^(type|related area|category|date|amount|payment|priority|source|action|expense item):/i.test(line))
+    .filter(
+      (line) =>
+        !/^(type|related area|category|date|amount|payment|priority|source|action|expense item):/i.test(
+          line
+        )
+    )
     .join(" ")
     .trim();
 }
@@ -174,9 +181,9 @@ function NoteEditorDialog({
     };
 
     if (isEdit && note) {
-      if (!await updateNote(note.id, nextNote)) return;
+      if (!(await updateNote(note.id, nextNote))) return;
     } else {
-      if (!await addNote(nextNote)) return;
+      if (!(await addNote(nextNote))) return;
       form.reset();
     }
 
@@ -207,7 +214,11 @@ function NoteEditorDialog({
                   </FieldShell>
                 </div>
                 <FieldShell label="Note type">
-                  <SelectInput name="noteType" onChange={(event) => setNoteType(event.target.value)} value={noteType}>
+                  <SelectInput
+                    name="noteType"
+                    onChange={(event) => setNoteType(event.target.value)}
+                    value={noteType}
+                  >
                     {noteTypes.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label}
@@ -216,14 +227,20 @@ function NoteEditorDialog({
                   </SelectInput>
                 </FieldShell>
                 <FieldShell label="Related area">
-                  <SelectInput defaultValue={note ? getNoteField(note, "Related area") || "Notes" : "Notes"} name="relatedArea">
+                  <SelectInput
+                    defaultValue={note ? getNoteField(note, "Related area") || "Notes" : "Notes"}
+                    name="relatedArea"
+                  >
                     {relatedAreas.map((area) => (
                       <option key={area}>{area}</option>
                     ))}
                   </SelectInput>
                 </FieldShell>
                 <FieldShell label="Budget category">
-                  <SelectInput defaultValue={note ? getNoteField(note, "Category") || "General" : "General"} name="category">
+                  <SelectInput
+                    defaultValue={note ? getNoteField(note, "Category") || "General" : "General"}
+                    name="category"
+                  >
                     <option>General</option>
                     {categories.map((category) => (
                       <option key={category.id}>{category.name}</option>
@@ -231,7 +248,11 @@ function NoteEditorDialog({
                   </SelectInput>
                 </FieldShell>
                 <FieldShell label="Date">
-                  <TextInput defaultValue={note ? getNoteField(note, "Date") : ""} name="noteDate" type="date" />
+                  <TextInput
+                    defaultValue={note ? getNoteField(note, "Date") : ""}
+                    name="noteDate"
+                    type="date"
+                  />
                 </FieldShell>
                 <FieldShell label="Amount">
                   <TextInput
@@ -243,7 +264,10 @@ function NoteEditorDialog({
                   />
                 </FieldShell>
                 <FieldShell label="Payment method">
-                  <SelectInput defaultValue={note ? getNoteField(note, "Payment") : ""} name="paymentMethod">
+                  <SelectInput
+                    defaultValue={note ? getNoteField(note, "Payment") : ""}
+                    name="paymentMethod"
+                  >
                     <option value="">Not set</option>
                     <option>Cash</option>
                     <option>Card</option>
@@ -251,7 +275,10 @@ function NoteEditorDialog({
                   </SelectInput>
                 </FieldShell>
                 <FieldShell label="Priority">
-                  <SelectInput defaultValue={note ? getNoteField(note, "Priority") || "Medium" : "Medium"} name="priority">
+                  <SelectInput
+                    defaultValue={note ? getNoteField(note, "Priority") || "Medium" : "Medium"}
+                    name="priority"
+                  >
                     {priorities.map((priority) => (
                       <option key={priority}>{priority}</option>
                     ))}
@@ -285,19 +312,36 @@ function NoteEditorDialog({
                   </FieldShell>
                 </div>
                 <div className="md:col-span-2">
-                  <FieldShell hint="Separate tags with comma. Smart tags are added automatically." label="Manual tags">
-                    <TextInput defaultValue={note?.tags.join(", ") ?? ""} name="tags" placeholder="health, goal, budget" />
+                  <FieldShell
+                    hint="Separate tags with comma. Smart tags are added automatically."
+                    label="Manual tags"
+                  >
+                    <TextInput
+                      defaultValue={note?.tags.join(", ") ?? ""}
+                      name="tags"
+                      placeholder="health, goal, budget"
+                    />
                   </FieldShell>
                 </div>
               </div>
 
               <aside className="min-w-0 rounded-md border border-emerald-200 bg-emerald-50 p-4">
                 <p className="text-xs font-semibold uppercase text-emerald-700">AI helper</p>
-                <h3 className="mt-2 text-base font-semibold text-slate-950">This note will be easier to use</h3>
+                <h3 className="mt-2 text-base font-semibold text-slate-950">
+                  This note will be easier to use
+                </h3>
                 <div className="mt-4 space-y-3 text-sm leading-6 text-slate-700">
-                  <p>Money fields help the assistant find payments, spending, and draft expense rows.</p>
-                  <p>Category and related area connect the note with budget, expenses, receipt scanner, routine, or dashboard context.</p>
-                  <p>Action and priority make reminders visible in the AI review without changing any workflow automatically.</p>
+                  <p>
+                    Money fields help the assistant find payments, spending, and draft expense rows.
+                  </p>
+                  <p>
+                    Category and related area connect the note with budget, expenses, receipt
+                    scanner, routine, or dashboard context.
+                  </p>
+                  <p>
+                    Action and priority make reminders visible in the AI review without changing any
+                    workflow automatically.
+                  </p>
                 </div>
                 <div className="mt-4 rounded-md border border-emerald-200 bg-white p-3 text-sm text-slate-600">
                   Current type:{" "}
@@ -332,7 +376,9 @@ export function NotesCreateAction() {
       >
         Add note
       </Button>
-      {isAddModalOpen && <NoteEditorDialog mode="create" onOpenChange={setIsAddModalOpen} open={isAddModalOpen} />}
+      {isAddModalOpen && (
+        <NoteEditorDialog mode="create" onOpenChange={setIsAddModalOpen} open={isAddModalOpen} />
+      )}
     </>
   );
 }
@@ -358,7 +404,9 @@ export function NotesManager() {
       render: (note) => (
         <div className="max-w-[280px]">
           <p className="truncate font-semibold text-slate-900">{note.title}</p>
-          <p className="mt-0.5 truncate text-xs text-slate-500">{getNoteDetails(note) || note.body}</p>
+          <p className="mt-0.5 truncate text-xs text-slate-500">
+            {getNoteDetails(note) || note.body}
+          </p>
         </div>
       ),
       width: "280px",
@@ -373,8 +421,12 @@ export function NotesManager() {
       header: "Related",
       render: (note) => (
         <div className="max-w-[170px]">
-          <p className="truncate font-medium text-slate-800">{getNoteField(note, "Related area") || "Notes"}</p>
-          <p className="mt-0.5 truncate text-xs text-slate-500">{getNoteField(note, "Category") || "General"}</p>
+          <p className="truncate font-medium text-slate-800">
+            {getNoteField(note, "Related area") || "Notes"}
+          </p>
+          <p className="mt-0.5 truncate text-xs text-slate-500">
+            {getNoteField(note, "Category") || "General"}
+          </p>
         </div>
       ),
     },
@@ -382,13 +434,19 @@ export function NotesManager() {
       key: "amount",
       header: "Amount",
       align: "right",
-      render: (note) => <span className="font-mono font-semibold text-slate-800">{getNoteField(note, "Amount") || "-"}</span>,
+      render: (note) => (
+        <span className="font-mono font-semibold text-slate-800">
+          {getNoteField(note, "Amount") || "-"}
+        </span>
+      ),
     },
     {
       key: "actionItem",
       header: "Action item",
       render: (note) => (
-        <span className="block max-w-[180px] truncate text-slate-600">{getNoteField(note, "Action") || "-"}</span>
+        <span className="block max-w-[180px] truncate text-slate-600">
+          {getNoteField(note, "Action") || "-"}
+        </span>
       ),
     },
     {
@@ -413,7 +471,9 @@ export function NotesManager() {
       key: "updated",
       header: "Updated",
       align: "right",
-      render: (note) => <span className="text-slate-500">{new Date(note.updatedAt).toLocaleDateString()}</span>,
+      render: (note) => (
+        <span className="text-slate-500">{new Date(note.updatedAt).toLocaleDateString()}</span>
+      ),
     },
     {
       key: "actions",
@@ -486,18 +546,31 @@ export function NotesManager() {
             <div className="modal-scrollbar max-h-[70vh] overflow-y-auto p-5">
               <div className="mb-5 rounded-md border border-emerald-200 bg-emerald-50 p-4">
                 <p className="text-xs font-semibold uppercase text-emerald-700">Note summary</p>
-                <h3 className="mt-2 break-words text-xl font-semibold text-slate-950">{viewNote.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{getNoteDetails(viewNote) || viewNote.body}</p>
+                <h3 className="mt-2 break-words text-xl font-semibold text-slate-950">
+                  {viewNote.title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-slate-700">
+                  {getNoteDetails(viewNote) || viewNote.body}
+                </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <DetailTile label="Type" value={getNoteField(viewNote, "Type") || "Daily note"} />
-                <DetailTile label="Related area" value={getNoteField(viewNote, "Related area") || "Notes"} />
-                <DetailTile label="Category" value={getNoteField(viewNote, "Category") || "General"} />
+                <DetailTile
+                  label="Related area"
+                  value={getNoteField(viewNote, "Related area") || "Notes"}
+                />
+                <DetailTile
+                  label="Category"
+                  value={getNoteField(viewNote, "Category") || "General"}
+                />
                 <DetailTile label="Date" value={getNoteField(viewNote, "Date")} />
                 <DetailTile label="Amount" value={getNoteField(viewNote, "Amount")} />
                 <DetailTile label="Payment" value={getNoteField(viewNote, "Payment")} />
-                <DetailTile label="Priority" value={getNoteField(viewNote, "Priority") || "Medium"} />
+                <DetailTile
+                  label="Priority"
+                  value={getNoteField(viewNote, "Priority") || "Medium"}
+                />
                 <DetailTile label="Source / file" value={getNoteField(viewNote, "Source")} />
                 <DetailTile label="Action item" value={getNoteField(viewNote, "Action")} />
                 <DetailTile label="Created" value={new Date(viewNote.createdAt).toLocaleString()} />
@@ -522,7 +595,9 @@ export function NotesManager() {
 
               <div className="mt-5 rounded-md border border-slate-200 bg-white p-4">
                 <p className="text-xs font-semibold uppercase text-slate-500">Full note body</p>
-                <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">{viewNote.body}</p>
+                <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-slate-700">
+                  {viewNote.body}
+                </p>
               </div>
             </div>
           )}

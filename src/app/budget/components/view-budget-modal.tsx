@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import type { BudgetCategory } from "@/lib/types";
 
-
 type BudgetStatus = "active" | "paused" | "completed";
 
 type ViewBudgetModalProps = {
@@ -74,14 +73,20 @@ export function ViewBudgetModal({ budget, open, onOpenChange }: ViewBudgetModalP
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto p-4">
             <div className="mb-4 flex flex-wrap items-center gap-2 rounded-md border border-emerald-100 bg-emerald-50 p-4">
               <span className="text-lg font-semibold text-slate-950">{budget.name}</span>
-              <Badge tone={budget.color as "teal" | "amber" | "rose" | "indigo"}>{budget.type}</Badge>
+              <Badge tone={budget.color as "teal" | "amber" | "rose" | "indigo"}>
+                {budget.type}
+              </Badge>
               <Badge tone={status === "active" ? "teal" : status === "paused" ? "amber" : "indigo"}>
                 {statusLabels[status]}
               </Badge>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <DetailTile icon={Target} label="Target Price" value={formatCurrency(budget.monthlyLimit)} />
+              <DetailTile
+                icon={Target}
+                label="Target Price"
+                value={formatCurrency(budget.monthlyLimit)}
+              />
               <DetailTile icon={CalendarDays} label="Date Range" value={formatDateRange(budget)} />
               <DetailTile icon={WalletCards} label="Budget Type" value={budget.type} />
               <DetailTile icon={FileText} label="Status" value={statusLabels[status]} />
@@ -89,13 +94,17 @@ export function ViewBudgetModal({ budget, open, onOpenChange }: ViewBudgetModalP
 
             <div className="mt-4 rounded-md border border-slate-200 bg-white p-4">
               <p className="text-xs font-semibold uppercase text-slate-500">Note</p>
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-800">{budget.note || "-"}</p>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-800">
+                {budget.note || "-"}
+              </p>
             </div>
 
             {budget.extraNote && (
               <div className="mt-4 rounded-md border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-semibold uppercase text-slate-500">Extra Note</p>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-800">{budget.extraNote}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-800">
+                  {budget.extraNote}
+                </p>
               </div>
             )}
           </div>

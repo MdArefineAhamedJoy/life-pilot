@@ -12,12 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  FieldShell,
-  SelectInput,
-  TextArea,
-  TextInput,
-} from "@/components/ui/field";
+import { FieldShell, SelectInput, TextArea, TextInput } from "@/components/ui/field";
 import type { BudgetCategory } from "@/lib/types";
 import { localDateKey } from "@/lib/utils";
 import { Plus } from "lucide-react";
@@ -78,28 +73,20 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
       <DialogContent className="flex h-[82vh] !w-[min(92vw,760px)] max-w-none grid-rows-none flex-col gap-0 overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-slate-200 px-4 py-2">
           <DialogTitle>Manual Expense Entry</DialogTitle>
-          <DialogDescription>
-            Add cost details and save the record.
-          </DialogDescription>
+          <DialogDescription>Add cost details and save the record.</DialogDescription>
         </DialogHeader>
-        <form
-          className="flex min-h-0 flex-1  flex-col overflow-hidden"
-          onSubmit={handleSubmit}
-        >
+        <form className="flex min-h-0 flex-1  flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
             <div className="grid min-w-0 grid-cols-1 gap-4 p-4 md:grid-cols-2">
               <FieldShell label="Item name">
-                <TextInput
-                  name="itemName"
-                  placeholder="Enter an item name"
-                  required
-                />
+                <TextInput name="itemName" placeholder="Enter an item name" required />
               </FieldShell>
               <FieldShell label="Date">
                 <TextInput defaultValue={localDateKey()} name="date" type="date" required />
               </FieldShell>
               <FieldShell label="Category">
-                <SelectInput name="category"><option value="Uncategorized">Uncategorized</option>
+                <SelectInput name="category">
+                  <option value="Uncategorized">Uncategorized</option>
                   {categories.map((category) => (
                     <option key={category.id}>{category.name}</option>
                   ))}
@@ -134,35 +121,25 @@ export function AddExpenseDialog({ categories }: AddExpenseDialogProps) {
                 </SelectInput>
               </FieldShell>
               <div className="rounded-md border border-emerald-200 bg-emerald-50 p-4">
-                <p className="text-sm font-medium text-emerald-600">
-                  Auto total
-                </p>
+                <p className="text-sm font-medium text-emerald-600">Auto total</p>
                 <p className="mt-1 text-2xl font-semibold text-slate-800">
                   {formatCurrency(previewTotal)}
                 </p>
               </div>
               <div className="md:col-span-2">
                 <FieldShell label="Note">
-                  <TextArea
-                    className="min-h-20"
-                    name="note"
-                    placeholder="Optional details"
-                  />
+                  <TextArea className="min-h-20" name="note" placeholder="Optional details" />
                 </FieldShell>
               </div>
             </div>
           </div>
           <DialogFooter className="shrink-0 border-t border-slate-200 ">
-           <div className="px-4 py-2">
-             <Button
-              onClick={() => setIsOpen(false)}
-              type="button"
-              variant="outline"
-            >
-              Cancel
-            </Button>
-            <Button type="submit">Save expense</Button>
-           </div>
+            <div className="px-4 py-2">
+              <Button onClick={() => setIsOpen(false)} type="button" variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit">Save expense</Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>

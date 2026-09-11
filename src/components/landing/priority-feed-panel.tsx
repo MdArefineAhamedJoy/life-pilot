@@ -9,17 +9,27 @@ export function PriorityFeedPanel() {
           <p className="text-sm font-semibold text-[var(--life-text)]">Priority feed</p>
           <p className="text-xs text-[var(--life-dim)]">Auto-organized from today</p>
         </div>
-        <span className="life-chip"><BellRing aria-hidden="true" className="size-4" strokeWidth={2} />12</span>
+        <span className="life-chip">
+          <BellRing aria-hidden="true" className="size-4" strokeWidth={2} />
+          12
+        </span>
       </div>
       <div className="space-y-3">
         {dashboardRows.map((row) => (
-          <div className="flex gap-3 border-b border-[var(--life-border)] pb-3 last:border-b-0 last:pb-0" key={row.title}>
+          <div
+            className="flex gap-3 border-b border-[var(--life-border)] pb-3 last:border-b-0 last:pb-0"
+            key={row.title}
+          >
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[var(--life-accent-soft)] text-[var(--life-accent)]">
               <CheckCircle2 aria-hidden="true" className="size-4" strokeWidth={2} />
             </span>
             <span className="min-w-0">
-              <b className="block truncate text-sm font-semibold text-[var(--life-text)]">{row.title}</b>
-              <small className="block truncate text-xs text-[var(--life-muted)]">{row.detail}</small>
+              <b className="block truncate text-sm font-semibold text-[var(--life-text)]">
+                {row.title}
+              </b>
+              <small className="block truncate text-xs text-[var(--life-muted)]">
+                {row.detail}
+              </small>
             </span>
             <span className="ml-auto font-mono text-xs text-[var(--life-dim)]">{row.time}</span>
           </div>

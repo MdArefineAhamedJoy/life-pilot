@@ -2,15 +2,7 @@
 
 import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowRight,
-  ImageUp,
-  LockKeyhole,
-  Mail,
-  Phone,
-  UserRound,
-  X,
-} from "lucide-react";
+import { ArrowRight, ImageUp, LockKeyhole, Mail, Phone, UserRound, X } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterStepForm() {
@@ -66,7 +58,13 @@ export function RegisterStepForm() {
 
   return (
     <>
-      <form className="mt-3 space-y-2.5 sm:mt-5 sm:space-y-3" onSubmit={(event) => { event.preventDefault(); if (canCreate) void handleCreateAccount(); }}>
+      <form
+        className="mt-3 space-y-2.5 sm:mt-5 sm:space-y-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (canCreate) void handleCreateAccount();
+        }}
+      >
         <div className="flex justify-center">
           <div className="relative text-center">
             {profileImagePreview ? (
@@ -218,7 +216,11 @@ export function RegisterStepForm() {
           </p>
         ) : null}
 
-        {imageError && <p role="alert" className="text-sm text-red-600">{imageError}</p>}
+        {imageError && (
+          <p role="alert" className="text-sm text-red-600">
+            {imageError}
+          </p>
+        )}
         {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
         <label className="flex items-start gap-3 text-sm leading-5 text-slate-600">

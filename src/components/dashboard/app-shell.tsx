@@ -100,7 +100,7 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   const primaryMobileItems = navItems.filter((item) =>
-    ["/dashboard", "/budget", "/expenses", "/routine", "/timer"].includes(item.href),
+    ["/dashboard", "/budget", "/expenses", "/routine", "/timer"].includes(item.href)
   );
 
   return (
@@ -108,33 +108,32 @@ export function AppShell({ children }: AppShellProps) {
       <div
         className={cn(
           "lg:grid lg:transition-[grid-template-columns] lg:duration-200 lg:ease-out",
-          isSidebarCollapsed ? "lg:grid-cols-[88px_minmax(0,1fr)]" : "lg:grid-cols-[272px_minmax(0,1fr)]",
+          isSidebarCollapsed
+            ? "lg:grid-cols-[88px_minmax(0,1fr)]"
+            : "lg:grid-cols-[272px_minmax(0,1fr)]"
         )}
       >
         <aside className="hidden min-h-screen border-r border-slate-200 bg-white lg:block">
           <div
             className={cn(
               "sticky top-0 flex h-dvh min-h-dvh flex-col transition-[padding] duration-200 ease-out",
-              isSidebarCollapsed ? "px-3" : "px-4 xl:px-5",
+              isSidebarCollapsed ? "px-3" : "px-4 xl:px-5"
             )}
           >
             <div
               className={cn(
                 "shrink-0 border-b border-slate-200 bg-white transition-[margin,padding] duration-200 ease-out",
-                isSidebarCollapsed ? "-mx-3 px-3 py-4" : "-mx-4 px-4 py-5 xl:-mx-5 xl:px-5",
+                isSidebarCollapsed ? "-mx-3 px-3 py-4" : "-mx-4 px-4 py-5 xl:-mx-5 xl:px-5"
               )}
             >
               <div
-                className={cn(
-                  "flex items-center",
-                  isSidebarCollapsed ? "justify-center" : "gap-3",
-                )}
+                className={cn("flex items-center", isSidebarCollapsed ? "justify-center" : "gap-3")}
               >
                 <Link
                   aria-label="Life Pilot dashboard"
                   className={cn(
                     "flex min-w-0 items-center rounded-md py-1",
-                    isSidebarCollapsed ? "justify-center px-0" : "flex-1 gap-3 px-2",
+                    isSidebarCollapsed ? "justify-center px-0" : "flex-1 gap-3 px-2"
                   )}
                   href="/dashboard"
                 >
@@ -175,7 +174,7 @@ export function AppShell({ children }: AppShellProps) {
             <div
               className={cn(
                 "sidebar-scrollbar min-h-0 flex-1 overflow-y-auto pb-4 transition-[margin,padding] duration-200 ease-out",
-                isSidebarCollapsed ? "-mx-3 px-3" : "-mx-4 pl-4 pr-1 xl:-mx-5 xl:pl-5",
+                isSidebarCollapsed ? "-mx-3 px-3" : "-mx-4 pl-4 pr-1 xl:-mx-5 xl:pl-5"
               )}
             >
               <nav
@@ -194,7 +193,7 @@ export function AppShell({ children }: AppShellProps) {
                         isSidebarCollapsed ? "justify-center px-0" : "gap-4 px-3",
                         isActive
                           ? "bg-emerald-50 text-emerald-600"
-                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-800",
+                          : "text-slate-600 hover:bg-slate-50 hover:text-slate-800"
                       )}
                       href={item.href}
                       key={item.href}
@@ -215,14 +214,14 @@ export function AppShell({ children }: AppShellProps) {
             <div
               className={cn(
                 "relative shrink-0 border-t border-slate-200 bg-white transition-[margin,padding] duration-200 ease-out",
-                isSidebarCollapsed ? "-mx-3 px-3 py-2" : "-mx-4 px-4 py-0 xl:-mx-5 xl:px-5",
+                isSidebarCollapsed ? "-mx-3 px-3 py-2" : "-mx-4 px-4 py-0 xl:-mx-5 xl:px-5"
               )}
             >
               {isAccountMenuOpen && (
                 <div
                   className={cn(
                     "absolute bottom-[calc(100%+8px)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.14)]",
-                    isSidebarCollapsed ? "left-3 w-60" : "inset-x-4 xl:inset-x-5",
+                    isSidebarCollapsed ? "left-3 w-60" : "inset-x-4 xl:inset-x-5"
                   )}
                 >
                   <div className="border-b border-slate-200 px-4 py-3 text-sm font-semibold text-slate-800">
@@ -251,7 +250,9 @@ export function AppShell({ children }: AppShellProps) {
                 aria-label={isAccountMenuOpen ? "Close account menu" : "Open account menu"}
                 className={cn(
                   "flex w-full min-w-0 items-center bg-white py-2 text-left transition hover:bg-slate-50",
-                  isSidebarCollapsed ? "min-h-12 justify-center rounded-md px-0" : "min-h-16 gap-3 px-2",
+                  isSidebarCollapsed
+                    ? "min-h-12 justify-center rounded-md px-0"
+                    : "min-h-16 gap-3 px-2"
                 )}
                 onClick={(event) => {
                   event.preventDefault();
@@ -294,15 +295,24 @@ export function AppShell({ children }: AppShellProps) {
                 <p className="text-sm font-medium text-emerald-600">Life Pilot</p>
                 <h1 className="text-xl font-semibold">Daily planner</h1>
               </Link>
-              <button className="mt-2 text-sm font-semibold text-red-600" onClick={handleLogout} type="button">Log out</button>
-              <nav className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 sm:mt-4" aria-label="Mobile navigation">
+              <button
+                className="mt-2 text-sm font-semibold text-red-600"
+                onClick={handleLogout}
+                type="button"
+              >
+                Log out
+              </button>
+              <nav
+                className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1 sm:mt-4"
+                aria-label="Mobile navigation"
+              >
                 {navItems.map((item) => (
                   <Link
                     aria-current={isActivePath(pathname, item.href) ? "page" : undefined}
                     className={cn(
                       "snap-start whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-800",
                       isActivePath(pathname, item.href) &&
-                        "bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white",
+                        "bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white"
                     )}
                     href={item.href}
                     key={item.href}
@@ -314,9 +324,7 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </header>
 
-          <main className="mx-auto min-w-0 max-w-[1600px] p-6 pb-24 lg:pb-6">
-            {children}
-          </main>
+          <main className="mx-auto min-w-0 max-w-[1600px] p-6 pb-24 lg:pb-6">{children}</main>
         </div>
       </div>
 
@@ -329,7 +337,7 @@ export function AppShell({ children }: AppShellProps) {
               aria-current={isActive ? "page" : undefined}
               className={cn(
                 "flex min-h-13 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[11px] font-medium text-slate-600",
-                isActive && "bg-emerald-500 text-white",
+                isActive && "bg-emerald-500 text-white"
               )}
               href={item.href}
               key={item.href}

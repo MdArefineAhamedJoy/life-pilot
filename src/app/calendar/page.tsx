@@ -133,7 +133,9 @@ export default function CalendarPage() {
   const monthExpenseTotal = expenses
     .filter((expense) => {
       const date = new Date(`${expense.date}T00:00:00`);
-      return date.getFullYear() === viewDate.getFullYear() && date.getMonth() === viewDate.getMonth();
+      return (
+        date.getFullYear() === viewDate.getFullYear() && date.getMonth() === viewDate.getMonth()
+      );
     })
     .reduce((sum, expense) => sum + expense.amount, 0);
 
@@ -207,7 +209,9 @@ export default function CalendarPage() {
           <div className="flex flex-col gap-2 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase text-emerald-600">Month view</p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-950">{formatMonthTitle(viewDate)}</h2>
+              <h2 className="mt-1 text-lg font-semibold text-slate-950">
+                {formatMonthTitle(viewDate)}
+              </h2>
             </div>
             <div className="flex flex-wrap gap-2 text-xs font-medium text-slate-500">
               <span className="inline-flex items-center gap-1">
@@ -227,7 +231,10 @@ export default function CalendarPage() {
 
           <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50">
             {weekDays.map((day) => (
-              <div className="px-2 py-3 text-center text-xs font-semibold uppercase text-slate-500" key={day}>
+              <div
+                className="px-2 py-3 text-center text-xs font-semibold uppercase text-slate-500"
+                key={day}
+              >
                 {day}
               </div>
             ))}
@@ -246,7 +253,7 @@ export default function CalendarPage() {
                   className={cn(
                     "min-h-28 border-b border-r border-slate-200 bg-white p-2 text-left transition hover:bg-slate-50",
                     !isCurrentMonth && "bg-slate-50/70 text-slate-400",
-                    isSelected && "bg-emerald-50/70 ring-2 ring-inset ring-emerald-500",
+                    isSelected && "bg-emerald-50/70 ring-2 ring-inset ring-emerald-500"
                   )}
                   key={dateKey}
                   onClick={() => setSelectedDate(dateKey)}
@@ -257,7 +264,7 @@ export default function CalendarPage() {
                       className={cn(
                         "flex size-7 items-center justify-center rounded-full text-sm font-semibold",
                         isToday ? "bg-emerald-600 text-white" : "text-slate-700",
-                        !isCurrentMonth && !isToday && "text-slate-400",
+                        !isCurrentMonth && !isToday && "text-slate-400"
                       )}
                     >
                       {date.getDate()}
@@ -271,7 +278,10 @@ export default function CalendarPage() {
                   <div className="space-y-1">
                     {dayEvents.slice(0, 3).map((event) => (
                       <div
-                        className={cn("truncate rounded border px-2 py-1 text-xs font-medium", eventToneClasses(event.tone))}
+                        className={cn(
+                          "truncate rounded border px-2 py-1 text-xs font-medium",
+                          eventToneClasses(event.tone)
+                        )}
                         key={event.id}
                         title={`${event.title} - ${event.detail}`}
                       >
@@ -279,7 +289,9 @@ export default function CalendarPage() {
                       </div>
                     ))}
                     {dayEvents.length > 3 && (
-                      <div className="text-xs font-medium text-slate-400">+{dayEvents.length - 3} more</div>
+                      <div className="text-xs font-medium text-slate-400">
+                        +{dayEvents.length - 3} more
+                      </div>
                     )}
                   </div>
                 </button>
@@ -291,18 +303,31 @@ export default function CalendarPage() {
         <SharedCard className="!p-0">
           <div className="border-b border-slate-100 px-5 py-4">
             <p className="text-xs font-semibold uppercase text-emerald-600">Selected day</p>
-            <h2 className="mt-1 text-lg font-semibold text-slate-950">{formatReadableDate(selectedDate)}</h2>
+            <h2 className="mt-1 text-lg font-semibold text-slate-950">
+              {formatReadableDate(selectedDate)}
+            </h2>
           </div>
           <div className="space-y-3 p-5">
             {selectedEvents.length > 0 ? (
               selectedEvents.map((event) => (
-                <div className={cn("rounded-md border p-3", eventToneClasses(event.tone))} key={event.id}>
+                <div
+                  className={cn("rounded-md border p-3", eventToneClasses(event.tone))}
+                  key={event.id}
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">{event.title}</p>
                       <p className="mt-1 text-xs opacity-80">{event.detail}</p>
                     </div>
-                    <Badge tone={event.tone === "expense" ? "danger" : event.tone === "task" ? "indigo" : "success"}>
+                    <Badge
+                      tone={
+                        event.tone === "expense"
+                          ? "danger"
+                          : event.tone === "task"
+                            ? "indigo"
+                            : "success"
+                      }
+                    >
                       {event.tone}
                     </Badge>
                   </div>
@@ -311,7 +336,9 @@ export default function CalendarPage() {
             ) : (
               <div className="rounded-md border border-dashed border-slate-200 p-6 text-center">
                 <p className="text-sm font-semibold text-slate-700">No items on this date</p>
-                <p className="mt-1 text-sm text-slate-500">Expenses, tasks, and budget dates will appear here.</p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Expenses, tasks, and budget dates will appear here.
+                </p>
               </div>
             )}
           </div>

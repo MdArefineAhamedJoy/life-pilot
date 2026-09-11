@@ -30,13 +30,7 @@ export type BudgetCategory = {
   isActive: boolean;
 };
 
-export type RoutineStatus =
-  | "pending"
-  | "active"
-  | "completed"
-  | "skipped"
-  | "delayed"
-  | "missed";
+export type RoutineStatus = "pending" | "active" | "completed" | "skipped" | "delayed" | "missed";
 
 export type RoutineTask = {
   id: string;

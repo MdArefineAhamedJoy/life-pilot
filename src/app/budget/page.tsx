@@ -76,7 +76,11 @@ export default function BudgetPage() {
       render: (category) => (
         <div className="min-w-0">
           <p className="font-semibold text-slate-900">{category.name}</p>
-          {category.extraNote && <p className="mt-1 max-w-[240px] truncate text-xs text-slate-500">{category.extraNote}</p>}
+          {category.extraNote && (
+            <p className="mt-1 max-w-[240px] truncate text-xs text-slate-500">
+              {category.extraNote}
+            </p>
+          )}
         </div>
       ),
     },
@@ -95,20 +99,29 @@ export default function BudgetPage() {
     {
       key: "target",
       header: "Target Price",
-      render: (category) => <span className="font-medium text-slate-900">{formatCurrency(category.monthlyLimit)}</span>,
+      render: (category) => (
+        <span className="font-medium text-slate-900">{formatCurrency(category.monthlyLimit)}</span>
+      ),
       align: "right",
     },
     {
       key: "spent",
       header: "Spent",
-      render: (category) => <span className="font-mono text-slate-700">{formatCurrency(category.spent)}</span>,
+      render: (category) => (
+        <span className="font-mono text-slate-700">{formatCurrency(category.spent)}</span>
+      ),
       align: "right",
     },
     {
       key: "remaining",
       header: "Remaining",
       render: (category) => (
-        <span className={cn("font-mono font-semibold", category.isOverBudget ? "text-red-500" : "text-emerald-600")}>
+        <span
+          className={cn(
+            "font-mono font-semibold",
+            category.isOverBudget ? "text-red-500" : "text-emerald-600"
+          )}
+        >
           {formatCurrency(category.remaining)}
         </span>
       ),
@@ -124,7 +137,11 @@ export default function BudgetPage() {
             <span>{category.isOverBudget ? "Over" : "Available"}</span>
           </div>
           <ProgressBar
-            tone={category.isOverBudget ? "rose" : (category.color as "teal" | "amber" | "rose" | "indigo")}
+            tone={
+              category.isOverBudget
+                ? "rose"
+                : (category.color as "teal" | "amber" | "rose" | "indigo")
+            }
             value={category.percent}
           />
         </div>
@@ -160,7 +177,9 @@ export default function BudgetPage() {
             aria-expanded={openActionMenuId === category.id}
             aria-label={`Open actions for ${category.name}`}
             className="flex size-9 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-            onClick={() => setOpenActionMenuId((current) => (current === category.id ? undefined : category.id))}
+            onClick={() =>
+              setOpenActionMenuId((current) => (current === category.id ? undefined : category.id))
+            }
             type="button"
           >
             <MoreVertical aria-hidden="true" className="size-4" />

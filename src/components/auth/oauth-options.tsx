@@ -1,1 +1,3 @@
-export function OAuthOptions() { return null; }
+export function OAuthOptions() {
+  return null;
+}

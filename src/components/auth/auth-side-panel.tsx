@@ -31,8 +31,7 @@ export function AuthSidePanel() {
           Organize the day before it starts.
         </h2>
         <p className="mt-4 max-w-md text-sm leading-6 text-slate-300">
-          Keep routine, money, tasks, notes, and AI decisions in one focused
-          personal system.
+          Keep routine, money, tasks, notes, and AI decisions in one focused personal system.
         </p>
 
         <div className="mt-8 grid gap-3">
@@ -45,12 +44,8 @@ export function AuthSidePanel() {
                 <Icon aria-hidden="true" className="size-5" strokeWidth={2} />
               </span>
               <span>
-                <span className="block text-sm font-semibold text-white">
-                  {title}
-                </span>
-                <span className="mt-1 block text-sm leading-5 text-slate-300">
-                  {detail}
-                </span>
+                <span className="block text-sm font-semibold text-white">{title}</span>
+                <span className="mt-1 block text-sm leading-5 text-slate-300">{detail}</span>
               </span>
             </div>
           ))}

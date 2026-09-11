@@ -1,0 +1,9 @@
+.next
+.serena
+.tmp
+dist
+node_modules
+coverage
+*.tsbuildinfo
+next-env.d.ts
+pnpm-lock.yaml

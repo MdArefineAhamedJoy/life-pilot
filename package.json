@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint src scripts next.config.ts eslint.config.mjs",
+    "lint:fix": "eslint src scripts next.config.ts eslint.config.mjs --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test:integration": "node scripts/integration-test.mjs"
   },
   "dependencies": {
@@ -14,10 +17,11 @@
     "@reduxjs/toolkit": "^2.12.0",
     "axios": "^1.20.0",
     "lucide-react": "^1.29.0",
-    "next": "16.3.0",
+    "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-redux": "^9.3.0"
+    "react-redux": "^9.3.0",
+    "tar": "7.5.19"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
@@ -27,6 +31,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

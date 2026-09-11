@@ -32,7 +32,7 @@ export function Pagination({
   const startPages = range(1, Math.min(boundaryCount, safeTotalPages));
   const endPages = range(
     Math.max(safeTotalPages - boundaryCount + 1, boundaryCount + 1),
-    safeTotalPages,
+    safeTotalPages
   );
   const leftSibling = Math.max(safePage - siblingCount, boundaryCount + 1);
   const rightSibling = Math.min(safePage + siblingCount, safeTotalPages - boundaryCount);
@@ -58,7 +58,10 @@ export function Pagination({
   return (
     <nav
       aria-label="Pagination"
-      className={cn("flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3", className)}
+      className={cn(
+        "flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3",
+        className
+      )}
       role="navigation"
     >
       <p className="whitespace-nowrap text-sm font-medium text-slate-600">
@@ -96,7 +99,7 @@ export function Pagination({
                     "inline-flex size-9 items-center justify-center rounded-md border text-sm font-medium shadow-sm transition",
                     isActive
                       ? "border-emerald-600 bg-emerald-600 text-white"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                   )}
                   onClick={() => goTo(item)}
                   type="button"

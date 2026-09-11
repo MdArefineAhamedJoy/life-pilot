@@ -89,7 +89,7 @@ export function FeaturePage({
               <div
                 className={cn(
                   "mb-4 inline-flex rounded-xl border px-2.5 py-1 text-xs font-semibold",
-                  toneStyles[metric.tone ?? "neutral"],
+                  toneStyles[metric.tone ?? "neutral"]
                 )}
               >
                 {metric.label}
@@ -115,8 +115,18 @@ export function FeaturePage({
                   className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"
                   key={item}
                 >
-                  <span className="min-w-0 truncate text-sm font-medium text-slate-800">{item}</span>
-                  <Badge tone={panel.tone === "danger" ? "danger" : panel.tone === "warning" ? "warning" : "teal"}>
+                  <span className="min-w-0 truncate text-sm font-medium text-slate-800">
+                    {item}
+                  </span>
+                  <Badge
+                    tone={
+                      panel.tone === "danger"
+                        ? "danger"
+                        : panel.tone === "warning"
+                          ? "warning"
+                          : "teal"
+                    }
+                  >
                     Ready
                   </Badge>
                 </div>
@@ -130,11 +140,17 @@ export function FeaturePage({
         <Card eyebrow="Workflow" title="Board View">
           <div className="grid min-w-0 gap-4 md:grid-cols-3">
             {board.map((column) => (
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3" key={column.title}>
+              <div
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                key={column.title}
+              >
                 <h3 className="text-sm font-semibold text-slate-800">{column.title}</h3>
                 <div className="mt-3 space-y-2">
                   {column.items.map((item) => (
-                    <div className="rounded-xl bg-white p-3 text-sm text-slate-700 shadow-sm" key={item}>
+                    <div
+                      className="rounded-xl bg-white p-3 text-sm text-slate-700 shadow-sm"
+                      key={item}
+                    >
                       {item}
                     </div>
                   ))}

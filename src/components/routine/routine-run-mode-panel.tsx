@@ -1,6 +1,16 @@
 "use client";
 
-import { Bell, BellOff, BookOpen, CalendarDays, CheckCircle2, Pause, Play, SkipForward, TimerReset } from "lucide-react";
+import {
+  Bell,
+  BellOff,
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  Pause,
+  Play,
+  SkipForward,
+  TimerReset,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -60,7 +70,9 @@ export function RoutineRunModePanel({
               <div className="h-2 overflow-hidden rounded-full bg-slate-100">
                 <div
                   className="h-full rounded-full bg-blue-600"
-                  style={{ width: `${Math.round((currentTaskPosition / Math.max(totalTasks, 1)) * 100)}%` }}
+                  style={{
+                    width: `${Math.round((currentTaskPosition / Math.max(totalTasks, 1)) * 100)}%`,
+                  }}
                 />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-slate-500">
@@ -79,7 +91,9 @@ export function RoutineRunModePanel({
                   {routineStatusLabels[getRoutineDisplayStatus(currentTask)]}
                 </Badge>
               </div>
-              <h3 className="mt-2 break-words text-2xl font-semibold text-slate-950">{currentTask.title}</h3>
+              <h3 className="mt-2 break-words text-2xl font-semibold text-slate-950">
+                {currentTask.title}
+              </h3>
               <div className="mt-2 grid gap-2 text-sm text-slate-600 md:grid-cols-3">
                 <span className="inline-flex min-w-0 items-center gap-2">
                   <BookOpen className="h-4 w-4 shrink-0 text-blue-600" />
@@ -95,7 +109,11 @@ export function RoutineRunModePanel({
                   ) : (
                     <BellOff className="h-4 w-4 shrink-0 text-slate-400" />
                   )}
-                  <span className="truncate">{currentTask.alertEnabled ? `Alert at ${getRoutineAlertTime(currentTask)}` : "No alert set"}</span>
+                  <span className="truncate">
+                    {currentTask.alertEnabled
+                      ? `Alert at ${getRoutineAlertTime(currentTask)}`
+                      : "No alert set"}
+                  </span>
                 </span>
               </div>
             </div>
@@ -106,20 +124,45 @@ export function RoutineRunModePanel({
               <div className="min-w-0 rounded-lg border border-slate-200 bg-slate-50 p-2">
                 <p className="text-xs font-medium text-slate-500">Next point</p>
                 <p className="mt-1 truncate font-semibold text-slate-800">{upcomingTask.title}</p>
-                <p className="mt-1 text-xs font-semibold text-slate-500">{upcomingTask.plannedStart}</p>
+                <p className="mt-1 text-xs font-semibold text-slate-500">
+                  {upcomingTask.plannedStart}
+                </p>
               </div>
             )}
             <div className="grid grid-cols-2 gap-2">
-              <Button className="h-9 px-2" icon={<Play className="h-4 w-4" />} onClick={onStart} type="button">
+              <Button
+                className="h-9 px-2"
+                icon={<Play className="h-4 w-4" />}
+                onClick={onStart}
+                type="button"
+              >
                 Start
               </Button>
-              <Button className="h-9 px-2" icon={<CheckCircle2 className="h-4 w-4" />} onClick={onComplete} type="button" variant="secondary">
+              <Button
+                className="h-9 px-2"
+                icon={<CheckCircle2 className="h-4 w-4" />}
+                onClick={onComplete}
+                type="button"
+                variant="secondary"
+              >
                 Done next
               </Button>
-              <Button className="h-9 px-2" icon={<Pause className="h-4 w-4" />} onClick={onDelay} type="button" variant="outline">
+              <Button
+                className="h-9 px-2"
+                icon={<Pause className="h-4 w-4" />}
+                onClick={onDelay}
+                type="button"
+                variant="outline"
+              >
                 Delay
               </Button>
-              <Button className="h-9 px-2" icon={<SkipForward className="h-4 w-4" />} onClick={onSkip} type="button" variant="ghost">
+              <Button
+                className="h-9 px-2"
+                icon={<SkipForward className="h-4 w-4" />}
+                onClick={onSkip}
+                type="button"
+                variant="ghost"
+              >
                 Skip next
               </Button>
             </div>

@@ -23,7 +23,7 @@ export function Button({ className, variant = "primary", icon, children, ...prop
       className={cn(
         "inline-flex h-9 max-w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-center text-sm font-medium transition disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         variants[variant],
-        className,
+        className
       )}
       {...props}
       disabled={props.disabled || isSaving}

@@ -20,14 +20,27 @@ export function AuthGate({ children }: { children: ReactNode }) {
       const current = ++generation;
       try {
         const nextUser = await authService.currentUser();
-        if (active && current === generation) { setUser(nextUser); setError(""); }
+        if (active && current === generation) {
+          setUser(nextUser);
+          setError("");
+        }
       } catch (cause) {
-        if (active && current === generation) setError(cause instanceof Error ? cause.message : "Unable to check your session.");
+        if (active && current === generation)
+          setError(cause instanceof Error ? cause.message : "Unable to check your session.");
       }
     };
-    const invalidate = () => { setUser(null); void check(); };
-    const unauthorized = () => { ++generation; setUser(null); router.replace("/login"); };
-    const onStorage = (event: StorageEvent) => { if (event.key === "life-pilot-auth-event") invalidate(); };
+    const invalidate = () => {
+      setUser(null);
+      void check();
+    };
+    const unauthorized = () => {
+      ++generation;
+      setUser(null);
+      router.replace("/login");
+    };
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === "life-pilot-auth-event") invalidate();
+    };
     void check();
     window.addEventListener("life-pilot:auth-changed", invalidate);
     window.addEventListener("life-pilot:unauthorized", unauthorized);
@@ -40,9 +53,19 @@ export function AuthGate({ children }: { children: ReactNode }) {
     };
   }, [isPublic, router, attempt]);
   if (isPublic) return <AuthUserContext.Provider value={null}>{children}</AuthUserContext.Provider>;
-  if (!user) return <div className="grid min-h-dvh place-content-center gap-4 bg-slate-50 p-6" aria-busy={!error}>
-    <p role={error ? "alert" : "status"}>{error || "Checking your session…"}</p>
-    {error && <button className="rounded bg-emerald-600 px-4 py-2 text-white" onClick={() => setAttempt((value) => value + 1)}>Try again</button>}
-  </div>;
+  if (!user)
+    return (
+      <div className="grid min-h-dvh place-content-center gap-4 bg-slate-50 p-6" aria-busy={!error}>
+        <p role={error ? "alert" : "status"}>{error || "Checking your session…"}</p>
+        {error && (
+          <button
+            className="rounded bg-emerald-600 px-4 py-2 text-white"
+            onClick={() => setAttempt((value) => value + 1)}
+          >
+            Try again
+          </button>
+        )}
+      </div>
+    );
   return <AuthUserContext.Provider value={user}>{children}</AuthUserContext.Provider>;
 }

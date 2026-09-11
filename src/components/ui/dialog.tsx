@@ -34,7 +34,7 @@ function DialogContent({
       <DialogPrimitive.Content
         className={cn(
           "fixed left-1/2 top-1/2 z-[60] grid w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border border-slate-200 bg-white shadow-lg outline-none",
-          className,
+          className
         )}
         data-slot="dialog-content"
         {...props}
@@ -84,7 +84,10 @@ function DialogTitle({ className, ...props }: ComponentProps<typeof DialogPrimit
   );
 }
 
-function DialogDescription({ className, ...props }: ComponentProps<typeof DialogPrimitive.Description>) {
+function DialogDescription({
+  className,
+  ...props
+}: ComponentProps<typeof DialogPrimitive.Description>) {
   return (
     <DialogPrimitive.Description
       className={cn("text-sm text-slate-500", className)}

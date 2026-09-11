@@ -22,12 +22,8 @@ export function SecuritySection() {
                 className="size-7 text-[var(--life-accent)]"
                 strokeWidth={2}
               />
-              <h3 className="mt-5 text-lg font-semibold text-[var(--life-text)]">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--life-muted)]">
-                {detail}
-              </p>
+              <h3 className="mt-5 text-lg font-semibold text-[var(--life-text)]">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--life-muted)]">{detail}</p>
             </article>
           ))}
         </div>

@@ -25,14 +25,16 @@ export function RoutineNotificationToast({
         aria-label="Show routine notification"
         className={cn(
           "relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-800 shadow-sm transition hover:bg-slate-50",
-          hasNotification && "border-amber-300 bg-amber-50 text-amber-700",
+          hasNotification && "border-amber-300 bg-amber-50 text-amber-700"
         )}
         onClick={onOpen}
         title="Routine notification"
         type="button"
       >
         <Bell className="h-4 w-4" />
-        {hasNotification && <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white" />}
+        {hasNotification && (
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white" />
+        )}
       </button>
 
       {open && message && (

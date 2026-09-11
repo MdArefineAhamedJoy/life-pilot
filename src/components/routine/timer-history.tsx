@@ -21,7 +21,9 @@ export function TimerHistory() {
       key: "duration",
       header: "Duration",
       align: "right",
-      render: (session) => <span className="font-mono">{formatDuration(session.durationSeconds)}</span>,
+      render: (session) => (
+        <span className="font-mono">{formatDuration(session.durationSeconds)}</span>
+      ),
     },
   ];
 
@@ -31,7 +33,12 @@ export function TimerHistory() {
         <p className="text-xs font-semibold uppercase tracking-normal text-emerald-600">History</p>
         <h2 className="mt-1 text-xl font-semibold text-slate-800">Saved Timer Sessions</h2>
       </div>
-      <DataTable columns={columns} emptyMessage="No timer session saved yet." getRowKey={(session) => session.id} rows={timerSessions} />
+      <DataTable
+        columns={columns}
+        emptyMessage="No timer session saved yet."
+        getRowKey={(session) => session.id}
+        rows={timerSessions}
+      />
     </section>
   );
 }

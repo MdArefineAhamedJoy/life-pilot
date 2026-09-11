@@ -13,7 +13,10 @@ export function getCategorySpent(expenses: Expense[], category: string) {
 
 export function getBudgetUsage(categories: BudgetCategory[], expenses: Expense[]) {
   return categories.map((category) => {
-    const spent = getCategorySpent(expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)), category.name);
+    const spent = getCategorySpent(
+      expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)),
+      category.name
+    );
     const limit = category.monthlyLimit;
     const remaining = limit - spent;
     const percent = limit > 0 ? Math.min(Math.round((spent / limit) * 100), 100) : 0;

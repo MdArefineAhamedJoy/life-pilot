@@ -56,8 +56,10 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     const targetPrice = Number(data.get("targetPrice")) || 0;
     const selectedCategoryId = String(data.get("categoryId") ?? "");
     const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
-    const categoryName = isEdit ? budget?.name ?? "" : selectedCategory?.name ?? "";
-    const color = isEdit ? String(data.get("color") ?? "teal") : selectedCategory?.color ?? "teal";
+    const categoryName = isEdit ? (budget?.name ?? "") : (selectedCategory?.name ?? "");
+    const color = isEdit
+      ? String(data.get("color") ?? "teal")
+      : (selectedCategory?.color ?? "teal");
 
     if (!categoryName) {
       return;
@@ -78,9 +80,9 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     };
 
     if (isEdit && budget) {
-      if (!await updateBudgetCategory(budget.id, nextBudget)) return;
+      if (!(await updateBudgetCategory(budget.id, nextBudget))) return;
     } else if (selectedCategory) {
-      if (!await updateBudgetCategory(selectedCategory.id, nextBudget)) return;
+      if (!(await updateBudgetCategory(selectedCategory.id, nextBudget))) return;
       form.reset();
       setHasExtraNote(false);
     }
@@ -124,10 +126,20 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
                 </SelectInput>
               </FieldShell>
               <FieldShell label="Start date">
-                <TextInput defaultValue={budget?.startDate ?? ""} name="startDate" required type="date" />
+                <TextInput
+                  defaultValue={budget?.startDate ?? ""}
+                  name="startDate"
+                  required
+                  type="date"
+                />
               </FieldShell>
               <FieldShell label="End date">
-                <TextInput defaultValue={budget?.endDate ?? ""} name="endDate" required type="date" />
+                <TextInput
+                  defaultValue={budget?.endDate ?? ""}
+                  name="endDate"
+                  required
+                  type="date"
+                />
               </FieldShell>
               <FieldShell label="Target price">
                 <TextInput
@@ -140,7 +152,10 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
                 />
               </FieldShell>
               <FieldShell label="Status">
-                <SelectInput defaultValue={budget ? getBudgetStatus(budget) : "active"} name="status">
+                <SelectInput
+                  defaultValue={budget ? getBudgetStatus(budget) : "active"}
+                  name="status"
+                >
                   <option value="active">Active</option>
                   <option value="paused">Paused</option>
                   <option value="completed">Completed</option>

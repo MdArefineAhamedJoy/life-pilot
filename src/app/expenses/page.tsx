@@ -1,6 +1,15 @@
 "use client";
 
-import { CalendarDays, CreditCard, Receipt, Search, Tags, TrendingUp, Wallet, X } from "lucide-react";
+import {
+  CalendarDays,
+  CreditCard,
+  Receipt,
+  Search,
+  Tags,
+  TrendingUp,
+  Wallet,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { AddExpenseDialog } from "@/components/budget/add-expense-dialog";
 import { ExpenseTable } from "@/components/budget/expense-table";
@@ -64,9 +73,14 @@ export default function ExpensesPage() {
           detail={`${filteredExpenses.length} matching entries`}
           icon={Wallet}
           label="Total spent"
-          progress={totalExpenseAmount > 0 ? Math.round((stats.total / totalExpenseAmount) * 100) : 0}
+          progress={
+            totalExpenseAmount > 0 ? Math.round((stats.total / totalExpenseAmount) * 100) : 0
+          }
           tone="red"
-          value={stats.total.toLocaleString(undefined, { style: "currency", currency: settings.currency })}
+          value={stats.total.toLocaleString(undefined, {
+            style: "currency",
+            currency: settings.currency,
+          })}
         />
         <StatCard
           detail={`of ${expenses.length} total records`}
@@ -80,9 +94,14 @@ export default function ExpensesPage() {
           detail="Average per filtered entry"
           icon={TrendingUp}
           label="Average / entry"
-          progress={stats.total > 0 ? Math.min(Math.round((stats.avg / stats.total) * 100), 100) : 0}
+          progress={
+            stats.total > 0 ? Math.min(Math.round((stats.avg / stats.total) * 100), 100) : 0
+          }
           tone="emerald"
-          value={stats.avg.toLocaleString(undefined, { style: "currency", currency: settings.currency })}
+          value={stats.avg.toLocaleString(undefined, {
+            style: "currency",
+            currency: settings.currency,
+          })}
         />
       </div>
 
@@ -176,8 +195,8 @@ export default function ExpensesPage() {
         </div>
         {hasActiveFilters && (
           <div className="border-t border-slate-100 bg-slate-50 px-5 py-3 text-sm text-slate-500">
-            Showing <span className="font-semibold text-slate-800">{filteredExpenses.length}</span> of{" "}
-            <span className="font-semibold text-slate-800">{expenses.length}</span> expenses
+            Showing <span className="font-semibold text-slate-800">{filteredExpenses.length}</span>{" "}
+            of <span className="font-semibold text-slate-800">{expenses.length}</span> expenses
           </div>
         )}
       </SharedCard>

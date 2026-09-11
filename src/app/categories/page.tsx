@@ -80,7 +80,9 @@ export default function CategoriesPage() {
       key: "expenseCount",
       header: "Expense Records",
       render: (category) => (
-        <span className="font-mono text-slate-700">{expenseCountByCategory[category.name] ?? 0}</span>
+        <span className="font-mono text-slate-700">
+          {expenseCountByCategory[category.name] ?? 0}
+        </span>
       ),
       align: "right",
     },
@@ -91,7 +93,9 @@ export default function CategoriesPage() {
         const status = getCategoryStatus(category);
 
         return (
-          <Badge tone={status === "active" ? "success" : status === "pushed" ? "warning" : "danger"}>
+          <Badge
+            tone={status === "active" ? "success" : status === "pushed" ? "warning" : "danger"}
+          >
             {statusLabels[status]}
           </Badge>
         );
@@ -107,7 +111,9 @@ export default function CategoriesPage() {
             aria-expanded={openActionMenuId === category.id}
             aria-label={`Open actions for ${category.name}`}
             className="flex size-9 items-center justify-center rounded-md text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-            onClick={() => setOpenActionMenuId((current) => (current === category.id ? undefined : category.id))}
+            onClick={() =>
+              setOpenActionMenuId((current) => (current === category.id ? undefined : category.id))
+            }
             type="button"
           >
             <MoreVertical aria-hidden="true" className="size-4" />
@@ -233,7 +239,7 @@ export default function CategoriesPage() {
             return;
           }
 
-          if (!await deleteBudgetCategory(deleteCategory.id)) return false;
+          if (!(await deleteBudgetCategory(deleteCategory.id))) return false;
           setDeleteCategory(undefined);
         }}
         onOpenChange={(open) => !open && setDeleteCategory(undefined)}

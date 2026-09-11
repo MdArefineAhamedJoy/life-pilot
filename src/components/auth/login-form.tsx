@@ -18,7 +18,10 @@ export function LoginForm() {
     try {
       await login({ email, password });
       const next = new URLSearchParams(window.location.search).get("next");
-      const destination = next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : "/dashboard";
+      const destination =
+        next && next.startsWith("/") && !next.startsWith("//") && !next.includes("\\")
+          ? next
+          : "/dashboard";
       router.replace(destination);
       router.refresh();
     } catch {
@@ -27,7 +30,13 @@ export function LoginForm() {
   }
 
   return (
-    <form className="mt-5 space-y-3" onSubmit={(event) => { event.preventDefault(); void handleLogin(); }}>
+    <form
+      className="mt-5 space-y-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleLogin();
+      }}
+    >
       <label className="block space-y-2">
         <span className="text-sm font-medium text-slate-900">Email address</span>
         <span className="relative block">
@@ -68,13 +77,29 @@ export function LoginForm() {
         </span>
       </label>
 
-      <button type="button" disabled={!email || requestingRecovery} className="text-sm font-semibold text-emerald-700" onClick={async () => {
-        setRequestingRecovery(true);
-        try { await accountService.requestPasswordRecovery(email); setRecoveryMessage("Recovery instructions requested."); }
-        catch (cause) { setRecoveryMessage(cause instanceof Error ? cause.message : "Recovery request failed."); }
-        finally { setRequestingRecovery(false); }
-      }}>{requestingRecovery ? "Requesting?" : "Forgot password?"}</button>
-      {recoveryMessage && <p role="status" className="text-sm text-slate-700">{recoveryMessage}</p>}
+      <button
+        type="button"
+        disabled={!email || requestingRecovery}
+        className="text-sm font-semibold text-emerald-700"
+        onClick={async () => {
+          setRequestingRecovery(true);
+          try {
+            await accountService.requestPasswordRecovery(email);
+            setRecoveryMessage("Recovery instructions requested.");
+          } catch (cause) {
+            setRecoveryMessage(cause instanceof Error ? cause.message : "Recovery request failed.");
+          } finally {
+            setRequestingRecovery(false);
+          }
+        }}
+      >
+        {requestingRecovery ? "Requesting?" : "Forgot password?"}
+      </button>
+      {recoveryMessage && (
+        <p role="status" className="text-sm text-slate-700">
+          {recoveryMessage}
+        </p>
+      )}
       {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
       <button

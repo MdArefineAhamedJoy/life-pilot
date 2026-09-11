@@ -26,9 +26,7 @@ export default function TimerPage() {
       />
       <section className="min-w-0">
         <Tabs ariaLabel="Timer views" onValueChange={setActiveTab} tabs={tabs} value={activeTab} />
-        <div className="mt-5">
-          {activeTab === "timer" ? <TimerPanel /> : <TimerHistory />}
-        </div>
+        <div className="mt-5">{activeTab === "timer" ? <TimerPanel /> : <TimerHistory />}</div>
       </section>
     </div>
   );

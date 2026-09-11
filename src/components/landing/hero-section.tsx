@@ -24,29 +24,23 @@ export function HeroSection() {
             Plan the day by money, energy, and real priorities.
           </h1>
           <p className="mx-auto mt-7 max-w-[62ch] text-[clamp(0.98rem,1.25vw,1.14rem)] leading-8 text-[var(--life-muted)]">
-            Life Pilot AI blends spending drift, upcoming tasks, routines, and
-            focus blocks into one colorful daily operating system.
+            Life Pilot AI blends spending drift, upcoming tasks, routines, and focus blocks into one
+            colorful daily operating system.
           </p>
           <div className="mx-auto mt-7 flex max-w-3xl flex-wrap justify-center gap-3">
-            {["Cashflow aware", "Task load mapped", "AI review ready"].map(
-              (item) => (
-                <span
-                  className="rounded-full border border-[var(--life-border)] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-semibold text-[var(--life-muted)] shadow-[var(--life-shadow-card)] backdrop-blur-xl"
-                  key={item}
-                >
-                  {item}
-                </span>
-              ),
-            )}
+            {["Cashflow aware", "Task load mapped", "AI review ready"].map((item) => (
+              <span
+                className="rounded-full border border-[var(--life-border)] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-sm font-semibold text-[var(--life-muted)] shadow-[var(--life-shadow-card)] backdrop-blur-xl"
+                key={item}
+              >
+                {item}
+              </span>
+            ))}
           </div>
           <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <PrimaryLink href="/register">
               Create account
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4"
-                strokeWidth={2}
-              />
+              <ArrowRight aria-hidden="true" className="size-4" strokeWidth={2} />
             </PrimaryLink>
             <GhostLink href="/dashboard">
               <Zap aria-hidden="true" className="size-4" strokeWidth={2} />

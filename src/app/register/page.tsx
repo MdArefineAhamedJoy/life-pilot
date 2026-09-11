@@ -22,9 +22,7 @@ export default function RegisterPage() {
                 <span className="block truncate text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-emerald-300">
                   Life Pilot
                 </span>
-                <span className="block truncate text-sm font-semibold text-white">
-                  AI Planner
-                </span>
+                <span className="block truncate text-sm font-semibold text-white">AI Planner</span>
               </span>
             </Link>
 
@@ -44,14 +42,8 @@ export default function RegisterPage() {
                     className="auth-stat-card rounded-2xl border border-white/10 bg-white/[0.07] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
                     key={label}
                   >
-                    <Icon
-                      aria-hidden="true"
-                      className="size-4 text-emerald-200"
-                      strokeWidth={2}
-                    />
-                    <span className="mt-3 block text-2xl font-semibold text-white">
-                      {value}
-                    </span>
+                    <Icon aria-hidden="true" className="size-4 text-emerald-200" strokeWidth={2} />
+                    <span className="mt-3 block text-2xl font-semibold text-white">{value}</span>
                     <span className="mt-1 block text-[0.66rem] font-semibold uppercase tracking-[0.13em] text-slate-400">
                       {label}
                     </span>
@@ -79,21 +71,17 @@ export default function RegisterPage() {
               </div>
 
               <div className="mt-4 grid gap-2">
-                {["Money guardrail", "Focus block", "AI review"].map(
-                  (item, index) => (
-                    <div className="flex items-center gap-3" key={item}>
-                      <span className="w-24 text-[0.7rem] font-semibold text-slate-300">
-                        {item}
-                      </span>
-                      <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-                        <span
-                          className="auth-meter block h-full rounded-full bg-emerald-300"
-                          style={{ animationDelay: `${index * 0.45}s` }}
-                        />
-                      </span>
-                    </div>
-                  ),
-                )}
+                {["Money guardrail", "Focus block", "AI review"].map((item, index) => (
+                  <div className="flex items-center gap-3" key={item}>
+                    <span className="w-24 text-[0.7rem] font-semibold text-slate-300">{item}</span>
+                    <span className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                      <span
+                        className="auth-meter block h-full rounded-full bg-emerald-300"
+                        style={{ animationDelay: `${index * 0.45}s` }}
+                      />
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -124,7 +112,10 @@ export default function RegisterPage() {
 
               <p className="mt-4 text-center text-sm text-slate-600">
                 Have account?{" "}
-                <Link className="font-semibold text-emerald-700 hover:text-emerald-800" href="/login">
+                <Link
+                  className="font-semibold text-emerald-700 hover:text-emerald-800"
+                  href="/login"
+                >
                   Login
                 </Link>
               </p>

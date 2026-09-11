@@ -12,7 +12,6 @@ import { FieldShell, TextArea, TextInput } from "@/components/ui/field";
 import { SectionHeader } from "@/components/ui/section-header";
 import { parseReceiptText } from "@/lib/calculations";
 
-
 type ParsedReceiptRow = ReturnType<typeof parseReceiptText>[number];
 
 export default function ReceiptScannerPage() {
@@ -34,17 +33,23 @@ export default function ReceiptScannerPage() {
       render: (row) => <span className="font-medium text-slate-900">{row.itemName}</span>,
     },
     { key: "category", header: "Category", render: (row) => <Badge>{row.category}</Badge> },
-    { key: "qty", header: "Qty", render: (row) => <span className="font-mono">{row.quantity}</span> },
+    {
+      key: "qty",
+      header: "Qty",
+      render: (row) => <span className="font-mono">{row.quantity}</span>,
+    },
     {
       key: "amount",
       header: "Amount",
       align: "right",
-      render: (row) => <span className="font-mono font-semibold text-slate-900">{formatCurrency(row.amount)}</span>,
+      render: (row) => (
+        <span className="font-mono font-semibold text-slate-900">{formatCurrency(row.amount)}</span>
+      ),
     },
   ];
 
   async function handleSave() {
-    if (!await addExpensesFromRows(validRows, saveDate || undefined)) return;
+    if (!(await addExpensesFromRows(validRows, saveDate || undefined))) return;
     setRawText("");
     setSavedMessage(`${validRows.length} rows saved to expenses.`);
   }
@@ -76,7 +81,9 @@ export default function ReceiptScannerPage() {
           detail={`${parsedRows.length} parsed lines`}
           icon={ScanText}
           label="Valid rows"
-          progress={parsedRows.length > 0 ? Math.round((validRows.length / parsedRows.length) * 100) : 0}
+          progress={
+            parsedRows.length > 0 ? Math.round((validRows.length / parsedRows.length) * 100) : 0
+          }
           tone="blue"
           value={String(validRows.length)}
         />
@@ -111,7 +118,10 @@ export default function ReceiptScannerPage() {
                 />
               </span>
             </FieldShell>
-            <FieldShell hint="Paste one item per line, with the amount at the end." label="Receipt text">
+            <FieldShell
+              hint="Paste one item per line, with the amount at the end."
+              label="Receipt text"
+            >
               <TextArea
                 className="min-h-[260px] resize-none bg-white"
                 onChange={(event) => {
@@ -122,7 +132,10 @@ export default function ReceiptScannerPage() {
                 value={rawText}
               />
             </FieldShell>
-            <FieldShell hint="Image OCR is not connected. Paste receipt text to add expenses." label="Receipt image">
+            <FieldShell
+              hint="Image OCR is not connected. Paste receipt text to add expenses."
+              label="Receipt image"
+            >
               <TextInput
                 disabled
                 accept="image/*"
@@ -134,9 +147,13 @@ export default function ReceiptScannerPage() {
             <div className="rounded-md border border-emerald-200 bg-emerald-50 p-4">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-sm font-medium text-emerald-600">Ready to save</span>
-                <span className="font-mono text-lg font-semibold text-slate-800">{formatCurrency(total)}</span>
+                <span className="font-mono text-lg font-semibold text-slate-800">
+                  {formatCurrency(total)}
+                </span>
               </div>
-              <p className="mt-1 text-sm text-slate-500">{validRows.length} valid expense rows will be added.</p>
+              <p className="mt-1 text-sm text-slate-500">
+                {validRows.length} valid expense rows will be added.
+              </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Button

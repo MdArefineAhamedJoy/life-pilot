@@ -9,19 +9,29 @@ export async function proxy(request: NextRequest) {
   if (token) {
     try {
       const result = await fetch(backendUrl("auth/me"), {
-        headers: { Authorization: `Bearer ${token}` }, cache: "no-store", signal: AbortSignal.timeout(10000),
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10000),
       });
-      if (result.ok) return authPage ? NextResponse.redirect(new URL("/dashboard", request.url)) : NextResponse.next();
+      if (result.ok)
+        return authPage
+          ? NextResponse.redirect(new URL("/dashboard", request.url))
+          : NextResponse.next();
       if (result.status !== 401) throw new Error("Authentication unavailable");
     } catch {
       if (publicPage) return NextResponse.next();
-      return new NextResponse("Your session could not be checked because the server is unavailable. Please reload to try again.", {
-        status: 503, headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
-      });
+      return new NextResponse(
+        "Your session could not be checked because the server is unavailable. Please reload to try again.",
+        {
+          status: 503,
+          headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
+        }
+      );
     }
   }
   const destination = new URL("/login", request.url);
-  if (!publicPage) destination.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
+  if (!publicPage)
+    destination.searchParams.set("next", request.nextUrl.pathname + request.nextUrl.search);
   const response = publicPage ? NextResponse.next() : NextResponse.redirect(destination);
   response.cookies.delete(sessionCookie);
   return response;

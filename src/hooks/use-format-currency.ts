@@ -5,5 +5,8 @@ import { formatCurrency } from "@/lib/utils";
 
 export function useFormatCurrency() {
   const { settings } = useLifeOs();
-  return useCallback((amount: number) => formatCurrency(amount, settings.currency), [settings.currency]);
+  return useCallback(
+    (amount: number) => formatCurrency(amount, settings.currency),
+    [settings.currency]
+  );
 }

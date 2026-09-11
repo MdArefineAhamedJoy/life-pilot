@@ -180,18 +180,18 @@ The product should feel like a calm Daily Money Management + Daily Routine dashb
 
 ### Color Palette
 
-| Element | Color | Hex |
-| --- | --- | --- |
-| Primary | Emerald | `#10B981` |
+| Element       | Color        | Hex       |
+| ------------- | ------------ | --------- |
+| Primary       | Emerald      | `#10B981` |
 | Primary hover | Dark Emerald | `#059669` |
-| Secondary | Blue | `#3B82F6` |
-| Background | Light Gray | `#F8FAFC` |
-| Card | White | `#FFFFFF` |
-| Text | Dark Slate | `#1E293B` |
-| Border | Gray | `#E2E8F0` |
-| Success | Green | `#22C55E` |
-| Warning | Orange | `#F59E0B` |
-| Danger | Red | `#EF4444` |
+| Secondary     | Blue         | `#3B82F6` |
+| Background    | Light Gray   | `#F8FAFC` |
+| Card          | White        | `#FFFFFF` |
+| Text          | Dark Slate   | `#1E293B` |
+| Border        | Gray         | `#E2E8F0` |
+| Success       | Green        | `#22C55E` |
+| Warning       | Orange       | `#F59E0B` |
+| Danger        | Red          | `#EF4444` |
 
 Feature color rules:
 

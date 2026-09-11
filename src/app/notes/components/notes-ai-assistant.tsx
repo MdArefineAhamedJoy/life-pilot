@@ -95,13 +95,19 @@ function hasAnyTerm(text: string, terms: string[]) {
 
 function getMatchedCategory(note: LifeNote, categories: BudgetCategory[]) {
   const text = noteText(note);
-  return categories.find((category) => text.includes(category.name.toLowerCase()))?.name ?? categories[0]?.name ?? "Uncategorized";
+  return (
+    categories.find((category) => text.includes(category.name.toLowerCase()))?.name ??
+    categories[0]?.name ??
+    "Uncategorized"
+  );
 }
 
 function extractAmounts(notes: LifeNote[]) {
   return notes.flatMap((note) => {
     const text = `${note.title}. ${note.body}`;
-    const matches = Array.from(text.matchAll(/(?:bdt|tk|taka|৳)?\s*(\d{2,}(?:,\d{3})*(?:\.\d+)?)/gi));
+    const matches = Array.from(
+      text.matchAll(/(?:bdt|tk|taka|৳)?\s*(\d{2,}(?:,\d{3})*(?:\.\d+)?)/gi)
+    );
 
     return matches.map<ExtractedAmount>((match, index) => {
       const rawAmount = match[1]?.replaceAll(",", "") ?? "0";
@@ -133,7 +139,10 @@ function getDraftExpenses(notes: LifeNote[], categories: BudgetCategory[]) {
       }
 
       const amount = Number(amountMatch[1].replaceAll(",", ""));
-      const itemName = line.slice(0, amountMatch.index).replace(/[-:]+$/, "").trim();
+      const itemName = line
+        .slice(0, amountMatch.index)
+        .replace(/[-:]+$/, "")
+        .trim();
 
       if (!itemName || amount <= 0) {
         return [];
@@ -153,7 +162,9 @@ function getDraftExpenses(notes: LifeNote[], categories: BudgetCategory[]) {
 }
 
 function getUpcomingTasks(tasks: RoutineTask[]) {
-  return tasks.filter((task) => ["pending", "active", "delayed", "missed"].includes(task.status)).slice(0, 3);
+  return tasks
+    .filter((task) => ["pending", "active", "delayed", "missed"].includes(task.status))
+    .slice(0, 3);
 }
 
 function MetricTile({ label, value, detail }: { label: string; value: string; detail: string }) {
@@ -184,7 +195,7 @@ function InsightRow({
           "flex size-9 shrink-0 items-center justify-center rounded-md",
           tone === "warning" && "bg-amber-50 text-amber-600",
           tone === "success" && "bg-emerald-50 text-emerald-600",
-          tone === "neutral" && "bg-blue-50 text-blue-600",
+          tone === "neutral" && "bg-blue-50 text-blue-600"
         )}
       >
         <Icon aria-hidden="true" className="size-4" />
@@ -204,7 +215,9 @@ export function NotesAiAssistant() {
 
   const analysis = useMemo(() => {
     const budgetUsage = getBudgetUsage(categories, expenses);
-    const totalSpent = getTotalSpent(expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7)));
+    const totalSpent = getTotalSpent(
+      expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7))
+    );
     const totalBudget = budgetUsage.reduce((total, category) => total + category.monthlyLimit, 0);
     const remaining = totalBudget - totalSpent;
     const moneyNotes = notes.filter((note) => hasAnyTerm(noteText(note), moneyTerms));
@@ -262,9 +275,12 @@ export function NotesAiAssistant() {
               <p className="text-xs font-semibold uppercase text-emerald-600">AI Notes Assistant</p>
               <Badge tone="neutral">{assistantStatus}</Badge>
             </div>
-            <h2 className="mt-3 break-words text-lg font-semibold text-slate-950">Review notes with money context</h2>
+            <h2 className="mt-3 break-words text-lg font-semibold text-slate-950">
+              Review notes with money context
+            </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-              Notes, expenses, budget categories, routine tasks, and file-sourced records are reviewed together before anything changes.
+              Notes, expenses, budget categories, routine tasks, and file-sourced records are
+              reviewed together before anything changes.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -274,7 +290,7 @@ export function NotesAiAssistant() {
                   "h-9 flex-1 border px-3 min-[520px]:flex-none",
                   activeView === id
                     ? "border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 )}
                 icon={<Icon aria-hidden="true" className="size-4" />}
                 key={id}
@@ -293,9 +309,21 @@ export function NotesAiAssistant() {
         <div className="min-w-0 space-y-5 p-4">
           <div className="grid min-w-0 gap-3 sm:grid-cols-2">
             <MetricTile detail="Saved in notes" label="Notes" value={String(notes.length)} />
-            <MetricTile detail="Matched by tags or text" label="Money notes" value={String(analysis.moneyNotes.length)} />
-            <MetricTile detail="Need review before saving" label="Draft rows" value={String(analysis.draftExpenses.length)} />
-            <MetricTile detail="Across tracked expenses" label="Spent" value={formatCurrency(analysis.totalSpent)} />
+            <MetricTile
+              detail="Matched by tags or text"
+              label="Money notes"
+              value={String(analysis.moneyNotes.length)}
+            />
+            <MetricTile
+              detail="Need review before saving"
+              label="Draft rows"
+              value={String(analysis.draftExpenses.length)}
+            />
+            <MetricTile
+              detail="Across tracked expenses"
+              label="Spent"
+              value={formatCurrency(analysis.totalSpent)}
+            />
           </div>
 
           {activeView === "summary" && (
@@ -323,7 +351,9 @@ export function NotesAiAssistant() {
               <InsightRow
                 detail={
                   analysis.upcomingTasks.length > 0
-                    ? analysis.upcomingTasks.map((task) => `${task.title} (${task.status})`).join(", ")
+                    ? analysis.upcomingTasks
+                        .map((task) => `${task.title} (${task.status})`)
+                        .join(", ")
                     : "No pending routine items need attention."
                 }
                 icon={ListChecks}
@@ -335,15 +365,17 @@ export function NotesAiAssistant() {
           {activeView === "money" && (
             <div className="grid gap-3">
               {analysis.moneyNotes.length > 0 ? (
-                analysis.moneyNotes.slice(0, 4).map((note) => (
-                  <InsightRow
-                    detail={note.body}
-                    icon={WalletCards}
-                    key={note.id}
-                    title={`${note.title} -> ${getMatchedCategory(note, categories)}`}
-                    tone="success"
-                  />
-                ))
+                analysis.moneyNotes
+                  .slice(0, 4)
+                  .map((note) => (
+                    <InsightRow
+                      detail={note.body}
+                      icon={WalletCards}
+                      key={note.id}
+                      title={`${note.title} -> ${getMatchedCategory(note, categories)}`}
+                      tone="success"
+                    />
+                  ))
               ) : (
                 <InsightRow
                   detail="No saved note currently mentions budget, payment, balance, cost, or spending terms."
@@ -367,9 +399,16 @@ export function NotesAiAssistant() {
           {activeView === "reminders" && (
             <div className="grid gap-3">
               {analysis.reminderNotes.length > 0 ? (
-                analysis.reminderNotes.slice(0, 4).map((note) => (
-                  <InsightRow detail={note.body} icon={ListChecks} key={note.id} title={note.title} />
-                ))
+                analysis.reminderNotes
+                  .slice(0, 4)
+                  .map((note) => (
+                    <InsightRow
+                      detail={note.body}
+                      icon={ListChecks}
+                      key={note.id}
+                      title={note.title}
+                    />
+                  ))
               ) : (
                 <InsightRow
                   detail="No saved note currently looks like a reminder or follow-up."
@@ -380,7 +419,9 @@ export function NotesAiAssistant() {
               <InsightRow
                 detail={
                   analysis.upcomingTasks.length > 0
-                    ? analysis.upcomingTasks.map((task) => `${task.plannedStart} ${task.title}`).join(", ")
+                    ? analysis.upcomingTasks
+                        .map((task) => `${task.plannedStart} ${task.title}`)
+                        .join(", ")
                     : "Routine queue is clear."
                 }
                 icon={Sparkles}
@@ -405,12 +446,16 @@ export function NotesAiAssistant() {
                       className="grid grid-cols-[1.2fr_0.8fr_0.8fr_1fr] items-center gap-3 border-b border-slate-100 px-4 py-3 last:border-b-0"
                       key={row.id}
                     >
-                      <span className="min-w-0 truncate text-sm font-semibold text-slate-900">{row.itemName}</span>
+                      <span className="min-w-0 truncate text-sm font-semibold text-slate-900">
+                        {row.itemName}
+                      </span>
                       <Badge tone="teal">{row.category}</Badge>
                       <span className="text-right font-mono text-sm font-semibold text-slate-900">
                         {formatCurrency(row.amount)}
                       </span>
-                      <span className="min-w-0 truncate text-right text-sm text-slate-500">{row.sourceNote}</span>
+                      <span className="min-w-0 truncate text-right text-sm text-slate-500">
+                        {row.sourceNote}
+                      </span>
                     </div>
                   ))
                 ) : (
@@ -436,7 +481,8 @@ export function NotesAiAssistant() {
                   Balance
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {formatCurrency(analysis.remaining)} remaining from {formatCurrency(analysis.totalBudget)} planned.
+                  {formatCurrency(analysis.remaining)} remaining from{" "}
+                  {formatCurrency(analysis.totalBudget)} planned.
                 </p>
               </div>
               <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
@@ -445,7 +491,8 @@ export function NotesAiAssistant() {
                   Files
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {analysis.sourceCounts.text ?? 0} text-imported and {analysis.sourceCounts.image ?? 0} image-sourced expense records.
+                  {analysis.sourceCounts.text ?? 0} text-imported and{" "}
+                  {analysis.sourceCounts.image ?? 0} image-sourced expense records.
                 </p>
               </div>
               <div className="rounded-md border border-slate-200 bg-slate-50 p-4">

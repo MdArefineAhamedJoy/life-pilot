@@ -1,5 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { budgetCategories, expenses, notes, routineTasks, settings, timerSessions } from "@/lib/life-os-data";
+import {
+  budgetCategories,
+  expenses,
+  notes,
+  routineTasks,
+  settings,
+  timerSessions,
+} from "@/lib/life-os-data";
 import type { LifeOsState } from "@/lib/types";
 
 export const initialLifeOsState: LifeOsState = {

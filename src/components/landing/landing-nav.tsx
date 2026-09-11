@@ -19,9 +19,7 @@ export function LandingNav() {
             <span className="block truncate text-xs font-semibold uppercase tracking-[0.14em] text-[var(--life-accent)]">
               Life Pilot
             </span>
-            <span className="block truncate text-base font-semibold">
-              AI Planner
-            </span>
+            <span className="block truncate text-base font-semibold">AI Planner</span>
           </span>
         </Link>
 
