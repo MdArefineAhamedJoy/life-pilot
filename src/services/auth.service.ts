@@ -1,4 +1,4 @@
-import { apiClient } from "@/services/api-client";
+import { apiClient, unwrapResponse } from "@/services/api-client";
 export type AuthUser = {
   id: string;
   name: string;
@@ -28,13 +28,13 @@ function notifyAuthChange() {
 }
 export const authService = {
   async login(payload: LoginPayload) {
-    return (await apiClient.post<AuthResponse>("/auth/login", payload)).data;
+    return unwrapResponse(apiClient.post<AuthResponse>("/auth/login", payload));
   },
   async register(payload: RegisterPayload) {
-    return (await apiClient.post<AuthResponse>("/auth/register", payload)).data;
+    return unwrapResponse(apiClient.post<AuthResponse>("/auth/register", payload));
   },
   async currentUser() {
-    return (await apiClient.get<AuthUser>("/auth/me")).data;
+    return unwrapResponse(apiClient.get<AuthUser>("/auth/me"));
   },
   async logout() {
     try {

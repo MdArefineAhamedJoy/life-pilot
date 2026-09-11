@@ -10,33 +10,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { BudgetCategory } from "@/lib/types";
-
-type BudgetStatus = "active" | "paused" | "completed";
+import { budgetStatusLabels, getBudgetDateRange, getBudgetStatus } from "@/lib/budget-utils";
+import type { Budget } from "@/types/budget.types";
 
 type ViewBudgetModalProps = {
-  budget?: BudgetCategory;
+  budget?: Budget;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
-
-const statusLabels: Record<BudgetStatus, string> = {
-  active: "Active",
-  paused: "Paused",
-  completed: "Completed",
-};
-
-function getBudgetStatus(category: BudgetCategory): BudgetStatus {
-  return category.status ?? (category.isActive ? "active" : "paused");
-}
-
-function formatDateRange(category: BudgetCategory) {
-  if (!category.startDate && !category.endDate) {
-    return "-";
-  }
-
-  return `${category.startDate || "No start"} to ${category.endDate || "No end"}`;
-}
 
 function DetailTile({
   label,
@@ -77,7 +58,7 @@ export function ViewBudgetModal({ budget, open, onOpenChange }: ViewBudgetModalP
                 {budget.type}
               </Badge>
               <Badge tone={status === "active" ? "teal" : status === "paused" ? "amber" : "indigo"}>
-                {statusLabels[status]}
+                {budgetStatusLabels[status]}
               </Badge>
             </div>
 
@@ -87,9 +68,13 @@ export function ViewBudgetModal({ budget, open, onOpenChange }: ViewBudgetModalP
                 label="Target Price"
                 value={formatCurrency(budget.monthlyLimit)}
               />
-              <DetailTile icon={CalendarDays} label="Date Range" value={formatDateRange(budget)} />
+              <DetailTile
+                icon={CalendarDays}
+                label="Date Range"
+                value={getBudgetDateRange(budget)}
+              />
               <DetailTile icon={WalletCards} label="Budget Type" value={budget.type} />
-              <DetailTile icon={FileText} label="Status" value={statusLabels[status]} />
+              <DetailTile icon={FileText} label="Status" value={budgetStatusLabels[status]} />
             </div>
 
             <div className="mt-4 rounded-md border border-slate-200 bg-white p-4">

@@ -3,6 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, ImageUp, LockKeyhole, Mail, Phone, UserRound, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 
 export function RegisterStepForm() {
@@ -114,7 +115,7 @@ export function RegisterStepForm() {
               className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
               strokeWidth={2}
             />
-            <input
+            <Input
               className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20 sm:h-10"
               name="name"
               onChange={(event) => setFullName(event.target.value)}
@@ -134,7 +135,7 @@ export function RegisterStepForm() {
               className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
               strokeWidth={2}
             />
-            <input
+            <Input
               className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20 sm:h-10"
               name="email"
               onChange={(event) => setEmail(event.target.value)}
@@ -154,7 +155,7 @@ export function RegisterStepForm() {
               className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
               strokeWidth={2}
             />
-            <input
+            <Input
               className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20 sm:h-10"
               name="phone"
               onChange={(event) => setPhone(event.target.value)}
@@ -175,7 +176,7 @@ export function RegisterStepForm() {
                 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
                 strokeWidth={2}
               />
-              <input
+              <Input
                 className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20 sm:h-10"
                 minLength={8}
                 name="password"
@@ -196,7 +197,7 @@ export function RegisterStepForm() {
                 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
                 strokeWidth={2}
               />
-              <input
+              <Input
                 className="h-9 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20 sm:h-10"
                 minLength={8}
                 name="confirmPassword"

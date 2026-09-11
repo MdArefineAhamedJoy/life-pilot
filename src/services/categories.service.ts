@@ -1,22 +1,31 @@
 import type { BudgetCategory } from "@/lib/types";
-import { apiClient } from "@/services/api-client";
+import { apiClient, listRequestParams, unwrapResponse } from "@/services/api-client";
 
 export const categoriesService = {
   async list() {
-    return (await apiClient.get<BudgetCategory[]>("/life-os/categories")).data;
+    const categories = await unwrapResponse(
+      apiClient.get<BudgetCategory[]>("/life-os/categories", { params: listRequestParams })
+    );
+    if (!Array.isArray(categories)) {
+      throw new Error("The categories API returned an invalid list response.");
+    }
+    return categories;
+  },
+  async get(categoryId: string) {
+    return unwrapResponse(apiClient.get<BudgetCategory>(`/life-os/categories/${categoryId}`));
   },
   async create(payload: Omit<BudgetCategory, "id">) {
-    return (await apiClient.post<BudgetCategory>("/life-os/categories", payload)).data;
+    return unwrapResponse(apiClient.post<BudgetCategory>("/life-os/categories", payload));
   },
   async update(categoryId: string, payload: Partial<BudgetCategory>) {
-    return (await apiClient.put<BudgetCategory>(`/life-os/categories/${categoryId}`, payload)).data;
+    return unwrapResponse(
+      apiClient.put<BudgetCategory>(`/life-os/categories/${categoryId}`, payload)
+    );
   },
   async updateLimit(categoryId: string, monthlyLimit: number) {
-    return (
-      await apiClient.patch<BudgetCategory>(`/life-os/categories/${categoryId}/limit`, {
-        monthlyLimit,
-      })
-    ).data;
+    return unwrapResponse(
+      apiClient.patch<BudgetCategory>(`/life-os/categories/${categoryId}/limit`, { monthlyLimit })
+    );
   },
   async remove(categoryId: string) {
     await apiClient.delete(`/life-os/categories/${categoryId}`);

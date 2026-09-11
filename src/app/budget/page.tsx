@@ -1,78 +1,120 @@
 "use client";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 
-import { localDateKey } from "@/lib/utils";
-import { Eye, MoreVertical, Pencil, Plus, RefreshCcw, WalletCards } from "lucide-react";
-import { useState } from "react";
 import { BudgetModal } from "@/app/budget/components/budget-modal";
 import { ViewBudgetModal } from "@/app/budget/components/view-budget-modal";
+import { StatCard } from "@/components/shared/card";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
 import { DataTable, type TableColumn } from "@/components/shared/data-table";
-import { StatCard } from "@/components/shared/card";
-import { useLifeOs } from "@/components/state/life-os-provider";
+import { PageSkeleton } from "@/components/shared/page-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { SelectInput, TextInput } from "@/components/ui/field";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { SectionHeader } from "@/components/ui/section-header";
-import { getBudgetUsage, getTotalSpent } from "@/lib/calculations";
-import type { BudgetCategory } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import {
+  budgetStatusLabels,
+  getBudgetDateRange,
+  getBudgetStatus,
+  getNextBudgetStatus,
+} from "@/lib/budget-utils";
+import { budgetService } from "@/services/budget.service";
+import type {
+  Budget,
+  BudgetStatus,
+  BudgetSummary,
+  BudgetType,
+  BudgetUsage,
+} from "@/types/budget.types";
+import { Eye, MoreVertical, Pencil, Plus, RefreshCcw, Trash2, WalletCards } from "lucide-react";
+import { useEffect, useState } from "react";
 
-type BudgetStatus = "active" | "paused" | "completed";
-type BudgetModalMode = "create" | "edit";
-type BudgetUsage = ReturnType<typeof getBudgetUsage>[number];
-
-const statusLabels: Record<BudgetStatus, string> = {
-  active: "Active",
-  paused: "Paused",
-  completed: "Completed",
+type PaginationMeta = {
+  page: number;
+  totalPages: number;
 };
-
-function getBudgetStatus(category: BudgetCategory): BudgetStatus {
-  return category.status ?? (category.isActive ? "active" : "paused");
-}
-
-function formatDateRange(category: BudgetCategory) {
-  if (!category.startDate && !category.endDate) {
-    return "-";
-  }
-
-  return `${category.startDate || "No start"} to ${category.endDate || "No end"}`;
-}
-
-function getNextBudgetStatus(status: BudgetStatus): BudgetStatus {
-  if (status === "active") {
-    return "paused";
-  }
-
-  if (status === "paused") {
-    return "completed";
-  }
-
-  return "active";
-}
 
 export default function BudgetPage() {
   const formatCurrency = useFormatCurrency();
-  const { categories, expenses, updateBudgetCategory } = useLifeOs();
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<BudgetStatus | undefined>();
+  const [type, setType] = useState<BudgetType | undefined>();
+  const [budgets, setBudgets] = useState<BudgetUsage[]>([]);
+  const [summary, setSummary] = useState<BudgetSummary | null>(null);
+  const [meta, setMeta] = useState<PaginationMeta>({ page: 1, totalPages: 1 });
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [isBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
-  const [budgetModalMode, setBudgetModalMode] = useState<BudgetModalMode>("create");
-  const [selectedBudget, setSelectedBudget] = useState<BudgetCategory | undefined>();
-  const [viewBudget, setViewBudget] = useState<BudgetCategory | undefined>();
-  const [statusChangeBudget, setStatusChangeBudget] = useState<BudgetCategory | undefined>();
+  const [selectedBudget, setSelectedBudget] = useState<Budget | undefined>();
+  const [viewBudget, setViewBudget] = useState<Budget | undefined>();
+  const [statusChangeBudget, setStatusChangeBudget] = useState<Budget | undefined>();
+  const [deleteBudget, setDeleteBudget] = useState<Budget | undefined>();
   const [openActionMenuId, setOpenActionMenuId] = useState<string | undefined>();
-  const budgetUsage = getBudgetUsage(categories, expenses);
-  const totalBudget = budgetUsage.reduce((total, category) => total + category.monthlyLimit, 0);
-  const totalSpent = budgetUsage.reduce((total, category) => total + category.spent, 0);
-  const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === localDateKey()));
-  const totalActiveBudget = categories
-    .filter((category) => getBudgetStatus(category) === "active")
-    .reduce((total, category) => total + category.monthlyLimit, 0);
-  const usageProgress = totalBudget > 0 ? Math.round((totalSpent / totalBudget) * 100) : 0;
+  const [reloadVersion, setReloadVersion] = useState(0);
+
+  useEffect(() => {
+    async function loadBudgets() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const filters = { search: search || undefined, status, type };
+        const response = await budgetService.list({ page, limit: pageSize, ...filters });
+        const summaryResponse = await budgetService.getSummary(filters);
+        setBudgets(response.data);
+        setMeta(response.meta ?? { page, totalPages: 1 });
+        setSummary(summaryResponse.data);
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Failed to load budgets.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    void loadBudgets();
+  }, [page, pageSize, reloadVersion, search, status, type]);
+
+  if (isLoading) {
+    return <PageSkeleton />;
+  }
+
+  async function handleStatusChange() {
+    if (!statusChangeBudget) {
+      return false;
+    }
+
+    try {
+      await budgetService.updateStatus(
+        statusChangeBudget.id,
+        getNextBudgetStatus(getBudgetStatus(statusChangeBudget))
+      );
+      setReloadVersion((current) => current + 1);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Failed to change budget status.");
+      return false;
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteBudget) {
+      return false;
+    }
+
+    try {
+      await budgetService.remove(deleteBudget.id);
+      setReloadVersion((current) => current + 1);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Failed to delete budget.");
+      return false;
+    }
+  }
+
   const columns: TableColumn<BudgetUsage>[] = [
     {
-      key: "category",
-      header: "Category",
+      key: "budget",
+      header: "Budget",
       render: (category) => (
         <div className="min-w-0">
           <p className="font-semibold text-slate-900">{category.name}</p>
@@ -94,7 +136,7 @@ export default function BudgetPage() {
     {
       key: "dateRange",
       header: "Date Range",
-      render: (category) => <span className="text-slate-600">{formatDateRange(category)}</span>,
+      render: (category) => <span className="text-slate-600">{getBudgetDateRange(category)}</span>,
     },
     {
       key: "target",
@@ -117,10 +159,9 @@ export default function BudgetPage() {
       header: "Remaining",
       render: (category) => (
         <span
-          className={cn(
-            "font-mono font-semibold",
+          className={`font-mono font-semibold ${
             category.isOverBudget ? "text-red-500" : "text-emerald-600"
-          )}
+          }`}
         >
           {formatCurrency(category.remaining)}
         </span>
@@ -155,7 +196,7 @@ export default function BudgetPage() {
 
         return (
           <Badge tone={status === "active" ? "teal" : status === "paused" ? "amber" : "indigo"}>
-            {statusLabels[status]}
+            {budgetStatusLabels[status]}
           </Badge>
         );
       },
@@ -190,7 +231,6 @@ export default function BudgetPage() {
                 className="flex min-h-10 w-full items-center gap-3 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-emerald-600"
                 onClick={() => {
                   setSelectedBudget(category);
-                  setBudgetModalMode("edit");
                   setIsBudgetModalOpen(true);
                   setOpenActionMenuId(undefined);
                 }}
@@ -221,6 +261,17 @@ export default function BudgetPage() {
                 <RefreshCcw aria-hidden="true" className="size-4" />
                 Status Change
               </button>
+              <button
+                className="flex min-h-10 w-full items-center gap-3 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-red-600"
+                onClick={() => {
+                  setDeleteBudget(category);
+                  setOpenActionMenuId(undefined);
+                }}
+                type="button"
+              >
+                <Trash2 aria-hidden="true" className="size-4" />
+                Delete Budget
+              </button>
             </div>
           )}
         </div>
@@ -241,7 +292,6 @@ export default function BudgetPage() {
           icon={<Plus aria-hidden="true" className="size-4" />}
           onClick={() => {
             setSelectedBudget(undefined);
-            setBudgetModalMode("create");
             setIsBudgetModalOpen(true);
           }}
           type="button"
@@ -251,40 +301,88 @@ export default function BudgetPage() {
       </div>
       <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
-          detail={`${formatCurrency(totalBudget - totalSpent)} remaining`}
+          detail={`${formatCurrency(summary?.remaining ?? 0)} remaining`}
           icon={WalletCards}
           label="Total budget use"
-          progress={usageProgress}
+          progress={summary?.usageProgress ?? 0}
           tone="emerald"
-          value={formatCurrency(totalSpent)}
+          value={formatCurrency(summary?.totalSpent ?? 0)}
         />
         <StatCard
           detail="Tracked for today"
           icon={WalletCards}
           label="Today spent"
-          progress={totalBudget > 0 ? Math.round((todaySpent / totalBudget) * 100) : 0}
+          progress={summary?.todayUsageProgress ?? 0}
           tone="red"
-          value={formatCurrency(todaySpent)}
+          value={formatCurrency(summary?.todaySpent ?? 0)}
         />
         <StatCard
-          detail={`${categories.length} categories tracked`}
+          detail={`${summary?.budgetCount ?? 0} budgets tracked`}
           icon={WalletCards}
           label="Total budget"
-          progress={totalBudget > 0 ? Math.round((totalActiveBudget / totalBudget) * 100) : 0}
+          progress={summary?.activeBudgetProgress ?? 0}
           tone="blue"
-          value={formatCurrency(totalBudget)}
+          value={formatCurrency(summary?.totalBudget ?? 0)}
         />
+      </div>
+      {error && (
+        <p
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+      <div className="grid gap-3 rounded-md border border-slate-200 bg-white p-4 sm:grid-cols-2 xl:grid-cols-3">
+        <TextInput
+          aria-label="Search budgets"
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
+          placeholder="Search budgets"
+          value={search}
+        />
+        <SelectInput
+          aria-label="Filter by status"
+          onChange={(event) => {
+            setStatus((event.target.value || undefined) as BudgetStatus | undefined);
+            setPage(1);
+          }}
+          value={status ?? ""}
+        >
+          <option value="">All statuses</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+          <option value="completed">Completed</option>
+        </SelectInput>
+        <SelectInput
+          aria-label="Filter by type"
+          onChange={(event) => {
+            setType((event.target.value || undefined) as BudgetType | undefined);
+            setPage(1);
+          }}
+          value={type ?? ""}
+        >
+          <option value="">All types</option>
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </SelectInput>
       </div>
       <DataTable
         columns={columns}
-        emptyMessage="No budget categories yet."
+        emptyMessage={isLoading ? "Loading budgets..." : "No budgets yet."}
         getRowKey={(category) => category.id}
-        rows={budgetUsage}
+        paginated={false}
+        rows={budgets}
+        serverPagination={{ page: meta.page, totalPages: meta.totalPages, onPageChange: setPage }}
       />
       <BudgetModal
         budget={selectedBudget}
-        mode={budgetModalMode}
+        mode={selectedBudget ? "edit" : "create"}
         onOpenChange={setIsBudgetModalOpen}
+        onSaved={() => setReloadVersion((current) => current + 1)}
         open={isBudgetModalOpen}
       />
       <ViewBudgetModal
@@ -297,28 +395,27 @@ export default function BudgetPage() {
         cancelLabel="Cancel"
         description={
           statusChangeBudget
-            ? `This will change "${statusChangeBudget.name}" from ${statusLabels[getBudgetStatus(statusChangeBudget)]} to ${statusLabels[getNextBudgetStatus(getBudgetStatus(statusChangeBudget))]}.`
+            ? `This will change "${statusChangeBudget.name}" from ${budgetStatusLabels[getBudgetStatus(statusChangeBudget)]} to ${budgetStatusLabels[getNextBudgetStatus(getBudgetStatus(statusChangeBudget))]}.`
             : "This will change the selected budget status."
         }
-        onConfirm={async () => {
-          if (!statusChangeBudget) {
-            return;
-          }
-
-          const status = getNextBudgetStatus(getBudgetStatus(statusChangeBudget));
-          const { id, ...nextCategory } = statusChangeBudget;
-
-          const saved = await updateBudgetCategory(id, {
-            ...nextCategory,
-            status,
-            isActive: status === "active",
-          });
-          if (!saved) return false;
-          setStatusChangeBudget(undefined);
-        }}
+        onConfirm={handleStatusChange}
         onOpenChange={(open) => !open && setStatusChangeBudget(undefined)}
         open={Boolean(statusChangeBudget)}
         title="Change Budget Status"
+      />
+      <ConfirmationModal
+        actionLabel="Delete budget"
+        cancelLabel="Cancel"
+        description={
+          deleteBudget
+            ? `This permanently deletes "${deleteBudget.name}". This action cannot be undone.`
+            : "This permanently deletes the selected budget."
+        }
+        onConfirm={handleDelete}
+        onOpenChange={(open) => !open && setDeleteBudget(undefined)}
+        open={Boolean(deleteBudget)}
+        title="Delete Budget"
+        variant="danger"
       />
     </div>
   );

@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Poppins } from "next/font/google";
 import { AppShell } from "@/components/dashboard/app-shell";
 import { AuthGate } from "@/components/auth/auth-gate";
 import { LifeOsProvider } from "@/components/state/life-os-provider";
+import { AppToaster } from "@/components/ui/toaster";
 import { StoreProvider } from "@/store/provider";
 import "./globals.css";
 
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <LifeOsProvider>
               <AppShell>{children}</AppShell>
             </LifeOsProvider>
+            <AppToaster />
           </AuthGate>
         </StoreProvider>
       </body>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
 import { accountService } from "@/services/account.service";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 
 export function LoginForm() {
@@ -45,7 +46,7 @@ export function LoginForm() {
             className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
             strokeWidth={2}
           />
-          <input
+          <Input
             className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20"
             name="email"
             onChange={(event) => setEmail(event.target.value)}
@@ -65,7 +66,7 @@ export function LoginForm() {
             className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"
             strokeWidth={2}
           />
-          <input
+          <Input
             className="h-10 w-full rounded-xl border border-slate-200 bg-white pl-10 pr-3 text-sm text-slate-950 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-[3px] focus:ring-emerald-600/20"
             name="password"
             onChange={(event) => setPassword(event.target.value)}

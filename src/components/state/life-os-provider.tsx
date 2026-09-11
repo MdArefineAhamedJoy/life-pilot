@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import { useAuthenticatedUser } from "@/components/auth/auth-gate";
 import { lifeOsStateService } from "@/services/life-os-state.service";
 import { categoriesService } from "@/services/categories.service";
@@ -71,6 +72,7 @@ export function LifeOsProvider({ children }: { children: ReactNode }) {
 
 function UserWorkspace({ children }: { children: ReactNode }) {
   const user = useAuthenticatedUser();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const state = useAppSelector((store) => store.lifeOs);
   const current = useRef(initialLifeOsState);
@@ -96,6 +98,13 @@ function UserWorkspace({ children }: { children: ReactNode }) {
       return () => {
         active.current = false;
       };
+    if (pathname === "/budget") {
+      setReady(true);
+      setError("");
+      return () => {
+        active.current = false;
+      };
+    }
     async function load() {
       try {
         // All collection reads are backed by the corresponding protected endpoints.
@@ -139,7 +148,7 @@ function UserWorkspace({ children }: { children: ReactNode }) {
       cancelled = true;
       active.current = false;
     };
-  }, [user, commit, attempt]);
+  }, [user, pathname, commit, attempt]);
 
   const mutate = useCallback(
     (operation: (state: LifeOsState) => Promise<LifeOsState>) => {

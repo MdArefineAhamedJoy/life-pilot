@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import { useLifeOs } from "@/components/state/life-os-provider";
+import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/shared/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -12,17 +12,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FieldShell, SelectInput, TextArea, TextInput } from "@/components/ui/field";
+import { getBudgetStatus } from "@/lib/budget-utils";
 import type { BudgetCategory } from "@/lib/types";
-
-type BudgetStatus = "active" | "paused" | "completed";
-type BudgetType = "daily" | "weekly" | "monthly";
-type BudgetModalMode = "create" | "edit";
+import { budgetService } from "@/services/budget.service";
+import { categoriesService } from "@/services/categories.service";
+import type { Budget, BudgetModalMode, BudgetStatus, BudgetType } from "@/types/budget.types";
 
 type BudgetModalProps = {
   mode: BudgetModalMode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  budget?: BudgetCategory;
+  budget?: Budget;
+  onSaved?: () => void;
 };
 
 const colorOptions = [
@@ -32,19 +33,41 @@ const colorOptions = [
   { label: "Indigo", value: "indigo" },
 ];
 
-function getBudgetStatus(category: BudgetCategory): BudgetStatus {
-  return category.status ?? (category.isActive ? "active" : "paused");
-}
-
-export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalProps) {
-  const { categories, updateBudgetCategory } = useLifeOs();
+export function BudgetModal({ mode, open, onOpenChange, budget, onSaved }: BudgetModalProps) {
   const [hasExtraNote, setHasExtraNote] = useState(Boolean(budget?.extraNote));
+  const [categories, setCategories] = useState<BudgetCategory[]>([]);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState("");
   const isEdit = mode === "edit";
+
+  useEffect(() => {
+    if (!open || isEdit) {
+      return;
+    }
+    async function loadCategories() {
+      setIsCategoriesLoading(true);
+      setError("");
+      try {
+        const response = await categoriesService.list();
+        setCategories(response);
+      } catch (cause) {
+        setError(cause instanceof Error ? cause.message : "Failed to load categories.");
+      } finally {
+        setIsCategoriesLoading(false);
+      }
+    }
+
+    void loadCategories();
+  }, [isEdit, open]);
 
   function handleOpenChange(nextOpen: boolean) {
     onOpenChange(nextOpen);
     if (nextOpen) {
       setHasExtraNote(Boolean(budget?.extraNote));
+    }
+    if (!nextOpen) {
+      setError("");
     }
   }
 
@@ -54,18 +77,16 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
     const data = new FormData(form);
     const status = String(data.get("status") ?? "active") as BudgetStatus;
     const targetPrice = Number(data.get("targetPrice")) || 0;
-    const selectedCategoryId = String(data.get("categoryId") ?? "");
-    const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
-    const categoryName = isEdit ? (budget?.name ?? "") : (selectedCategory?.name ?? "");
-    const color = isEdit
-      ? String(data.get("color") ?? "teal")
-      : (selectedCategory?.color ?? "teal");
+    const categoryName = isEdit
+      ? (budget?.name ?? "")
+      : String(data.get("categoryName") ?? "").trim();
+    const color = isEdit ? String(data.get("color") ?? "teal") : "teal";
 
     if (!categoryName) {
       return;
     }
 
-    const nextBudget: Omit<BudgetCategory, "id"> = {
+    const nextBudget: Omit<Budget, "id"> = {
       name: categoryName,
       type: String(data.get("type") ?? "monthly") as BudgetType,
       monthlyLimit: targetPrice,
@@ -75,19 +96,27 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
       note: String(data.get("note") ?? "").trim(),
       extraNote: hasExtraNote ? String(data.get("extraNote") ?? "").trim() : "",
       color,
-      categoryStatus: budget?.categoryStatus ?? selectedCategory?.categoryStatus,
       isActive: status === "active",
     };
 
-    if (isEdit && budget) {
-      if (!(await updateBudgetCategory(budget.id, nextBudget))) return;
-    } else if (selectedCategory) {
-      if (!(await updateBudgetCategory(selectedCategory.id, nextBudget))) return;
+    setIsSaving(true);
+    setError("");
+
+    try {
+      if (isEdit && budget) {
+        await budgetService.update(budget.id, nextBudget);
+      } else {
+        await budgetService.create(nextBudget);
+      }
       form.reset();
       setHasExtraNote(false);
+      onSaved?.();
+      onOpenChange(false);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Failed to save budget.");
+    } finally {
+      setIsSaving(false);
     }
-
-    onOpenChange(false);
   }
 
   return (
@@ -105,13 +134,13 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
               <FieldShell label="Category">
                 {isEdit ? (
                   <TextInput defaultValue={budget?.name ?? ""} readOnly />
+                ) : isCategoriesLoading ? (
+                  <Skeleton className="h-9 w-full" />
                 ) : (
-                  <SelectInput defaultValue="" name="categoryId" required>
-                    <option disabled value="">
-                      {categories.length > 0 ? "Select category" : "Add category first"}
-                    </option>
+                  <SelectInput disabled={isSaving} name="categoryName" required>
+                    <option value="">Select a category</option>
                     {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
+                      <option key={category.id} value={category.name}>
                         {category.name}
                       </option>
                     ))}
@@ -203,13 +232,21 @@ export function BudgetModal({ mode, open, onOpenChange, budget }: BudgetModalPro
                   </FieldShell>
                 </div>
               )}
+              {error && <p className="text-sm font-medium text-red-500 md:col-span-2">{error}</p>}
             </div>
           </div>
           <DialogFooter className="shrink-0 border-t border-slate-200 px-4 py-3">
-            <Button onClick={() => onOpenChange(false)} type="button" variant="outline">
+            <Button
+              disabled={isSaving}
+              onClick={() => onOpenChange(false)}
+              type="button"
+              variant="outline"
+            >
               Cancel
             </Button>
-            <Button type="submit">{isEdit ? "Update budget" : "Save budget"}</Button>
+            <Button disabled={isSaving || isCategoriesLoading} type="submit">
+              {isSaving ? "Saving..." : isEdit ? "Update budget" : "Save budget"}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

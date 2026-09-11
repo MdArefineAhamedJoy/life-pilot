@@ -19,6 +19,12 @@ type DataTableProps<Row> = {
   emptyMessage?: string;
   pageSize?: number;
   paginated?: boolean;
+  showPagination?: boolean;
+  serverPagination?: {
+    page: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  };
   minHeightClassName?: string;
   className?: string;
   tableClassName?: string;
@@ -33,6 +39,8 @@ export function DataTable<Row>({
   emptyMessage = "No data yet.",
   pageSize = 10,
   paginated = true,
+  showPagination = true,
+  serverPagination,
   minHeightClassName = "min-h-[600px]",
   className,
   tableClassName,
@@ -42,15 +50,16 @@ export function DataTable<Row>({
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
   const currentPage = Math.min(page, totalPages);
+  const isServerPaginated = Boolean(serverPagination);
 
   const visibleRows = useMemo(() => {
-    if (!paginated) {
+    if (!paginated || isServerPaginated) {
       return rows;
     }
 
     const start = (currentPage - 1) * pageSize;
     return rows.slice(start, start + pageSize);
-  }, [currentPage, pageSize, paginated, rows]);
+  }, [currentPage, isServerPaginated, pageSize, paginated, rows]);
 
   function handlePageChange(nextPage: number) {
     setPage(Math.min(Math.max(nextPage, 1), totalPages));
@@ -119,12 +128,14 @@ export function DataTable<Row>({
           </tbody>
         </table>
       </div>
-      <Pagination
-        className="mt-auto"
-        onPageChange={handlePageChange}
-        page={currentPage}
-        totalPages={paginated ? totalPages : 1}
-      />
+      {showPagination && (
+        <Pagination
+          className="mt-auto"
+          onPageChange={serverPagination?.onPageChange ?? handlePageChange}
+          page={serverPagination?.page ?? currentPage}
+          totalPages={serverPagination?.totalPages ?? (paginated ? totalPages : 1)}
+        />
+      )}
     </div>
   );
 }

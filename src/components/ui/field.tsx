@@ -4,7 +4,10 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import { cn } from "@/lib/utils";
+
+import { Input } from "@/components/ui/input";
+import { SelectInput as RadixSelectInput } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 type FieldShellProps = {
   label: string;
@@ -25,37 +28,13 @@ export function FieldShell({ label, hint, children }: FieldShellProps) {
 }
 
 export function TextInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return (
-    <input
-      className={cn(
-        "flex h-9 w-full min-w-0 rounded-md border border-slate-200 bg-transparent px-3 py-1 text-base text-slate-900 shadow-sm outline-none transition-[color,box-shadow] placeholder:text-slate-400 focus-visible:border-emerald-600 focus-visible:ring-[3px] focus-visible:ring-emerald-600/25 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
-      )}
-      {...props}
-    />
-  );
+  return <Input className={className} {...props} />;
 }
 
 export function SelectInput({ className, ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return (
-    <select
-      className={cn(
-        "flex h-9 w-full min-w-0 items-center justify-between rounded-md border border-slate-200 bg-transparent px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition-[color,box-shadow] focus-visible:border-emerald-600 focus-visible:ring-[3px] focus-visible:ring-emerald-600/25 disabled:cursor-not-allowed disabled:opacity-50",
-        className
-      )}
-      {...props}
-    />
-  );
+  return <RadixSelectInput className={className} {...props} />;
 }
 
 export function TextArea({ className, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return (
-    <textarea
-      className={cn(
-        "flex min-h-16 w-full min-w-0 rounded-md border border-slate-200 bg-transparent px-3 py-2 text-base text-slate-900 shadow-sm outline-none transition-[color,box-shadow] placeholder:text-slate-400 focus-visible:border-emerald-600 focus-visible:ring-[3px] focus-visible:ring-emerald-600/25 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-        className
-      )}
-      {...props}
-    />
-  );
+  return <Textarea className={className} {...props} />;
 }

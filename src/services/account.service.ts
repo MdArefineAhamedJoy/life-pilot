@@ -1,4 +1,4 @@
-import { apiClient } from "@/services/api-client";
+import { apiClient, unwrapResponse } from "@/services/api-client";
 
 export type ProfilePayload = {
   name?: string;
@@ -12,16 +12,14 @@ export type ProfilePayload = {
 
 export const accountService = {
   async getProfile() {
-    return (await apiClient.get<ProfilePayload>("/account/profile")).data;
+    return unwrapResponse(apiClient.get<ProfilePayload>("/account/profile"));
   },
   async saveProfile(payload: ProfilePayload) {
-    return (await apiClient.post<ProfilePayload>("/account/profile", payload)).data;
+    return unwrapResponse(apiClient.post<ProfilePayload>("/account/profile", payload));
   },
   async requestPasswordRecovery(email: string) {
-    return (
-      await apiClient.post<{ ok: boolean; expiresAt?: string }>("/account/password-recovery", {
-        email,
-      })
-    ).data;
+    return unwrapResponse(
+      apiClient.post<{ ok: boolean; expiresAt?: string }>("/account/password-recovery", { email })
+    );
   },
 };
