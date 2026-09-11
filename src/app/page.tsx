@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import { AiPromptSection } from "@/components/landing/ai-prompt-section";
-import { LandingAuthRedirect } from "@/components/auth/landing-auth-redirect";
 import { DailyBriefingSection } from "@/components/landing/daily-briefing-section";
 import { DashboardSection } from "@/components/landing/dashboard-section";
 import { FeaturesSection } from "@/components/landing/features-section";
@@ -23,7 +22,6 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <main className="life-landing min-h-dvh overflow-hidden text-[var(--life-text)]">
-      <LandingAuthRedirect />
       <LandingBackground />
       <LandingNav />
       <HeroSection />

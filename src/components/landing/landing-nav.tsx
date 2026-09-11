@@ -1,10 +1,30 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
+import { authService } from "@/services/auth.service";
 import { navItems } from "./landing-data";
 import { PrimaryLink } from "./landing-primitives";
 
 export function LandingNav() {
+  const router = useRouter();
+
+  useEffect(() => {
+    async function redirectSavedSession() {
+      try {
+        await authService.currentUser({ suppressToast: true, suppressUnauthorized: true });
+        router.push("/dashboard");
+      } catch {
+        // Landing remains public when no saved session exists.
+      }
+    }
+
+    void redirectSavedSession();
+  }, [router]);
+
   return (
     <nav className="life-nav fixed left-0 right-0 top-0 z-50 border-b border-[var(--life-border)] bg-[color-mix(in_srgb,var(--life-bg)_86%,transparent)] backdrop-blur-2xl">
       <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6">
