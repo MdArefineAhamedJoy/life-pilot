@@ -16,7 +16,6 @@ import {
   ScanLine,
   Settings,
   StickyNote,
-  Timer,
   WalletCards,
   type LucideIcon,
 } from "lucide-react";
@@ -40,19 +39,18 @@ const navItems: NavItem[] = [
   { label: "Receipt Scanner", href: "/receipt-scanner", icon: ScanLine, accent: "bg-blue-500" },
   { label: "Categories", href: "/categories", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "Routine", href: "/routine", icon: ListChecks, accent: "bg-amber-500" },
-  { label: "Tasks", href: "/tasks", icon: ListTodo, accent: "bg-blue-500" },
-  { label: "Timer", href: "/timer", icon: Timer, accent: "bg-blue-500" },
+  // Hidden navigation items — keep these entries for easy re-enablement later.
+  // { label: "Tasks", href: "/tasks", icon: ListTodo, accent: "bg-blue-500" },
+  // { label: "Timer", href: "/timer", icon: Timer, accent: "bg-blue-500" },
   { label: "Notes", href: "/notes", icon: StickyNote, accent: "bg-green-500" },
   { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
   { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "Shopping", href: "/shopping", icon: ListTodo, accent: "bg-emerald-500" },
-  { label: "Health", href: "/health", icon: StickyNote, accent: "bg-emerald-500" },
-  { label: "Family", href: "/family", icon: StickyNote, accent: "bg-emerald-500" },
-  { label: "Goals", href: "/goals", icon: ListChecks, accent: "bg-emerald-500" },
+  // { label: "Health", href: "/health", icon: StickyNote, accent: "bg-emerald-500" },
+  // { label: "Goals", href: "/goals", icon: ListChecks, accent: "bg-emerald-500" },
   { label: "Meal planner", href: "/meal-planner", icon: CalendarDays, accent: "bg-emerald-500" },
   { label: "Reminders", href: "/reminder", icon: CalendarDays, accent: "bg-emerald-500" },
-  { label: "Settings", href: "/settings", icon: Settings, accent: "bg-emerald-500" },
 ];
 
 type AppShellProps = {

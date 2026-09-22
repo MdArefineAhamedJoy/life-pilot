@@ -119,7 +119,9 @@ export function LoginForm() {
             setRequestingRecovery(true);
             try {
               await accountService.requestPasswordRecovery(email);
-              setRecoveryMessage("Recovery instructions requested.");
+              setRecoveryMessage(
+                "If an account matches this email, password-reset instructions have been sent."
+              );
             } catch (cause) {
               setRecoveryMessage(
                 cause instanceof Error ? cause.message : "Recovery request failed."

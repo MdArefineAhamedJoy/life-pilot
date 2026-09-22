@@ -1,9 +1,4 @@
-import {
-  apiClient,
-  apiEnvelopeClient,
-  type ApiResponse,
-  unwrapResponse,
-} from "@/services/api-client";
+import { apiClient, requireApiSuccess, type ApiResponse } from "@/services/api-client";
 import type {
   Budget,
   BudgetFilters,
@@ -17,34 +12,39 @@ type BudgetListParams = BudgetFilters & {
   limit: number;
 };
 
-export const budgetService = {
+class BudgetService {
   async list(params: BudgetListParams): Promise<ApiResponse<BudgetUsage[]>> {
-    return unwrapResponse(
-      apiEnvelopeClient.get<ApiResponse<BudgetUsage[]>>("/life-os/budgets", { params })
-    );
-  },
+    return requireApiSuccess(await apiClient.get<BudgetUsage[]>("/life-os/budgets", { params }));
+  }
+
   async getSummary(filters: BudgetFilters): Promise<ApiResponse<BudgetSummary>> {
-    return unwrapResponse(
-      apiEnvelopeClient.get<ApiResponse<BudgetSummary>>("/life-os/budgets/summary", {
-        params: filters,
-      })
+    return requireApiSuccess(
+      await apiClient.get<BudgetSummary>("/life-os/budgets/summary", { params: filters })
     );
-  },
+  }
+
   async get(budgetId: string) {
-    return unwrapResponse(apiClient.get<Budget>(`/life-os/budgets/${budgetId}`));
-  },
+    return requireApiSuccess(await apiClient.get<Budget>(`/life-os/budgets/${budgetId}`)).data;
+  }
+
   async create(payload: Omit<Budget, "id">) {
-    return unwrapResponse(apiClient.post<Budget>("/life-os/budgets", payload));
-  },
+    return requireApiSuccess(await apiClient.post<Budget>("/life-os/budgets", payload)).data;
+  }
+
   async update(budgetId: string, payload: Partial<Budget>) {
-    return unwrapResponse(apiClient.put<Budget>(`/life-os/budgets/${budgetId}`, payload));
-  },
+    return requireApiSuccess(await apiClient.put<Budget>(`/life-os/budgets/${budgetId}`, payload))
+      .data;
+  }
+
   async updateStatus(budgetId: string, status: BudgetStatus) {
-    return unwrapResponse(
-      apiClient.patch<Budget>(`/life-os/budgets/${budgetId}/status`, { status })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.patch<Budget>(`/life-os/budgets/${budgetId}/status`, { status })
+    ).data;
+  }
+
   async remove(budgetId: string) {
-    await apiClient.delete(`/life-os/budgets/${budgetId}`);
-  },
-};
+    requireApiSuccess(await apiClient.delete<void>(`/life-os/budgets/${budgetId}`));
+  }
+}
+
+export const budgetService = new BudgetService();

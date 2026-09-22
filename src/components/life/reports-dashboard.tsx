@@ -5,14 +5,16 @@ import { localDateKey } from "@/lib/utils";
 import { BudgetCategoryList } from "@/components/budget/budget-category-list";
 import { MetricCard } from "@/components/dashboard/metric-card";
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { useBudgetData } from "@/hooks/use-budget-data";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { getRoutineProgress, getTotalSpent } from "@/lib/calculations";
 
 export function ReportsDashboard() {
   const formatCurrency = useFormatCurrency();
-  const { categories, expenses, tasks, timerSessions } = useLifeOs();
-  const totalBudget = categories.reduce((sum, category) => sum + category.monthlyLimit, 0);
+  const { expenses, tasks, timerSessions } = useLifeOs();
+  const { budgets, error, summary } = useBudgetData();
+  const totalBudget = summary?.totalBudget ?? 0;
   const totalSpent = getTotalSpent(
     expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7))
   );
@@ -26,6 +28,14 @@ export function ReportsDashboard() {
 
   return (
     <div className="space-y-5">
+      {error && (
+        <p
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
       <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
           detail={`${formatCurrency(Math.max(totalBudget - totalSpent, 0))} remaining`}
@@ -49,7 +59,7 @@ export function ReportsDashboard() {
         />
       </div>
       <div className="grid min-w-0 gap-5 2xl:grid-cols-[1fr_1fr]">
-        <BudgetCategoryList categories={categories} expenses={expenses} />
+        <BudgetCategoryList budgets={budgets} />
         <Card title="Work-Life Balance" eyebrow="Routine report">
           <div className="space-y-4">
             <ProgressBar

@@ -1,20 +1,27 @@
 import type { LifeNote } from "@/lib/types";
-import { apiClient, listRequestParams, unwrapResponse } from "@/services/api-client";
+import { apiClient, listRequestParams, requireApiSuccess } from "@/services/api-client";
 
 export type NotePayload = Pick<LifeNote, "title" | "body"> & { tags?: string[] };
-export const notesService = {
+
+class NotesService {
   async list() {
-    return unwrapResponse(
-      apiClient.get<LifeNote[]>("/life-os/notes", { params: listRequestParams })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.get<LifeNote[]>("/life-os/notes", { params: listRequestParams })
+    ).data;
+  }
+
   async create(payload: NotePayload) {
-    return unwrapResponse(apiClient.post<LifeNote>("/life-os/notes", payload));
-  },
+    return requireApiSuccess(await apiClient.post<LifeNote>("/life-os/notes", payload)).data;
+  }
+
   async update(noteId: string, payload: NotePayload) {
-    return unwrapResponse(apiClient.put<LifeNote>(`/life-os/notes/${noteId}`, payload));
-  },
+    return requireApiSuccess(await apiClient.put<LifeNote>(`/life-os/notes/${noteId}`, payload))
+      .data;
+  }
+
   async remove(noteId: string) {
-    await apiClient.delete(`/life-os/notes/${noteId}`);
-  },
-};
+    requireApiSuccess(await apiClient.delete<void>(`/life-os/notes/${noteId}`));
+  }
+}
+
+export const notesService = new NotesService();

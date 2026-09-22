@@ -1,11 +1,15 @@
-import { apiClient, unwrapResponse } from "@/services/api-client";
+import { apiClient, requireApiSuccess } from "@/services/api-client";
 
 export type HealthStatus = { status: string; database?: string };
-export const healthService = {
+
+class HealthService {
   async get() {
-    return unwrapResponse(apiClient.get<HealthStatus>("/health"));
-  },
+    return requireApiSuccess(await apiClient.get<HealthStatus>("/health")).data;
+  }
+
   async database() {
-    return unwrapResponse(apiClient.get<HealthStatus>("/health/db"));
-  },
-};
+    return requireApiSuccess(await apiClient.get<HealthStatus>("/health/db")).data;
+  }
+}
+
+export const healthService = new HealthService();

@@ -11,6 +11,7 @@ const publicEndpoints = new Set([
   "POST auth/register",
   "POST auth/refresh",
   "POST account/password-recovery",
+  "POST account/password-reset",
   "GET health",
 ]);
 

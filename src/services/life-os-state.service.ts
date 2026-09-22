@@ -1,14 +1,18 @@
 import type { LifeOsState } from "@/lib/types";
-import { apiClient, unwrapResponse } from "@/services/api-client";
+import { apiClient, requireApiSuccess } from "@/services/api-client";
 
-export const lifeOsStateService = {
+class LifeOsStateService {
   async get(signal?: AbortSignal) {
-    return unwrapResponse(apiClient.get<LifeOsState>("/life-os/state", { signal }));
-  },
+    return requireApiSuccess(await apiClient.get<LifeOsState>("/life-os/state", { signal })).data;
+  }
+
   async replace(payload: Partial<LifeOsState>) {
-    return unwrapResponse(apiClient.put<LifeOsState>("/life-os/state", payload));
-  },
+    return requireApiSuccess(await apiClient.put<LifeOsState>("/life-os/state", payload)).data;
+  }
+
   async reset() {
-    return unwrapResponse(apiClient.post<LifeOsState>("/life-os/reset"));
-  },
-};
+    return requireApiSuccess(await apiClient.post<LifeOsState>("/life-os/reset")).data;
+  }
+}
+
+export const lifeOsStateService = new LifeOsStateService();

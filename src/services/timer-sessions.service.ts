@@ -1,13 +1,17 @@
 import type { TimerSession } from "@/lib/types";
-import { apiClient, listRequestParams, unwrapResponse } from "@/services/api-client";
+import { apiClient, listRequestParams, requireApiSuccess } from "@/services/api-client";
 
-export const timerSessionsService = {
+class TimerSessionsService {
   async list() {
-    return unwrapResponse(
-      apiClient.get<TimerSession[]>("/life-os/timer-sessions", { params: listRequestParams })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.get<TimerSession[]>("/life-os/timer-sessions", { params: listRequestParams })
+    ).data;
+  }
+
   async create(payload: Omit<TimerSession, "id" | "createdAt">) {
-    return unwrapResponse(apiClient.post<TimerSession>("/life-os/timer-sessions", payload));
-  },
-};
+    return requireApiSuccess(await apiClient.post<TimerSession>("/life-os/timer-sessions", payload))
+      .data;
+  }
+}
+
+export const timerSessionsService = new TimerSessionsService();

@@ -1,10 +1,5 @@
+import { apiClient, requireApiSuccess, type ApiResponse } from "@/services/api-client";
 import type { Expense, ExpenseFilters, ExpenseSummary } from "@/types/expense.types";
-import {
-  apiClient,
-  apiEnvelopeClient,
-  type ApiResponse,
-  unwrapResponse,
-} from "@/services/api-client";
 
 export type ParsedExpenseRow = {
   itemName: string;
@@ -18,26 +13,30 @@ type ExpenseListParams = ExpenseFilters & {
   limit: number;
 };
 
-export const expensesService = {
+class ExpensesService {
   async list(params: ExpenseListParams): Promise<ApiResponse<Expense[]>> {
-    return unwrapResponse(
-      apiEnvelopeClient.get<ApiResponse<Expense[]>>("/life-os/expenses", { params })
-    );
-  },
+    return requireApiSuccess(await apiClient.get<Expense[]>("/life-os/expenses", { params }));
+  }
+
   async getSummary(filters: ExpenseFilters): Promise<ApiResponse<ExpenseSummary>> {
-    return unwrapResponse(
-      apiEnvelopeClient.get<ApiResponse<ExpenseSummary>>("/life-os/expenses/summary", {
-        params: filters,
-      })
+    return requireApiSuccess(
+      await apiClient.get<ExpenseSummary>("/life-os/expenses/summary", { params: filters })
     );
-  },
+  }
+
   async create(payload: Omit<Expense, "id">) {
-    return unwrapResponse(apiClient.post<Expense>("/life-os/expenses", payload));
-  },
+    return requireApiSuccess(await apiClient.post<Expense>("/life-os/expenses", payload)).data;
+  }
+
   async createBulk(rows: ParsedExpenseRow[], date?: string) {
-    return unwrapResponse(apiClient.post<Expense[]>("/life-os/expenses/bulk", { rows, date }));
-  },
+    return requireApiSuccess(
+      await apiClient.post<Expense[]>("/life-os/expenses/bulk", { rows, date })
+    ).data;
+  }
+
   async remove(expenseId: string) {
-    await apiClient.delete(`/life-os/expenses/${expenseId}`);
-  },
-};
+    requireApiSuccess(await apiClient.delete<void>(`/life-os/expenses/${expenseId}`));
+  }
+}
+
+export const expensesService = new ExpensesService();

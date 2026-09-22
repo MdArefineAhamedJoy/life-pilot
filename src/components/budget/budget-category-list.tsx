@@ -1,25 +1,22 @@
 "use client";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
-import type { BudgetCategory, Expense } from "@/lib/types";
-import { getBudgetUsage } from "@/lib/calculations";
+import type { BudgetUsage } from "@/types/budget.types";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/progress-bar";
 
 type BudgetCategoryListProps = {
-  categories: BudgetCategory[];
-  expenses: Expense[];
+  budgets: BudgetUsage[];
 };
 
-export function BudgetCategoryList({ categories, expenses }: BudgetCategoryListProps) {
+export function BudgetCategoryList({ budgets }: BudgetCategoryListProps) {
   const formatCurrency = useFormatCurrency();
-  const usage = getBudgetUsage(categories, expenses);
 
   return (
-    <Card title="Budget Categories" eyebrow="Budget">
+    <Card title="Budget progress" eyebrow="Budget">
       <div className="space-y-4">
-        {usage.map((category) => (
+        {budgets.map((category) => (
           <div
             className="space-y-2 border-b border-slate-200 pb-4 last:border-0 last:pb-0"
             key={category.id}
@@ -56,6 +53,9 @@ export function BudgetCategoryList({ categories, expenses }: BudgetCategoryListP
             />
           </div>
         ))}
+        {budgets.length === 0 && (
+          <p className="text-sm text-slate-500">Create a budget to see its progress here.</p>
+        )}
       </div>
     </Card>
   );

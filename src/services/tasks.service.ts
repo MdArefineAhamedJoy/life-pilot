@@ -1,29 +1,38 @@
 import type { RoutineStatus, RoutineTask } from "@/lib/types";
-import { apiClient, listRequestParams, unwrapResponse } from "@/services/api-client";
+import { apiClient, listRequestParams, requireApiSuccess } from "@/services/api-client";
 
-export const tasksService = {
+class TasksService {
   async list() {
-    return unwrapResponse(
-      apiClient.get<RoutineTask[]>("/life-os/tasks", { params: listRequestParams })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.get<RoutineTask[]>("/life-os/tasks", { params: listRequestParams })
+    ).data;
+  }
+
   async create(payload: Omit<RoutineTask, "id">) {
-    return unwrapResponse(apiClient.post<RoutineTask>("/life-os/tasks", payload));
-  },
+    return requireApiSuccess(await apiClient.post<RoutineTask>("/life-os/tasks", payload)).data;
+  }
+
   async update(taskId: string, payload: Partial<RoutineTask>) {
-    return unwrapResponse(apiClient.patch<RoutineTask>(`/life-os/tasks/${taskId}`, payload));
-  },
+    return requireApiSuccess(
+      await apiClient.patch<RoutineTask>(`/life-os/tasks/${taskId}`, payload)
+    ).data;
+  }
+
   async updateStatus(taskId: string, status: RoutineStatus) {
-    return unwrapResponse(
-      apiClient.patch<RoutineTask>(`/life-os/tasks/${taskId}/status`, { status })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.patch<RoutineTask>(`/life-os/tasks/${taskId}/status`, { status })
+    ).data;
+  }
+
   async reorder(orderedTaskIds: string[]) {
-    return unwrapResponse(
-      apiClient.patch<RoutineTask[]>("/life-os/tasks/reorder", { orderedTaskIds })
-    );
-  },
+    return requireApiSuccess(
+      await apiClient.patch<RoutineTask[]>("/life-os/tasks/reorder", { orderedTaskIds })
+    ).data;
+  }
+
   async remove(taskId: string) {
-    await apiClient.delete(`/life-os/tasks/${taskId}`);
-  },
-};
+    requireApiSuccess(await apiClient.delete<void>(`/life-os/tasks/${taskId}`));
+  }
+}
+
+export const tasksService = new TasksService();

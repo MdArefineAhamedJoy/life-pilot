@@ -1,4 +1,5 @@
-import { apiClient, type ApiRequestConfig, unwrapResponse } from "@/services/api-client";
+import { apiClient, requireApiSuccess, type ApiRequestConfig } from "@/services/api-client";
+
 export type AuthUser = {
   id: string;
   name: string;
@@ -31,26 +32,40 @@ function notifyAuthChange(reason: AuthChangeReason = "login") {
   }
   window.dispatchEvent(new CustomEvent("life-pilot:auth-changed", { detail: { reason } }));
 }
-export const authService = {
+
+class AuthService {
   async login(payload: LoginPayload) {
-    return unwrapResponse(apiClient.post<AuthResponse>("/auth/login", payload));
-  },
+    return requireApiSuccess(await apiClient.post<AuthResponse>("/auth/login", payload)).data;
+  }
+
   async register(payload: RegisterPayload) {
-    return unwrapResponse(apiClient.post<AuthResponse>("/auth/register", payload));
-  },
+    return requireApiSuccess(await apiClient.post<AuthResponse>("/auth/register", payload)).data;
+  }
+
   async currentUser(config?: ApiRequestConfig) {
-    return unwrapResponse(apiClient.get<AuthUser>("/auth/me", config));
-  },
+    return requireApiSuccess(await apiClient.get<AuthUser>("/auth/me", config)).data;
+  }
+
   async logout() {
     try {
-      await apiClient.post("/auth/logout", undefined, {
-        suppressToast: true,
-        suppressUnauthorized: true,
-      } as ApiRequestConfig);
+      requireApiSuccess(
+        await apiClient.post("/auth/logout", undefined, {
+          suppressToast: true,
+          suppressUnauthorized: true,
+        })
+      );
     } finally {
       notifyAuthChange("logout");
     }
-  },
-  saveSession: notifyAuthChange,
-  clearSession: () => notifyAuthChange("logout"),
-};
+  }
+
+  saveSession() {
+    notifyAuthChange("login");
+  }
+
+  clearSession() {
+    notifyAuthChange("logout");
+  }
+}
+
+export const authService = new AuthService();

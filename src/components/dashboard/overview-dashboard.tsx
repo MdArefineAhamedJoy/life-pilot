@@ -3,8 +3,9 @@ import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 import { SharedCard, SharedCardHeader, StatCard } from "@/components/shared/card";
 import { Tabs } from "@/components/ui/tabs";
-import { getCategorySpent, getRoutineProgress, getTotalSpent } from "@/lib/calculations";
-import type { BudgetCategory, Expense, RoutineTask } from "@/lib/types";
+import { getRoutineProgress, getTotalSpent } from "@/lib/calculations";
+import type { Expense, RoutineTask } from "@/lib/types";
+import type { BudgetSummary, BudgetUsage } from "@/types/budget.types";
 import { cn, localDateKey } from "@/lib/utils";
 import {
   Camera,
@@ -22,7 +23,8 @@ import Link from "next/link";
 import { useState } from "react";
 
 type OverviewDashboardProps = {
-  categories: BudgetCategory[];
+  budgets: BudgetUsage[];
+  budgetSummary: BudgetSummary | null;
   expenses: Expense[];
   tasks: RoutineTask[];
 };
@@ -117,28 +119,18 @@ function ExpenseOverview({ expenses }: { expenses: Expense[] }) {
   );
 }
 
-function CategoryDistribution({
-  categories,
-  expenses,
-}: {
-  categories: BudgetCategory[];
-  expenses: Expense[];
-}) {
+function CategoryDistribution({ budgets }: { budgets: BudgetUsage[] }) {
   const formatCurrency = useFormatCurrency();
-  const rows = categories.map((category) => ({
-    ...category,
-    spent: getCategorySpent(expenses, category.name),
-  }));
-  const totalSpent = getTotalSpent(expenses);
+  const totalSpent = budgets.reduce((total, budget) => total + budget.spent, 0);
 
   return (
     <SharedCard>
       <SharedCardHeader title="Category Distribution" />
-      {rows.length === 0 ? (
-        <EmptyState>Create a budget category to track its spending here.</EmptyState>
+      {budgets.length === 0 ? (
+        <EmptyState>Create a budget to track its spending here.</EmptyState>
       ) : (
         <div className="space-y-5">
-          {rows.map((row) => {
+          {budgets.map((row) => {
             const percent = totalSpent > 0 ? Math.round((row.spent / totalSpent) * 100) : 0;
             return (
               <div key={row.id}>
@@ -403,7 +395,7 @@ function QuickAddPanel() {
   );
 }
 
-function DashboardTabPanel({ categories, expenses, tasks }: OverviewDashboardProps) {
+function DashboardTabPanel({ budgets, expenses, tasks }: OverviewDashboardProps) {
   const [activeTab, setActiveTab] = useState<DashboardTab>("expense");
   return (
     <section className="min-w-0">
@@ -415,9 +407,7 @@ function DashboardTabPanel({ categories, expenses, tasks }: OverviewDashboardPro
         value={activeTab}
       />
       {activeTab === "expense" && <ExpenseOverview expenses={expenses} />}
-      {activeTab === "category" && (
-        <CategoryDistribution categories={categories} expenses={expenses} />
-      )}
+      {activeTab === "category" && <CategoryDistribution budgets={budgets} />}
       {activeTab === "routine" && <RoutineTimeline tasks={tasks} />}
       {activeTab === "recent" && <RecentExpenses expenses={expenses} />}
       {activeTab === "reminders" && <UpcomingReminders tasks={tasks} />}
@@ -425,17 +415,18 @@ function DashboardTabPanel({ categories, expenses, tasks }: OverviewDashboardPro
   );
 }
 
-export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashboardProps) {
+export function OverviewDashboard({
+  budgets,
+  budgetSummary,
+  expenses,
+  tasks,
+}: OverviewDashboardProps) {
   const formatCurrency = useFormatCurrency();
-  const totalBudget = categories.reduce((total, category) => total + category.monthlyLimit, 0);
-  const totalSpent = getTotalSpent(
-    expenses.filter((expense) => expense.date.slice(0, 7) === localDateKey().slice(0, 7))
-  );
-  const remainingBudget = totalBudget - totalSpent;
-  const todayKey = localDateKey();
-  const todaySpent = getTotalSpent(expenses.filter((expense) => expense.date === todayKey));
-  const budgetProgress =
-    totalBudget > 0 ? Math.min(Math.round((totalSpent / totalBudget) * 100), 100) : 0;
+  const totalBudget = budgetSummary?.totalBudget ?? 0;
+  const totalSpent = budgetSummary?.totalSpent ?? 0;
+  const remainingBudget = budgetSummary?.remaining ?? 0;
+  const todaySpent = budgetSummary?.todaySpent ?? 0;
+  const budgetProgress = budgetSummary?.usageProgress ?? 0;
   const dateLabel = new Intl.DateTimeFormat(undefined, {
     weekday: "long",
     day: "numeric",
@@ -493,7 +484,12 @@ export function OverviewDashboard({ categories, expenses, tasks }: OverviewDashb
           value={formatCurrency(totalSpent)}
         />
       </div>
-      <DashboardTabPanel categories={categories} expenses={expenses} tasks={tasks} />
+      <DashboardTabPanel
+        budgets={budgets}
+        budgetSummary={budgetSummary}
+        expenses={expenses}
+        tasks={tasks}
+      />
       <div className="grid min-w-0 gap-5 xl:grid-cols-[7fr_3fr]">
         <TaskSummary tasks={tasks} />
         <QuickAddPanel />

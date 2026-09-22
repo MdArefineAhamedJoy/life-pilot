@@ -1,11 +1,15 @@
 import type { LifeSettings } from "@/lib/types";
-import { apiClient, unwrapResponse } from "@/services/api-client";
+import { apiClient, requireApiSuccess } from "@/services/api-client";
 
-export const settingsService = {
+class SettingsService {
   async get() {
-    return unwrapResponse(apiClient.get<LifeSettings>("/life-os/settings"));
-  },
+    return requireApiSuccess(await apiClient.get<LifeSettings>("/life-os/settings")).data;
+  }
+
   async update(payload: Partial<LifeSettings>) {
-    return unwrapResponse(apiClient.patch<LifeSettings>("/life-os/settings", payload));
-  },
-};
+    return requireApiSuccess(await apiClient.patch<LifeSettings>("/life-os/settings", payload))
+      .data;
+  }
+}
+
+export const settingsService = new SettingsService();

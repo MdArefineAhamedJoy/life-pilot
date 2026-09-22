@@ -1,4 +1,4 @@
-import { apiClient, unwrapResponse } from "@/services/api-client";
+import { apiClient, requireApiSuccess } from "@/services/api-client";
 
 export type ProfilePayload = {
   name?: string;
@@ -10,16 +10,33 @@ export type ProfilePayload = {
   imageUrl?: string;
 };
 
-export const accountService = {
+class AccountService {
   async getProfile() {
-    return unwrapResponse(apiClient.get<ProfilePayload>("/account/profile"));
-  },
+    return requireApiSuccess(await apiClient.get<ProfilePayload>("/account/profile")).data;
+  }
+
   async saveProfile(payload: ProfilePayload) {
-    return unwrapResponse(apiClient.post<ProfilePayload>("/account/profile", payload));
-  },
+    return requireApiSuccess(await apiClient.post<ProfilePayload>("/account/profile", payload))
+      .data;
+  }
+
   async requestPasswordRecovery(email: string) {
-    return unwrapResponse(
-      apiClient.post<{ ok: boolean; expiresAt?: string }>("/account/password-recovery", { email })
-    );
-  },
-};
+    return requireApiSuccess(
+      await apiClient.post<{ ok: boolean; expiresAt?: string }>("/account/password-recovery", {
+        email,
+      })
+    ).data;
+  }
+
+  async resetPassword(token: string, password: string, passwordConfirmation: string) {
+    return requireApiSuccess(
+      await apiClient.post<{ ok: boolean }>("/account/password-reset", {
+        token,
+        password,
+        passwordConfirmation,
+      })
+    ).data;
+  }
+}
+
+export const accountService = new AccountService();

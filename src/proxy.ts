@@ -33,7 +33,7 @@ function setSessionCookies(response: NextResponse, session: SessionTokens, reque
 }
 
 export async function proxy(request: NextRequest) {
-  const authPage = ["/login", "/register"].includes(request.nextUrl.pathname);
+  const authPage = ["/login", "/register", "/reset-password"].includes(request.nextUrl.pathname);
   const publicPage = authPage || request.nextUrl.pathname === "/";
   const accessToken = request.cookies.get(accessTokenCookie)?.value;
   const refreshToken = request.cookies.get(refreshTokenCookie)?.value;

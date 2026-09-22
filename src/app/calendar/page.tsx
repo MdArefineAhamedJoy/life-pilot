@@ -5,6 +5,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, ListChecks, ReceiptText } from
 import { useMemo, useState } from "react";
 import { SharedCard, StatCard } from "@/components/shared/card";
 import { useLifeOs } from "@/components/state/life-os-provider";
+import { useBudgetData } from "@/hooks/use-budget-data";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -51,7 +52,8 @@ function eventToneClasses(tone: CalendarEvent["tone"]) {
 
 export default function CalendarPage() {
   const formatCurrency = useFormatCurrency();
-  const { categories, expenses, tasks } = useLifeOs();
+  const { expenses, tasks } = useLifeOs();
+  const { budgets, error } = useBudgetData();
   const todayKey = formatDateKey(new Date());
   const [viewDate, setViewDate] = useState(() => startOfMonth(new Date()));
   const [selectedDate, setSelectedDate] = useState(todayKey);
@@ -74,7 +76,7 @@ export default function CalendarPage() {
       tone: "task" as const,
     }));
 
-    const budgetEvents = categories.flatMap((category) => {
+    const budgetEvents = budgets.flatMap((category) => {
       const items: CalendarEvent[] = [];
 
       if (category.startDate) {
@@ -101,7 +103,7 @@ export default function CalendarPage() {
     });
 
     return [...expenseEvents, ...taskEvents, ...budgetEvents];
-  }, [categories, expenses, tasks, todayKey, formatCurrency]);
+  }, [budgets, expenses, tasks, todayKey, formatCurrency]);
 
   const eventsByDate = useMemo(() => {
     return events.reduce<Record<string, CalendarEvent[]>>((grouped, event) => {
@@ -160,6 +162,15 @@ export default function CalendarPage() {
           </Button>
         </div>
       </div>
+
+      {error && (
+        <p
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
