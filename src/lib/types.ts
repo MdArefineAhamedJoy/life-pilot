@@ -26,6 +26,7 @@ export type BudgetCategory = {
   categoryStatus?: "active" | "pushed" | "blocked";
   note?: string;
   extraNote?: string;
+  subcategories: string[];
   color: string;
   isActive: boolean;
 };

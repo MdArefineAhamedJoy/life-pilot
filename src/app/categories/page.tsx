@@ -190,6 +190,7 @@ export default function CategoriesPage() {
       />
       <CategoryModal
         category={selectedCategory}
+        key={selectedCategory?.id ?? "new-category"}
         onOpenChange={(open) => {
           setIsModalOpen(open);
           if (!open) {

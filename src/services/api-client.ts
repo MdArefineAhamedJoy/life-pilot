@@ -17,9 +17,12 @@ export type ApiResponse<T> = {
 export type ApiRequestConfig = AxiosRequestConfig & {
   suppressToast?: boolean;
   suppressUnauthorized?: boolean;
+  skipAuth?: boolean;
+  _retry?: boolean;
 };
 
 type SessionSnapshot = { accessToken: string; refreshToken?: string };
+type RefreshResponse = SessionSnapshot & { accessExpiresAt: string; refreshExpiresAt: string };
 
 export const listRequestParams = { page: 1, limit: 100 };
 
@@ -30,6 +33,7 @@ class ApiClient {
   private sessionCache: SessionSnapshot | null = null;
   private sessionCacheTimestamp = 0;
   private readonly sessionCacheTtl = 5 * 60 * 1000;
+  private refreshPromise: Promise<SessionSnapshot | null> | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -41,8 +45,9 @@ class ApiClient {
     // Same browser-session pattern as Guardly: load the signed-in session once,
     // then attach its bearer token to every backend request.
     this.client.interceptors.request.use(async (config) => {
-      const session = await this.ensureSession();
-      if (session?.accessToken) {
+      const requestConfig = config as ApiRequestConfig;
+      const session = requestConfig.skipAuth ? null : await this.ensureSession();
+      if (session?.accessToken && !requestConfig.skipAuth) {
         config.headers = config.headers ?? {};
         config.headers.Authorization = `Bearer ${session.accessToken}`;
       }
@@ -62,19 +67,30 @@ class ApiClient {
         }
         return response;
       },
-      (error: AxiosError<{ message?: string | string[] }>) => {
+      async (error: AxiosError<{ message?: string | string[] }>) => {
         const requestConfig = error.config as ApiRequestConfig | undefined;
         const publicRequest = [
           "/auth/login",
           "/auth/register",
+          "/auth/refresh",
           "/account/password-recovery",
         ].includes(error.config?.url ?? "");
         if (
           error.response?.status === 401 &&
           !publicRequest &&
+          requestConfig &&
           !requestConfig?.suppressUnauthorized &&
           typeof window !== "undefined"
         ) {
+          if (!requestConfig?._retry) {
+            requestConfig._retry = true;
+            const session = await this.refreshAccessToken();
+            if (session?.accessToken) {
+              requestConfig.headers = requestConfig.headers ?? {};
+              requestConfig.headers.Authorization = `Bearer ${session.accessToken}`;
+              return this.client.request(requestConfig);
+            }
+          }
           this.clearSession();
           window.dispatchEvent(new Event("life-pilot:unauthorized"));
         }
@@ -97,10 +113,10 @@ class ApiClient {
     );
   }
 
-  private async ensureSession(): Promise<SessionSnapshot | null> {
+  private async ensureSession(force = false): Promise<SessionSnapshot | null> {
     if (typeof window === "undefined") return null;
     const now = Date.now();
-    if (this.sessionCache && now - this.sessionCacheTimestamp < this.sessionCacheTtl) {
+    if (!force && this.sessionCache && now - this.sessionCacheTimestamp < this.sessionCacheTtl) {
       return this.sessionCache;
     }
 
@@ -129,6 +145,37 @@ class ApiClient {
     });
     if (!response.ok) throw new Error("Unable to save the sign-in session.");
     this.cacheSession(session);
+  }
+
+  private async refreshAccessToken(): Promise<SessionSnapshot | null> {
+    if (this.refreshPromise) return this.refreshPromise;
+
+    this.refreshPromise = (async () => {
+      const currentSession = await this.ensureSession(true);
+      if (!currentSession?.refreshToken) return null;
+
+      const response = await this.client.post<ApiResponse<RefreshResponse>>("/auth/refresh", undefined, {
+        headers: { Authorization: `Bearer ${currentSession.refreshToken}` },
+        skipAuth: true,
+        suppressToast: true,
+        suppressUnauthorized: true,
+      } as ApiRequestConfig);
+      const payload = response.data;
+      if (!payload.success || !payload.data?.accessToken || !payload.data.refreshToken) return null;
+
+      const session = {
+        accessToken: payload.data.accessToken,
+        refreshToken: payload.data.refreshToken,
+      };
+      await this.persistSession(session);
+      return session;
+    })()
+      .catch(() => null)
+      .finally(() => {
+        this.refreshPromise = null;
+      });
+
+    return this.refreshPromise;
   }
 
   async clearSession() {

@@ -34,6 +34,8 @@ const colorOptions: Array<{ label: string; value: BadgeTone }> = [
 export function CategoryModal({ open, onOpenChange, category }: CategoryModalProps) {
   const { addBudgetCategory, categories, updateBudgetCategory } = useLifeOs();
   const [error, setError] = useState("");
+  const [categoryKind, setCategoryKind] = useState(category?.name === "Shopping" ? "shopping" : "custom");
+  const [manualName, setManualName] = useState(category?.name === "Shopping" ? "" : category?.name ?? "");
   const isEdit = Boolean(category);
 
   function handleOpenChange(nextOpen: boolean) {
@@ -47,10 +49,14 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    const name = String(data.get("name") ?? "").trim();
+    const name = categoryKind === "shopping" ? "Shopping" : manualName.trim();
     const color = String(data.get("color") ?? "teal") as BadgeTone;
     const status = String(data.get("status") ?? "active") as CategoryStatus;
     const note = String(data.get("note") ?? "").trim();
+    const subcategories = String(data.get("subcategories") ?? "")
+      .split(/[,\n]/)
+      .map((item) => item.trim())
+      .filter(Boolean);
 
     if (!name) {
       setError("Category name is required.");
@@ -76,6 +82,7 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
       startDate: category?.startDate ?? "",
       endDate: category?.endDate ?? "",
       extraNote: category?.extraNote ?? "",
+      subcategories: categoryKind === "shopping" ? subcategories : [],
       status: category?.status,
       categoryStatus: status,
       name,
@@ -109,15 +116,26 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
         <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
             <div className="grid min-w-0 grid-cols-1 gap-4 p-4 md:grid-cols-2">
-              <div className="md:col-span-2">
-                <FieldShell label="Category name">
-                  <TextInput
-                    defaultValue={category?.name ?? ""}
-                    name="name"
-                    placeholder="Home rent, grocery, savings"
-                  />
-                </FieldShell>
-              </div>
+              <FieldShell label="Category">
+                <SelectInput
+                  onChange={(event) => setCategoryKind(event.target.value)}
+                  value={categoryKind}
+                >
+                  <option value="shopping">Shopping</option>
+                  <option value="custom">Custom category</option>
+                </SelectInput>
+              </FieldShell>
+              <FieldShell
+                hint={categoryKind === "shopping" ? "Shopping will be used automatically." : "Type any category name you need."}
+                label="Category name"
+              >
+                <TextInput
+                  disabled={categoryKind === "shopping"}
+                  onChange={(event) => setManualName(event.target.value)}
+                  placeholder={categoryKind === "shopping" ? "Shopping" : "Home rent, grocery, savings"}
+                  value={categoryKind === "shopping" ? "Shopping" : manualName}
+                />
+              </FieldShell>
               <FieldShell label="Color">
                 <SelectInput defaultValue={category?.color ?? "teal"} name="color">
                   {colorOptions.map((option) => (
@@ -140,6 +158,21 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
                   <option value="blocked">Blocked</option>
                 </SelectInput>
               </FieldShell>
+              {categoryKind === "shopping" && (
+                <div className="md:col-span-2">
+                  <FieldShell
+                    hint="Add names separated by commas or new lines. Users can select these in Shopping, or enter another name manually."
+                    label="Shopping subcategories"
+                  >
+                    <TextArea
+                      className="min-h-20"
+                      defaultValue={(category?.subcategories ?? []).join(", ")}
+                      name="subcategories"
+                      placeholder="Electricity, baby market, shirt, pants"
+                    />
+                  </FieldShell>
+                </div>
+              )}
               <div className="md:col-span-2">
                 <FieldShell label="Note" hint="Optional details for this category.">
                   <TextArea
@@ -154,7 +187,7 @@ export function CategoryModal({ open, onOpenChange, category }: CategoryModalPro
                 <p className="text-sm font-medium text-emerald-600">Used across</p>
                 <p className="mt-1 text-xl font-semibold text-slate-800">Budget and expenses</p>
                 <p className="mt-1 text-sm text-slate-500">
-                  Category names created here will be available in budget and expense forms.
+                  Category names and their subcategories will be available in budget, expense, and shopping forms.
                 </p>
               </div>
               {error && <p className="text-sm font-medium text-red-500 md:col-span-2">{error}</p>}

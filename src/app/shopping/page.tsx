@@ -14,7 +14,7 @@ import type { BudgetCategory } from "@/lib/types";
 import { categoriesService } from "@/services/categories.service";
 import { shoppingService } from "@/services/shopping.service";
 import type { ShoppingItem, ShoppingItemStatus, ShoppingSummary } from "@/types/shopping.types";
-import { CheckCircle2, ListChecks, MoreVertical, ShoppingCart, Trash2, X } from "lucide-react";
+import { CheckCircle2, FileText, ListChecks, MoreVertical, ShoppingCart, Trash2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 type PaginationMeta = { page: number; totalPages: number };
@@ -103,6 +103,11 @@ export default function ShoppingPage() {
       render: (item) => (
         <div className="min-w-0">
           <p className="font-semibold text-slate-900">{item.name}</p>
+          {(item.brand || item.model || item.storeName) && (
+            <p className="mt-1 max-w-[240px] truncate text-xs text-slate-500">
+              {[item.brand, item.model, item.storeName].filter(Boolean).join(" · ")}
+            </p>
+          )}
           {item.note && (
             <p className="mt-1 max-w-[240px] truncate text-xs text-slate-500">{item.note}</p>
           )}
@@ -112,7 +117,13 @@ export default function ShoppingPage() {
     {
       key: "category",
       header: "Category",
-      render: (item) => (item.category ? <Badge>{item.category}</Badge> : "-"),
+      render: (item) => (
+        <div className="flex flex-wrap gap-1">
+          {item.category && <Badge>{item.category}</Badge>}
+          {item.subCategory && <Badge tone="indigo">{item.subCategory}</Badge>}
+          {!item.category && !item.subCategory && "-"}
+        </div>
+      ),
     },
     {
       key: "quantity",
@@ -122,11 +133,34 @@ export default function ShoppingPage() {
     },
     {
       key: "price",
-      header: "Estimated cost",
+      header: "Total paid",
       align: "right",
       render: (item) => (
-        <span className="font-mono font-medium">{formatCurrency(item.estimatedPrice ?? 0)}</span>
+        <span className="font-mono font-medium">
+          {formatCurrency(item.totalPrice ?? item.estimatedPrice ?? 0)}
+        </span>
       ),
+    },
+    {
+      key: "documents",
+      header: "Documents",
+      render: (item) => {
+        const documentCount = (item.receiptDocuments?.length ?? 0) + (item.warrantyDocuments?.length ?? 0);
+        const firstDocument = item.receiptDocuments?.[0] ?? item.warrantyDocuments?.[0];
+        return firstDocument ? (
+          <a
+            className="inline-flex items-center gap-1 text-sm font-medium text-emerald-700 hover:text-emerald-900 hover:underline"
+            href={firstDocument.dataUrl}
+            rel="noreferrer"
+            target="_blank"
+          >
+            <FileText aria-hidden="true" className="size-4" />
+            {documentCount} file{documentCount === 1 ? "" : "s"}
+          </a>
+        ) : (
+          "-"
+        );
+      },
     },
     {
       key: "added",
@@ -198,7 +232,7 @@ export default function ShoppingPage() {
         <SectionHeader
           eyebrow="Shopping"
           title="Shopping list"
-          description="Plan market items, track their estimated cost, and mark them purchased."
+          description="Keep every shopping purchase, receipt, warranty, and budget impact together."
         />
         <AddShoppingItemDialog onSaved={() => setReloadVersion((current) => current + 1)} />
       </div>
@@ -236,12 +270,12 @@ export default function ShoppingPage() {
           value={String(summary?.purchasedItems ?? 0)}
         />
         <StatCard
-          detail="Total estimated cost"
+          detail="Automatically deducted from budget"
           icon={ShoppingCart}
-          label="Expected spend"
+          label="Shopping spend"
           progress={summary?.totalItems ? 100 : 0}
           tone="red"
-          value={formatCurrency(summary?.estimatedTotal ?? 0)}
+          value={formatCurrency(summary?.purchasedTotal ?? 0)}
         />
       </div>
       {error && (

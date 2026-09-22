@@ -69,22 +69,23 @@ textarea {
 
 .modal-scrollbar {
   direction: ltr;
-  scrollbar-color: #94a3b8 transparent;
+  scrollbar-color: #475569 #e2e8f0;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
 }
 
 .modal-scrollbar::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 .modal-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: #e2e8f0;
+  border-radius: 999px;
 }
 
 .modal-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #94a3b8;
-  border: 2px solid #ffffff;
+  background-color: #475569;
+  border: 3px solid #e2e8f0;
   border-radius: 999px;
 }
 

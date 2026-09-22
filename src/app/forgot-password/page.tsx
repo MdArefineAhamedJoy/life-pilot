@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, Mail, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { accountService } from "@/services/account.service";
+import { ArrowLeft, ArrowRight, Mail, RefreshCw } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
