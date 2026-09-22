@@ -8,6 +8,12 @@ export type AuthUser = {
   imageUrl?: string;
 };
 export type AuthResponse = { user: AuthUser; expiresAt: string };
+type AuthSessionResponse = AuthResponse & {
+  accessToken: string;
+  refreshToken: string;
+  accessExpiresAt: string;
+  refreshExpiresAt: string;
+};
 export type LoginPayload = { email: string; password: string; rememberMe?: boolean };
 export type RegisterPayload = {
   name: string;
@@ -35,11 +41,11 @@ function notifyAuthChange(reason: AuthChangeReason = "login") {
 
 class AuthService {
   async login(payload: LoginPayload) {
-    return requireApiSuccess(await apiClient.post<AuthResponse>("/auth/login", payload)).data;
+    return this.startSession(payload, "/auth/login");
   }
 
   async register(payload: RegisterPayload) {
-    return requireApiSuccess(await apiClient.post<AuthResponse>("/auth/register", payload)).data;
+    return this.startSession(payload, "/auth/register");
   }
 
   async currentUser(config?: ApiRequestConfig) {
@@ -55,8 +61,20 @@ class AuthService {
         })
       );
     } finally {
+      await apiClient.clearSession();
       notifyAuthChange("logout");
     }
+  }
+
+  private async startSession(payload: LoginPayload | RegisterPayload, endpoint: string) {
+    const session = requireApiSuccess(
+      await apiClient.post<AuthSessionResponse>(endpoint, payload, { suppressToast: true })
+    ).data;
+    await apiClient.persistSession(
+      { accessToken: session.accessToken, refreshToken: session.refreshToken },
+      "rememberMe" in payload && Boolean(payload.rememberMe)
+    );
+    return { user: session.user, expiresAt: session.accessExpiresAt };
   }
 
   saveSession() {

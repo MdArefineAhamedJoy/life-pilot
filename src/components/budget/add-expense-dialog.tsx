@@ -13,10 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { FieldShell, SelectInput, TextArea, TextInput } from "@/components/ui/field";
+import type { BudgetCategory } from "@/lib/types";
 import { localDateKey } from "@/lib/utils";
 import { categoriesService } from "@/services/categories.service";
 import { expensesService } from "@/services/expenses.service";
-import type { BudgetCategory } from "@/lib/types";
 import { Plus } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -29,6 +29,7 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState("0");
   const [quantity, setQuantity] = useState("1");
+  const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
   const [error, setError] = useState("");
   const [isCategoriesLoading, setIsCategoriesLoading] = useState(false);
@@ -64,13 +65,18 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
     const form = event.currentTarget;
     const data = new FormData(form);
 
+    if (!category) {
+      setError("Choose an expense category before saving.");
+      return;
+    }
+
     setIsSaving(true);
     setError("");
     try {
       await expensesService.create({
         date: String(data.get("date") || localDateKey()),
         itemName: String(data.get("itemName") ?? ""),
-        category: String(data.get("category") ?? ""),
+        category,
         amount: previewTotal,
         quantity: Number(data.get("quantity")) || 1,
         unit: String(data.get("unit") ?? ""),
@@ -80,6 +86,7 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
       });
       setAmount("0");
       setQuantity("1");
+      setCategory("");
       form.reset();
       setIsOpen(false);
       onSaved();
@@ -101,14 +108,14 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
           Add Expense
         </Button>
       </DialogTrigger>
-      <DialogContent className="flex h-[82vh] !w-[min(92vw,760px)] max-w-none grid-rows-none flex-col gap-0 overflow-hidden p-0">
-        <DialogHeader className="shrink-0 border-b border-slate-200 px-4 py-2">
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] !w-[min(92vw,760px)] max-w-none grid-rows-none flex-col gap-0 overflow-hidden p-0">
+        <DialogHeader className="shrink-0 border-b border-slate-200 px-5 py-4">
           <DialogTitle>Manual Expense Entry</DialogTitle>
           <DialogDescription>Add cost details and save the record.</DialogDescription>
         </DialogHeader>
         <form className="flex min-h-0 flex-1 flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-auto">
-            <div className="grid min-w-0 grid-cols-1 gap-4 p-4 md:grid-cols-2">
+            <div className="grid min-w-0 grid-cols-1 gap-4 p-5 md:grid-cols-2">
               <FieldShell label="Item name">
                 <TextInput name="itemName" placeholder="Enter an item name" required />
               </FieldShell>
@@ -119,10 +126,25 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
                 {isCategoriesLoading ? (
                   <Skeleton className="h-9 w-full" />
                 ) : (
-                  <SelectInput disabled={isSaving} name="category">
+                  <SelectInput
+                    aria-invalid={Boolean(error && !category)}
+                    disabled={isSaving}
+                    name="category"
+                    onChange={(event) => {
+                      setCategory(event.target.value);
+                      if (error) setError("");
+                    }}
+                    required
+                    value={category}
+                  >
+                    <option disabled value="">
+                      Choose a category
+                    </option>
                     <option value="Uncategorized">Uncategorized</option>
                     {categories.map((category) => (
-                      <option key={category.id}>{category.name}</option>
+                      <option key={category.id} value={category.name}>
+                        {category.name}
+                      </option>
                     ))}
                   </SelectInput>
                 )}
@@ -150,9 +172,9 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
               </FieldShell>
               <FieldShell label="Payment method">
                 <SelectInput name="paymentMethod">
-                  <option>Cash</option>
-                  <option>Card</option>
-                  <option>Mobile banking</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Card">Card</option>
+                  <option value="Mobile banking">Mobile banking</option>
                 </SelectInput>
               </FieldShell>
               <div className="rounded-md border border-emerald-200 bg-emerald-50 p-4">
@@ -167,14 +189,17 @@ export function AddExpenseDialog({ onSaved }: AddExpenseDialogProps) {
                 </FieldShell>
               </div>
               {error && (
-                <p className="md:col-span-2 text-sm text-red-600" role="alert">
+                <p
+                  className="md:col-span-2 -mt-1 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                  role="alert"
+                >
                   {error}
                 </p>
               )}
             </div>
           </div>
-          <DialogFooter className="shrink-0 border-t border-slate-200 ">
-            <div className="px-4 py-2">
+          <DialogFooter className="shrink-0 border-t border-slate-200 px-5 py-3">
+            <div>
               <Button
                 disabled={isSaving}
                 onClick={() => setIsOpen(false)}
