@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, LockKeyhole, Mail } from "lucide-react";
-import { accountService } from "@/services/account.service";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -26,8 +26,6 @@ export function LoginForm() {
   const [email, setEmail] = useState(getRememberedEmail);
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(() => Boolean(getRememberedEmail()));
-  const [recoveryMessage, setRecoveryMessage] = useState("");
-  const [requestingRecovery, setRequestingRecovery] = useState(false);
   const { error, isSubmitting, login } = useAuth();
 
   async function handleLogin() {
@@ -112,34 +110,10 @@ export function LoginForm() {
           />
           Remember me
         </label>
-        <button
-          className="text-sm font-semibold text-emerald-700"
-          disabled={!email || requestingRecovery}
-          onClick={async () => {
-            setRequestingRecovery(true);
-            try {
-              await accountService.requestPasswordRecovery(email);
-              setRecoveryMessage(
-                "If an account matches this email, password-reset instructions have been sent."
-              );
-            } catch (cause) {
-              setRecoveryMessage(
-                cause instanceof Error ? cause.message : "Recovery request failed."
-              );
-            } finally {
-              setRequestingRecovery(false);
-            }
-          }}
-          type="button"
-        >
-          {requestingRecovery ? "Requesting?" : "Forgot password?"}
-        </button>
+        <Link className="text-sm font-semibold text-emerald-700" href="/forgot-password">
+          Forgot password?
+        </Link>
       </div>
-      {recoveryMessage && (
-        <p role="status" className="text-sm text-slate-700">
-          {recoveryMessage}
-        </p>
-      )}
       {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
       <button

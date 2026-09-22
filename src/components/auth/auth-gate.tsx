@@ -11,7 +11,9 @@ type AuthChangeEvent = CustomEvent<{ reason?: "login" | "logout" }>;
 export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const isPublic = pathname === "/" || pathname === "/login" || pathname === "/register";
+  const isPublic = ["/", "/login", "/register", "/forgot-password", "/reset-password"].includes(
+    pathname
+  );
   const [user, setUser] = useState<AuthUser | null>(null);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
