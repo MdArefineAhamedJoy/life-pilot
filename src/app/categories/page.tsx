@@ -1,6 +1,6 @@
 "use client";
 
-import { MoreVertical, Pencil, Plus, RefreshCcw, Tags, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Plus, Tags, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CategoryModal } from "@/app/categories/components/category-modal";
 import { ConfirmationModal } from "@/components/shared/confirmation-modal";
@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/section-header";
 import type { BudgetCategory } from "@/lib/types";
 
-type BadgeTone = "teal" | "amber" | "rose" | "indigo";
 type CategoryStatus = "active" | "pushed" | "blocked";
 
 const statusLabels: Record<CategoryStatus, string> = {
@@ -20,30 +19,26 @@ const statusLabels: Record<CategoryStatus, string> = {
   blocked: "Blocked",
 };
 
+const legacyColors: Record<string, string> = {
+  teal: "#0f766e",
+  amber: "#d97706",
+  rose: "#e11d48",
+  indigo: "#4f46e5",
+};
+
+function displayColor(color: string) {
+  return /^#[0-9a-f]{6}$/i.test(color) ? color : (legacyColors[color] ?? "#0f766e");
+}
+
 function getCategoryStatus(category: BudgetCategory): CategoryStatus {
   return category.categoryStatus ?? (category.isActive ? "active" : "blocked");
 }
 
-function getNextCategoryStatus(category: BudgetCategory): CategoryStatus {
-  const status = getCategoryStatus(category);
-
-  if (status === "active") {
-    return "pushed";
-  }
-
-  if (status === "pushed") {
-    return "blocked";
-  }
-
-  return "active";
-}
-
 export default function CategoriesPage() {
-  const { categories, deleteBudgetCategory, expenses, updateBudgetCategory } = useLifeOs();
+  const { categories, deleteBudgetCategory, expenses } = useLifeOs();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<BudgetCategory | undefined>();
   const [deleteCategory, setDeleteCategory] = useState<BudgetCategory | undefined>();
-  const [statusChangeCategory, setStatusChangeCategory] = useState<BudgetCategory | undefined>();
   const [openActionMenuId, setOpenActionMenuId] = useState<string | undefined>();
 
   const expenseCountByCategory = useMemo(() => {
@@ -64,6 +59,11 @@ export default function CategoriesPage() {
           </span>
           <div className="min-w-0">
             <p className="truncate font-semibold text-slate-950">{category.name}</p>
+            {category.subcategories.length > 0 && (
+              <p className="mt-1 max-w-[360px] truncate text-xs text-slate-500">
+                {category.subcategories.join(" · ")}
+              </p>
+            )}
             <p className="mt-1 max-w-[360px] truncate text-xs text-slate-500">
               {category.note || "Available for budget and expenses"}
             </p>
@@ -74,7 +74,12 @@ export default function CategoriesPage() {
     {
       key: "color",
       header: "Color",
-      render: (category) => <Badge tone={category.color as BadgeTone}>{category.color}</Badge>,
+      render: (category) => (
+        <span className="inline-flex items-center gap-2 text-sm text-slate-700">
+          <span className="size-4 rounded-full border border-slate-300" style={{ backgroundColor: displayColor(category.color) }} />
+          {displayColor(category.color).toUpperCase()}
+        </span>
+      ),
     },
     {
       key: "expenseCount",
@@ -133,17 +138,6 @@ export default function CategoriesPage() {
                 Edit Category
               </button>
               <button
-                className="flex min-h-10 w-full items-center gap-3 px-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 hover:text-amber-600"
-                onClick={() => {
-                  setStatusChangeCategory(category);
-                  setOpenActionMenuId(undefined);
-                }}
-                type="button"
-              >
-                <RefreshCcw aria-hidden="true" className="size-4" />
-                Status Change
-              </button>
-              <button
                 className="flex min-h-10 w-full items-center gap-3 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50"
                 onClick={() => {
                   setDeleteCategory(category);
@@ -198,34 +192,6 @@ export default function CategoriesPage() {
           }
         }}
         open={isModalOpen}
-      />
-      <ConfirmationModal
-        actionLabel="Change status"
-        cancelLabel="Cancel"
-        description={
-          statusChangeCategory
-            ? `This will change "${statusChangeCategory.name}" from ${statusLabels[getCategoryStatus(statusChangeCategory)]} to ${statusLabels[getNextCategoryStatus(statusChangeCategory)]}.`
-            : "This will change the selected category status."
-        }
-        onConfirm={async () => {
-          if (!statusChangeCategory) {
-            return;
-          }
-
-          const status = getNextCategoryStatus(statusChangeCategory);
-          const { id, ...nextCategory } = statusChangeCategory;
-
-          const saved = await updateBudgetCategory(id, {
-            ...nextCategory,
-            categoryStatus: status,
-            isActive: status === "active",
-          });
-          if (!saved) return false;
-          setStatusChangeCategory(undefined);
-        }}
-        onOpenChange={(open) => !open && setStatusChangeCategory(undefined)}
-        open={Boolean(statusChangeCategory)}
-        title="Change Category Status"
       />
       <ConfirmationModal
         actionLabel="Delete"

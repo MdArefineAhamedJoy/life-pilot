@@ -9,7 +9,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
   LayoutDashboard,
-  ListChecks,
   ListTodo,
   LogOut,
   NotebookTabs,
@@ -38,12 +37,10 @@ const navItems: NavItem[] = [
   { label: "Expenses", href: "/expenses", icon: NotebookTabs, accent: "bg-red-500" },
   { label: "Receipt Scanner", href: "/receipt-scanner", icon: ScanLine, accent: "bg-blue-500" },
   { label: "Categories", href: "/categories", icon: ChartColumn, accent: "bg-emerald-500" },
-  { label: "Routine", href: "/routine", icon: ListChecks, accent: "bg-amber-500" },
   // Hidden navigation items — keep these entries for easy re-enablement later.
   // { label: "Tasks", href: "/tasks", icon: ListTodo, accent: "bg-blue-500" },
   // { label: "Timer", href: "/timer", icon: Timer, accent: "bg-blue-500" },
   { label: "Notes", href: "/notes", icon: StickyNote, accent: "bg-green-500" },
-  { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
   { label: "Calendar", href: "/calendar", icon: CalendarDays, accent: "bg-emerald-500" },
   { label: "Reports", href: "/reports", icon: ChartColumn, accent: "bg-emerald-500" },
   { label: "Shopping", href: "/shopping", icon: ListTodo, accent: "bg-emerald-500" },
@@ -51,6 +48,7 @@ const navItems: NavItem[] = [
   // { label: "Goals", href: "/goals", icon: ListChecks, accent: "bg-emerald-500" },
   { label: "Meal planner", href: "/meal-planner", icon: CalendarDays, accent: "bg-emerald-500" },
   { label: "Reminders", href: "/reminder", icon: CalendarDays, accent: "bg-emerald-500" },
+  { label: "AI Assistant", href: "/ai", icon: Bot, accent: "bg-slate-800" },
 ];
 
 type AppShellProps = {
@@ -100,7 +98,7 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   const primaryMobileItems = navItems.filter((item) =>
-    ["/dashboard", "/budget", "/expenses", "/routine", "/timer"].includes(item.href)
+    ["/dashboard", "/budget", "/expenses", "/shopping", "/reminder"].includes(item.href)
   );
 
   return (

@@ -51,6 +51,8 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
   const formatCurrency = useFormatCurrency();
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<BudgetCategory[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [manualCategory, setManualCategory] = useState("");
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [manualSubCategory, setManualSubCategory] = useState("");
   const [quantity, setQuantity] = useState("1");
@@ -64,8 +66,8 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const suggestedSubcategories = useMemo(
-    () => categories.find((category) => category.name.trim().toLowerCase() === "shopping")?.subcategories ?? [],
-    [categories]
+    () => categories.find((category) => category.name === selectedCategory)?.subcategories ?? [],
+    [categories, selectedCategory]
   );
   const calculatedTotal = (Number(productPrice) || 0) * (Number(quantity) || 0);
 
@@ -86,6 +88,8 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
   }, [isOpen]);
 
   function resetForm() {
+    setSelectedCategory("");
+    setManualCategory("");
     setSelectedSubCategory("");
     setManualSubCategory("");
     setQuantity("1");
@@ -118,7 +122,12 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
+    const category = manualCategory.trim() || selectedCategory;
     const subCategory = manualSubCategory.trim() || selectedSubCategory;
+    if (!category) {
+      setError("Choose a saved category or enter one manually.");
+      return;
+    }
     if (!subCategory) {
       setError("Choose a saved subcategory or enter one manually.");
       return;
@@ -137,7 +146,7 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
     try {
       await shoppingService.create({
         name: String(data.get("name") ?? ""),
-        category: "Shopping",
+        category,
         subCategory,
         brand: String(data.get("brand") ?? ""),
         model: String(data.get("model") ?? ""),
@@ -194,10 +203,20 @@ export function AddShoppingItemDialog({ onSaved }: AddShoppingItemDialogProps) {
           <div className="modal-scrollbar min-h-0 flex-1 overflow-y-scroll pr-2">
             <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-2">
               <div className="rounded-md border border-emerald-200 bg-emerald-50 p-4 md:col-span-2">
-                <p className="text-sm font-medium text-emerald-700">Category</p>
-                <p className="mt-1 text-xl font-semibold text-slate-900">Shopping</p>
-                <p className="mt-1 text-xs text-slate-600">This purchase is automatically counted in your Shopping budget and total spending.</p>
+                <p className="text-sm font-medium text-emerald-700">Category and budget</p>
+                <p className="mt-1 text-sm text-slate-700">Choose a saved category or enter one manually. The purchase is automatically deducted from your total budget.</p>
               </div>
+              <FieldShell label="Saved category">
+                {isCategoriesLoading ? <Skeleton className="h-9 w-full" /> : (
+                  <SelectInput aria-invalid={Boolean(error && !selectedCategory && !manualCategory)} onChange={(event) => setSelectedCategory(event.target.value)} value={selectedCategory}>
+                    <option value="">Select a category</option>
+                    {categories.map((item) => <option key={item.id} value={item.name}>{item.name}</option>)}
+                  </SelectInput>
+                )}
+              </FieldShell>
+              <FieldShell hint="Optional when a saved category is selected." label="Or enter category manually">
+                <TextInput aria-invalid={Boolean(error && !selectedCategory && !manualCategory)} onChange={(event) => setManualCategory(event.target.value)} placeholder="e.g. Shopping, Home repair" value={manualCategory} />
+              </FieldShell>
               <FieldShell label="Product name">
                 <TextInput name="name" placeholder="Walton refrigerator, baby formula" required />
               </FieldShell>
